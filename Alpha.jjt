@@ -1,0 +1,514 @@
+options {
+  LOOKAHEAD = 1;
+ }
+ PARSER_BEGIN(Alpha)
+ 
+ public class Alpha {
+
+  public static void main(String args[]) throws ParseException {
+    if (args.length != 1) {
+      System.out.println("Usage: Alpha <FileToParse>");
+    }
+    try {
+      Alpha myCalc = new Alpha(new java.io.FileInputStream(args[0]));
+   
+      SimpleNode root = myCalc.Program();
+      root.dump("");
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  //used for testing only
+  /*private int eval(SimpleNode node){
+
+    if(node.val != null)
+      //System.out.println(node.val) ;// leaf node with integer value
+    if(node.jjtGetNumChildren() == 0)
+    {
+      return 0;
+    }
+    for(int i = 0; i < node.jjtGetNumChildren(); i++)
+    {
+      SimpleNode child_node = (SimpleNode) node.jjtGetChild(i); 
+      eval(child_node);
+    }
+    return 0;
+ }*/
+ }
+ 
+
+ PARSER_END(Alpha)
+ SKIP: {
+  " " | "\r" | "\t" | "\n"
+ }
+ TOKEN: {
+   <OPEN_CURLY_BRACKET: "{"> |
+   <CLOSE_CURLY_BRACKET: "}"> |
+   <OPEN_PARENTHESIS: "("> |
+   <CLOSE_PARENTHESIS: ")"> |
+   <OPEN_BRACKET: "["> |
+   <CLOSE_BRACKET: "]"> |
+   <INT:"int"> |
+   <BOOLEAN:"boolean"> |
+   <IF: "if"> |
+   <ELSE: "else"> |
+   <TRUE: "true"> |
+   <THIS: "this"> |
+   <WHILE: "while"> |
+   <FALSE: "false"> |
+   <EQUAL: "="> |
+   <COMMA: ";"> |
+   <NEW: "new"> |
+   <LENGTH: "length"> |
+   <AND: "&&"> |
+   <MINOR: "<"> |
+   <PLUS: "+"> |
+   <MINUS: "-"> |
+   <PRODUCT: "*"> |
+   <DIVISON: "/"> |
+   <DOT: "."> |
+   <CLASS: "class"> |
+   <EXTENDS: "extends">|
+   <PUBLIC: "public"> |
+   <STATIC: "static">|
+   <VOID: "void">|
+   <MAIN: "main">|
+   <EXCLAMATION_POINT: "!">|
+   <NORMAL_COMMA: ",">|
+   
+   <RETURN: "return">|
+   <STRING: "String"> |
+  
+   <INTEGER_LITERAL: (["0" - "9"])+ > |
+   <IDENTIFIER: ( (["A" - "Z", "a" - "z"] (["0" - "9", "A" - "Z", "a" - "z", "_"])* ) ) >
+ }
+ SimpleNode Program(): {} {
+  (ClassDeclaration() <EOF> ) {
+   return jjtThis;
+  }
+ }
+
+ void Class_token() #CLASS : {} 
+ {
+  <CLASS> 
+ } 
+
+ void Identifier_token() #void : {Token t;}
+ {
+  t = <IDENTIFIER> {
+    jjtThis.val = t.image;
+  }
+  #IDENTIFIER
+ } 
+
+ void Extends_token() #EXTENDS: {}
+ {
+  <EXTENDS> 
+ } 
+
+ void Public_token() #PUBLIC : {}
+ {
+  <PUBLIC> 
+ } 
+
+ void OpenCurlyBracket_token() #void: {}
+ {
+  <OPEN_CURLY_BRACKET> 
+ } 
+
+ void CloseCurlyBracket_token() #void: {}
+ {
+  <CLOSE_CURLY_BRACKET> 
+ } 
+
+ void Comma_token() #void: {}
+ {
+    <COMMA>
+ } 
+
+  void True_token() #TRUE : {}
+  {
+    <TRUE>
+  } 
+
+  void False_token() #FALSE : {}
+  {
+    <FALSE>
+  } 
+
+  void This_token() #THIS : {}
+  {
+    <THIS>
+  } 
+
+  void IntegerLiteral_token() #void : {Token t;}
+  {
+   t = <INTEGER_LITERAL>{
+    jjtThis.val = t.image;
+  }
+  #INTEGER
+  } 
+
+  void New_token() #NEW : {}
+  {
+    <NEW>
+  } 
+
+  void And_token() #void : {}
+  {
+    <AND>
+  } 
+
+ void Minor_token() #void : {}
+ {
+   <MINOR>
+ } 
+
+ void Plus_token() #void : {}
+ {
+   <PLUS>
+ } 
+
+ void Minus_token() #void  : {}
+ {
+   <MINUS>
+ } 
+
+ void Product_token() #void : {}
+ {
+   <PRODUCT>
+ } 
+
+ void Division_token() #void  : {}
+ {
+   <DIVISON>
+ } 
+
+ void OpenParentesis_token() #void : {}
+ {
+   <OPEN_PARENTHESIS>
+ } 
+
+ void CloseParentesis_token() #void : {}
+ {
+   <CLOSE_PARENTHESIS>
+ } 
+
+ void OpenBracket_token() #void : {}
+ {
+   <OPEN_BRACKET>
+ } 
+
+ void CloseBracket_token() #void : {}
+ {
+   <CLOSE_BRACKET>
+ } 
+
+ void Dot_token() #void  : {}
+ {
+   <DOT>
+ } 
+
+ void Length_token() #LENGTH : {}
+ {
+   <LENGTH>
+ } 
+
+ void Static_token() #STATIC : {}
+ {
+   <STATIC>
+ } 
+
+ void Void_token() #VOID : {}
+ {
+   <VOID>
+ } 
+
+ void Main_token() #MAIN : {}
+ {
+   <MAIN>
+ } 
+
+ void String_token() #STRING : {}
+ {
+   <STRING>
+ } 
+
+ void Int_token() #INT : {}
+ {
+   <INT>
+ } 
+
+ void Boolean_token() #BOOLEAN : {}
+ {
+   <BOOLEAN>
+ } 
+
+ void Equal_token() #EQUAL  : {}
+ {
+   <EQUAL>
+ } 
+
+ void If_token() #void: {}
+ {
+   <IF>
+ } 
+
+ 
+ void Else_token() #void : {}
+ {
+   <ELSE>
+ } 
+
+ void While_token() #void : {}
+ {
+   <WHILE>
+ } 
+
+ void NormalComma_token() #void: {}
+ {
+   <NORMAL_COMMA>
+ } 
+
+ void ExclamationPoint_token() #void : {}
+ {
+   <EXCLAMATION_POINT>
+ } 
+
+ void Return_token() #void : {}
+ {
+   <RETURN>
+ } 
+
+
+
+ void ClassDeclaration() #void : {}
+ {
+  Class_token() Identifier_token() [Extends_token() Identifier_token()] ClassBody()
+ }
+
+ void ClassBody() #Body : {}
+ {
+  OpenCurlyBracket_token()  (VarDeclaration())* ((Public_token() (MainDeclaration() | MethodDeclaration()))*) CloseCurlyBracket_token()
+ }
+
+ void VarDeclaration() #void : {}
+ {
+    Type() Identifier_token() Comma_token()
+  // (…)? é equivalente a […]
+ }
+
+ void MainDeclaration()  : {}
+ {
+  Static_token() Void_token() Main_token() MainArgs() MainBody()
+ }
+
+ void MainArgs() #Args: {}
+ {
+  OpenParentesis_token() String_token() OpenBracket_token() CloseBracket_token() Identifier_token() CloseParentesis_token()
+ }
+
+ void MainBody() #Body: {}
+ {
+  OpenCurlyBracket_token() (LOOKAHEAD(2) VarDeclaration())* (Statement())* CloseCurlyBracket_token()
+ }
+
+ void MethodDeclaration() #METHOD_DECLARATION : {}
+ {
+  Type() Identifier_token() MethodArgs() MethodBody()
+ }
+
+ void MethodArgs() #Args : {}
+ {
+  OpenParentesis_token() [Type() Identifier_token() (NormalComma_token() Type() Identifier_token())*] CloseParentesis_token()
+ }
+
+ void MethodBody() #Body : {}
+ {
+  OpenCurlyBracket_token()  (LOOKAHEAD(2) VarDeclaration())* (Statement())* Return_token() Expression() Comma_token() CloseCurlyBracket_token()
+ }
+
+ void Type() #void : {}
+ {
+   (Int_token() (OpenBracket_token() CloseBracket_token())?) |
+   (Boolean_token()) |
+   (Identifier_token())
+ }
+
+
+ void Statement()#void : {}
+ {
+    (OpenCurlyBracket_token() (Statement())* CloseCurlyBracket_token()) |
+    (If()) |
+    (While())|
+    LOOKAHEAD(2)
+    (Identifier_token() NoIdentifierStartStament()) |
+    (Expression() Comma_token())
+ }
+
+ void NoIdentifierStartStament() #void : {}
+ {
+  ( Equal_token()  Expression() Comma_token() ) |
+  ( OpenCurlyBracket_token() Expression() CloseBracket_token() Equal_token() Expression() Comma_token())
+ }
+
+
+void If() #If: {} {
+  If_token() IfCondition() IfBody()  Else()
+}
+
+void Else() #Else : {}
+{
+  Else_token() ElseBody()
+}
+
+void IfCondition() #Condition : {}
+{
+  OpenParentesis_token() Expression() CloseParentesis_token()
+}
+
+void IfBody() #Body : {}
+{
+  Statement()
+}
+
+void ElseBody() #Body : {}
+{
+  Statement()
+}
+
+
+
+ void While() #While: {} {
+  try {
+    (While_token() WhileCondition() WhileBody() ) 
+  } catch (ParseException e) {
+    error_skipto(e, OPEN_CURLY_BRACKET);
+  }
+ }
+
+ void WhileCondition() #Condition: {}
+ {
+  OpenParentesis_token() Expression() CloseParentesis_token()
+ }
+
+ void WhileBody() #Body: {}
+ {
+  Statement()
+ }
+
+
+void Expression() #void : {}
+{
+   NoExpressionExpression()
+}
+
+void ExpressionTerm() #void : {}
+{
+  (True_token()) |
+  (False_token()) |
+  (This_token()) |
+  (IntegerLiteral_token()) |
+  (New_token() IntIdentifierExpression())|
+  (Identifier_token()) |
+  (ExclamationPoint_token() Expression()) |
+  (OpenParentesis_token() Expression() CloseParentesis_token())
+}
+
+void NoExpressionExpression() #void : {}
+{
+  And()
+}
+
+
+void Dot() #void: {}
+{
+  Dot_token() NoDotExpression() #DOT(3)
+}
+
+void And() #void : {}
+{
+  (Minor()) [LOOKAHEAD(2)  AndAnd()]
+}
+
+void AndAnd() #void : {}
+{
+  And_token() And() #AND(2)
+}
+
+void Minor() #void : {}
+{
+  (PlusMinus()) [ LOOKAHEAD(2) MinorMinor()]
+}
+
+void MinorMinor() #void : {}
+{
+  Minor_token() Minor() #MINOR(2)
+}
+
+void PlusMinus() #void : {}
+{
+  (ProductDivision())  ([LOOKAHEAD(2) (Plus() | Minus())])
+}
+
+void Plus() #void : {}
+{
+  Plus_token() PlusMinus() #PLUS(2)
+}
+
+void Minus() #void : {}
+{
+  Minus_token() PlusMinus() #MINUS(2)
+}
+
+void ProductDivision() #void  : {}
+{
+  (ExpressionTermDotArray() ( [LOOKAHEAD(2) ((Division()) | (Product()))]))
+}
+
+void Product() #void : {}
+{
+  Product_token() ProductDivision() #PRODUCT(2)
+}
+
+void Division() #void : {}
+{
+  Division_token() ProductDivision() #DIVISION(2)
+}
+
+void ExpressionTermDotArray() # void : {}
+{
+ ExpressionTerm() [LOOKAHEAD(2) ((OpenBracket_token() Expression() CloseBracket_token())| (Dot()))]
+}
+
+void NoDotExpression() #void: {}
+{
+  (Length_token()) |
+  (Identifier_token() OpenParentesis_token() ( Expression() (NormalComma_token() Expression())* )? CloseParentesis_token() ) 
+}
+
+void IntIdentifierExpression() #void : {}
+{
+ (Int_token() OpenBracket_token() Expression() CloseBracket_token()) |
+  (Identifier_token() OpenParentesis_token() CloseParentesis_token() ) 
+}
+
+
+ 
+ JAVACODE
+ void error_skipto(ParseException e, int kind) {
+   System.out.println(e.toString());  // print the error message
+   Token t;
+   Token nextT;
+   do {
+     t = getNextToken();
+     nextT = getToken(1);
+   } while (nextT.kind != kind);
+     // The above loop consumes tokens all the way up to a token of
+     // "kind".  We use a do-while loop rather than a while because the
+     // current token is the one immediately before the erroneous token
+     // (in our case the token immediately before what should have been
+     // "if"/"while".
+ }

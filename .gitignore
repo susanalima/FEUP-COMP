@@ -1,0 +1,10 @@
+
+*.class
+
+*.java
+
+*.jj
+
+.vscode/*
+
+!SimpleNode.java
