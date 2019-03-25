@@ -41,7 +41,7 @@ options {
 
  PARSER_END(Alpha)
  SKIP: {
-  " " | "\r" | "\t" | "\n"
+  " " | "\r" | "\t" | "\n" | <"//" (~["\r", "\n"])* >
  }
  TOKEN: {
    <OPEN_CURLY_BRACKET: "{"> |
