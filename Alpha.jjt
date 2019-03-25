@@ -425,7 +425,7 @@ void NoExpressionExpression() #void : {}
 
 void Dot() #void: {}
 {
-  Dot_token() NoDotExpression() #DOT(3)
+  Dot_token() NoDotExpression() #DOT(2)
 }
 
 void And() #void : {}
@@ -486,8 +486,15 @@ void ExpressionTermDotArray() # void : {}
 void NoDotExpression() #void: {}
 {
   (Length_token()) |
-  (Identifier_token() OpenParentesis_token() ( Expression() (NormalComma_token() Expression())* )? CloseParentesis_token() ) 
+  (Identifier_token()
+  FuncArgs()) #FUNC 
 }
+
+void FuncArgs() #FUNC_ARGS : {}
+{
+  OpenParentesis_token() ( Expression() (NormalComma_token() Expression())* )? CloseParentesis_token()
+}
+
 
 void IntIdentifierExpression() #void : {}
 {
