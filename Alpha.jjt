@@ -351,7 +351,7 @@ options {
  void NoIdentifierStartStament() #void : {}
  {
   ( Equal_token()  Expression() Comma_token() ) |
-  ( OpenCurlyBracket_token() Expression() CloseBracket_token() Equal_token() Expression() Comma_token())
+  ( OpenBracket_token() Expression() CloseBracket_token() Equal_token() Expression() Comma_token())
  }
 
 
