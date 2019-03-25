@@ -246,7 +246,7 @@ options {
    <BOOLEAN>
  } 
 
- void Equal_token() #EQUAL  : {}
+ void Equal_token() #void  : {}
  {
    <EQUAL>
  } 
@@ -350,8 +350,8 @@ options {
 
  void NoIdentifierStartStament() #void : {}
  {
-  ( Equal_token()  Expression() Comma_token() ) |
-  ( OpenBracket_token() Expression() CloseBracket_token() Equal_token() Expression() Comma_token())
+  ( Equal_token()  Expression() #EQUAL(2) Comma_token() ) |
+  ( OpenBracket_token() Expression() CloseBracket_token() Equal_token() Expression() #EQUAL(3) Comma_token())
  }
 
 
