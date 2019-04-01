@@ -1,44 +1,12 @@
 options {
   LOOKAHEAD = 1;
+  JJTREE_OUTPUT_DIRECTORY = "OUT";
  }
  PARSER_BEGIN(Alpha)
- 
- public class Alpha {
+ package exp;
+ import parser.AlphaMain;
 
-  public static void main(String args[]) throws ParseException {
-    if (args.length != 1) {
-      System.out.println("Usage: Alpha <FileToParse>");
-    }
-    try {
-      Alpha myCalc = new Alpha(new java.io.FileInputStream(args[0]));
-   
-      SimpleNode root = myCalc.Program();
-      root.dump("");
-      
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  //used for testing only
-  /*private int eval(SimpleNode node){
-
-    if(node.val != null)
-      //System.out.println(node.val) ;// leaf node with integer value
-    if(node.jjtGetNumChildren() == 0)
-    {
-      return 0;
-    }
-    for(int i = 0; i < node.jjtGetNumChildren(); i++)
-    {
-      SimpleNode child_node = (SimpleNode) node.jjtGetChild(i); 
-      eval(child_node);
-    }
-    return 0;
- }*/
- }
- 
-
+public class Alpha {}
  PARSER_END(Alpha)
  SKIP: {
   " " | "\r" | "\t" | "\n" | <"//" (~["\r", "\n"])* >

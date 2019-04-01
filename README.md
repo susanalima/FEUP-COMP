@@ -1,4 +1,4 @@
 # COMP_temp
 Temporary repository for the Compilers class project.
 
-"jjtree Alpha.jjt && javacc Alpha.jj && javac *.java && java -cp . Alpha test/class1.jmm"
+jjtree exp/Alpha.jjt; javacc exp/Alpha.jj; javac  exp/*.java parser/*.java; java parser/AlphaMain ../test/class1.jmm
