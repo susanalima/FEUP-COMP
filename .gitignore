@@ -8,3 +8,4 @@
 .vscode/*
 
 !SimpleNode.java
+!./src/exp/parser/*java
