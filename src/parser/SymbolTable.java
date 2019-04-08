@@ -1,7 +1,9 @@
 package parser;
 
 import exp.*;
-import Type;
+import parser.Type;
+
+import java.util.HashMap;
 
 public class SymbolTable {
     HashMap<String, FunctionBlock> symbolTable; //First key is fn#Param1Type#Param2Type
@@ -15,7 +17,7 @@ public class SymbolTable {
         }
     }
 
-    boolean isVarLocal(String funcName, String var) {
+    boolean isVarLocal(String funcName, String varName) {
         FunctionBlock fBlock = this.symbolTable.get(funcName);
         if (fBlock != null) {
             return fBlock.varExists(varName);
@@ -28,7 +30,7 @@ public class SymbolTable {
         return isVarLocal(this.GLOBAL, varName);
     }
 
-    Type getVarType(String funcName, String var) {
+    Type getVarType(String funcName, String varName) {
        if (isVarGlobal(varName))
             funcName = this.GLOBAL;
         
@@ -50,6 +52,5 @@ public class SymbolTable {
         } else {
             this.symbolTable.get(funcName).addSymbol(varName, newSymbol); //nao sei se isto e valido
         }
-
     }
 }

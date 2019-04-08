@@ -1,7 +1,7 @@
 package parser;
 
 import exp.*;
-import Type;
+import parser.Type;
 
 public class Var extends Symbol {
     String value;

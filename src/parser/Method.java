@@ -1,4 +1,4 @@
-package parser;
+/*package parser;
 
 import exp.*;
 import javafx.util;
@@ -10,4 +10,4 @@ public class Method extends Symbol {
         super(returnType, name);
         this.paramTypes = paramTypes_;
     }
-}
+}*/

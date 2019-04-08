@@ -4,7 +4,7 @@ import exp.*;
 
 import java.util.HashMap;
 
-import Type;
+import parser.Type;
 
 public class FunctionBlock {
     HashMap<String, Symbol> contents;  //Key is varName
