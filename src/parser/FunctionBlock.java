@@ -24,4 +24,8 @@ public class FunctionBlock {
     Type getVarType(String varName) {
         return contents.get(varName).type;
     }
+
+    void addSymbol(String varName, Symbol newSymbol) {
+        this.contents.put(varName,newSymbol);
+    }
 }

@@ -27,8 +27,29 @@ public class SymbolTable {
     boolean isVarGlobal(String varName) {
         return isVarLocal(this.GLOBAL, varName);
     }
+
     Type getVarType(String funcName, String var) {
+       if (isVarGlobal(varName))
+            funcName = this.GLOBAL;
+        
+         FunctionBlock fBlock = this.symbolTable.get(funcName);
+         return fBlock.getVarType(varName);    
     }
-    boolean methodExists(String funcName);
-    void addSymbol(String funcName, Symbol newSymbol);
+ 
+    boolean methodExists(String funcName) {
+        if(this.symbolTable.get(funcName) != null)
+            return true;
+        else
+            return false;
+    }
+
+    void addSymbol(String funcName, String varName, Symbol newSymbol) {
+        if(this.symbolTable.get(funcName) == null){
+            FunctionBlock fBlock = new FunctionBlock();
+            this.symbolTable.put(funcName,fBlock);
+        } else {
+            this.symbolTable.get(funcName).addSymbol(varName, newSymbol); //nao sei se isto e valido
+        }
+
+    }
 }
