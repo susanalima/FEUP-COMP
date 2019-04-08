@@ -262,10 +262,9 @@ public class Alpha {}
   OpenCurlyBracket_token()  (VarDeclaration())* ((Public_token() (MainDeclaration() | MethodDeclaration()))*) CloseCurlyBracket_token()
  }
 
- void VarDeclaration() #void : {}
+ void VarDeclaration() #VAR_DECLARATION : {}
  {
     Type() Identifier_token() Comma_token()
-  // (…)? é equivalente a […]
  }
 
  void MainDeclaration()  : {}
@@ -275,7 +274,12 @@ public class Alpha {}
 
  void MainArgs() #Args: {}
  {
-  OpenParentesis_token() String_token() OpenBracket_token() CloseBracket_token() Identifier_token() CloseParentesis_token()
+  OpenParentesis_token() MainArg() CloseParentesis_token()
+ }
+
+ void MainArg() #Arg : {}
+ {
+  String_token() OpenBracket_token() CloseBracket_token() Identifier_token() 
  }
 
  void MainBody() #Body: {}
@@ -290,7 +294,12 @@ public class Alpha {}
 
  void MethodArgs() #Args : {}
  {
-  OpenParentesis_token() [Type() Identifier_token() (NormalComma_token() Type() Identifier_token())*] CloseParentesis_token()
+  OpenParentesis_token() [ MethodArg() (NormalComma_token()  MethodArg())*] CloseParentesis_token()
+ }
+
+ void MethodArg() #Arg : {}
+ {
+   Type() Identifier_token()
  }
 
  void MethodBody() #Body : {}
