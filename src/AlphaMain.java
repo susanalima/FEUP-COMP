@@ -12,9 +12,15 @@ public class AlphaMain {
 
       SimpleNode root = myCalc.Program();
       root.dump("");
-      System.out.println(eval(root, "", ""));
+      System.out.println(eval(root, "", "#GLOBAL_SCOPE"));
 
       /* TESTING */
+
+
+      System.out.println(symbolTable.methodExists("#GLOBAL_SCOPE"));
+      System.out.println(symbolTable.isVarGlobal("a4"));
+
+
       System.out.println(symbolTable.methodExists("#int#ComputeFac#int#num#int#a#int#b#intarray#c"));
       System.out.println(symbolTable.isVarLocal("#int#ComputeFac#int#num#int#a#int#b#intarray#c", "num_aux"));
       System.out.println(symbolTable.isVarLocal("#int#ComputeFac#int#num#int#a#int#b#intarray#c", "num"));
@@ -25,6 +31,7 @@ public class AlphaMain {
       System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "num"));
       System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "a1"));
       /* TESTING */
+
 
     } catch (Exception e) {
       e.printStackTrace();

@@ -57,8 +57,8 @@ public class SymbolTable {
         if(this.symbolTable.get(funcName) == null){
             FunctionBlock fBlock = new FunctionBlock();
             this.symbolTable.put(funcName,fBlock);
-        } else {
+        } //else {
             this.symbolTable.get(funcName).addSymbol(varName, newSymbol); //nao sei se isto e valido
-        }
+        //}
     }
 }
