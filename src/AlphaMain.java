@@ -21,15 +21,19 @@ public class AlphaMain {
       System.out.println(symbolTable.isVarGlobal("a4"));
 
 
-      System.out.println(symbolTable.methodExists("#int#ComputeFac#int#num#int#a#int#b#intarray#c"));
+      /*System.out.println(symbolTable.methodExists("#int#ComputeFac#int#num#int#a#int#b#intarray#c"));
       System.out.println(symbolTable.isVarLocal("#int#ComputeFac#int#num#int#a#int#b#intarray#c", "num_aux"));
       System.out.println(symbolTable.isVarLocal("#int#ComputeFac#int#num#int#a#int#b#intarray#c", "num"));
-      System.out.println(symbolTable.isVarLocal("#int#ComputeFac#int#num#int#a#int#b#intarray#c", "a1"));
+      System.out.println(symbolTable.isVarLocal("#int#ComputeFac#int#num#int#a#int#b#intarray#c", "a1"));*/
+      System.out.println(symbolTable.isVarLocal("#int#ComputeFac#int#num#int#a#int#b#intarray#c", "c"));
 
-      System.out.println(symbolTable.methodExists("#int#Compute#int#num"));
+      /*System.out.println(symbolTable.methodExists("#int#Compute#int#num"));
       System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "num_aux"));
       System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "num"));
-      System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "a1"));
+      System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "a1"));*/
+
+      System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "num"));
+
       /* TESTING */
 
 
@@ -112,7 +116,7 @@ public class AlphaMain {
       symbol = "";
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-        if(child_node.getId() == AlphaTreeConstants.JJTBODY){ //this means the argument are over and can create the symboltable entry
+        if(child_node.getId() == AlphaTreeConstants.JJTBODY){ //this means the arguments are over and can create the symboltable entry
           symbol += tmp;
           symbolTable.addSymbol(symbol, "", null);
           funcname = symbol;

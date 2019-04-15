@@ -53,10 +53,18 @@ public class SymbolTable {
             return false;
     }
 
+
+    void addParams(String funcname) {
+        String[] tokens = funcname.split("#");
+        for (int i = 3; i < tokens.length; i+=2)
+            addSymbol(funcname, tokens[i+1], new Var(tokens[i], tokens[i+1], ""));
+    }
+
     void addSymbol(String funcName, String varName, Symbol newSymbol) {
         if(this.symbolTable.get(funcName) == null){
             FunctionBlock fBlock = new FunctionBlock();
             this.symbolTable.put(funcName,fBlock);
+            addParams(funcName);
         } //else {
             this.symbolTable.get(funcName).addSymbol(varName, newSymbol); //nao sei se isto e valido
         //}
