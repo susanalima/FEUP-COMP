@@ -71,7 +71,7 @@ public class AlphaMain {
         tmp += eval(child_node, symbol, funcname);
       }
       break;
-    case AlphaTreeConstants.JJTMAINDECLARATION: // TODO
+    case AlphaTreeConstants.JJTMAINDECLARATION:
     case AlphaTreeConstants.JJTMETHOD_DECLARATION:
       symbol = "";
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
