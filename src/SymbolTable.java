@@ -2,11 +2,18 @@
 import java.util.HashMap;
 
 public class SymbolTable {
-    HashMap<String, FunctionBlock> symbolTable; // First key is fn#Param1Type#Param2Type
     static final String GLOBAL = "#GLOBAL_SCOPE";
+    HashMap<String, FunctionBlock> symbolTable; // First key is fn#Param1Type#Param2Type
+    boolean extends_;
 
     SymbolTable() {
         this.symbolTable = new HashMap<>();
+        this.extends_ = false;
+    }
+
+
+    public void setExtends() {
+        this.extends_ = true;
     }
 
     boolean varExists(String funcName, String varName) {
@@ -27,7 +34,7 @@ public class SymbolTable {
     }
 
     boolean isVarGlobal(String varName) {
-        return isVarLocal(this.GLOBAL, varName);
+        return isVarLocal(SymbolTable.GLOBAL, varName);
     }
 
     /*
@@ -40,7 +47,7 @@ public class SymbolTable {
 
     String getVarType(String funcName, String varName) {
         if (isVarGlobal(varName))
-            funcName = this.GLOBAL;
+            funcName = SymbolTable.GLOBAL;
 
         FunctionBlock fBlock = this.symbolTable.get(funcName);
         return fBlock.getVarType(varName);
@@ -80,6 +87,7 @@ public class SymbolTable {
     }
 
     public void printSymbolTable() {
+        System.out.println("extends: " + this.extends_);
         symbolTable.forEach((key, value) -> {
             System.out.println(key + " : ");
             value.printFunctionBlock();

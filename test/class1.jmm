@@ -1,4 +1,4 @@
-class Fac {
+class Fac extends A{
 
   int a4;
 

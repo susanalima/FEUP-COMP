@@ -10,7 +10,7 @@ public class AlphaMain {
     try {
       Alpha myCalc = new Alpha(new java.io.FileInputStream(args[0]));
 
-      SimpleNode root = myCalc.Program();
+      SimpleNode root = Alpha.Program();
       root.dump("");
       eval(root, "", SymbolTable.GLOBAL);
       symbolTable.printSymbolTable();
@@ -58,6 +58,9 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTMAIN:
       symbol = "#main";
       break;
+    case AlphaTreeConstants.JJTEXTENDS:
+      symbolTable.setExtends();
+    break;
     case AlphaTreeConstants.JJTVAR_DECLARATION:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
