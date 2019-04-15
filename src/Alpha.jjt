@@ -279,7 +279,7 @@ options {
 
  void MainArg() #Arg : {}
  {
-  String_token() OpenBracket_token() CloseBracket_token() Identifier_token() 
+  String_token() OpenBracket_token() CloseBracket_token() #ARRAY Identifier_token() 
  }
 
  void MainBody() #Body: {}

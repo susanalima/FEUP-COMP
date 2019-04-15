@@ -55,8 +55,10 @@ public class SymbolTable {
 
     void addParams(String funcname) {
         String[] tokens = funcname.split("#");
-        for (int i = 3; i < tokens.length; i += 2)
+        for (int i = 3; i < tokens.length -1; i += 2) {
             addSymbol(funcname, tokens[i + 1], new Var(tokens[i], tokens[i + 1], "param"));
+        }
+        
     }
 
     void addSymbol(String funcName, String varName, Symbol newSymbol) {
