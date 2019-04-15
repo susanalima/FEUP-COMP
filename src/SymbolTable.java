@@ -61,6 +61,14 @@ public class SymbolTable {
         
     }
 
+    void addSymbol(String funcName) {
+        if (this.symbolTable.get(funcName) == null) {
+            FunctionBlock fBlock = new FunctionBlock();
+            this.symbolTable.put(funcName, fBlock);
+            addParams(funcName);
+        } 
+    }
+
     void addSymbol(String funcName, String varName, Symbol newSymbol) {
         if (this.symbolTable.get(funcName) == null) {
             FunctionBlock fBlock = new FunctionBlock();
