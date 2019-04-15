@@ -12,4 +12,14 @@ public class Var extends Symbol {
         this.value = value_;
     }
 
+    @Override
+    public String toString() {
+        return "Symbol{" +
+                "type=" + super.type +
+                ", name=" + super.name +
+                ", value=" + value +
+                '}';
+    }
+
+
 }

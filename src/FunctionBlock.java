@@ -26,4 +26,10 @@ public class FunctionBlock {
     void addSymbol(String varName, Symbol newSymbol) {
         this.contents.put(varName,newSymbol);
     }
+
+  
+    public void printFunctionBlock() {
+        contents.forEach((key, value) -> System.out.println(key + " : " + value));
+    }
+  
 }

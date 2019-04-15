@@ -8,4 +8,13 @@ public abstract class Symbol {
         this.type = type_;
         this.name = name_;
     }
+    
+    @Override
+    public String toString() {
+        return "Symbol{" +
+                "type=" + type +
+                ", name=" + name +
+                '}';
+    }
+
 }
