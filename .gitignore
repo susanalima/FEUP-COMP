@@ -9,11 +9,10 @@
 
 !SimpleNode.java
 
+!AlphaMain.java
 !Type.java
 !Symbol.java
 !Var.java
 !Method.java
 !SymbolTable.java
 !FunctionBlock.java
-
-!./src/exp/parser/*java
