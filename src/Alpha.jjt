@@ -1,12 +1,12 @@
 options {
   LOOKAHEAD = 1;
-  JJTREE_OUTPUT_DIRECTORY = "OUT";
  }
  PARSER_BEGIN(Alpha)
- package exp;
- import parser.AlphaMain;
+ 
+ public class Alpha {
+ }
+ 
 
-public class Alpha {}
  PARSER_END(Alpha)
  SKIP: {
   " " | "\r" | "\t" | "\n" | <"//" (~["\r", "\n"])* >
@@ -264,7 +264,7 @@ public class Alpha {}
 
  void VarDeclaration() #VAR_DECLARATION : {}
  {
-    Type() Identifier_token() Comma_token()
+  Type() Identifier_token() Comma_token()
  }
 
  void MainDeclaration()  : {}
@@ -309,10 +309,11 @@ public class Alpha {}
 
  void Type() #void : {}
  {
-   (Int_token() (OpenBracket_token() CloseBracket_token())?) |
+   (Int_token() (OpenBracket_token()  CloseBracket_token() #ARRAY )?) |
    (Boolean_token()) |
    (Identifier_token())
  }
+
 
 
  void Statement() #void : {}

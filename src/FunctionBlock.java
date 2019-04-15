@@ -1,10 +1,4 @@
-package parser;
-
-import exp.*;
-
 import java.util.HashMap;
-
-import parser.Type;
 
 public class FunctionBlock {
     HashMap<String, Symbol> contents;  //Key is varName

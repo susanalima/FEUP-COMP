@@ -1,13 +1,13 @@
-package parser;
-
-import exp.*;
-import parser.Type;
 
 import java.util.HashMap;
 
 public class SymbolTable {
     HashMap<String, FunctionBlock> symbolTable; //First key is fn#Param1Type#Param2Type
     static final String GLOBAL = "#GLOBAL_SCOPE";
+
+     SymbolTable() {
+        this.symbolTable = new HashMap<>();
+    }
 
     boolean varExists(String funcName, String varName) {
         if (isVarLocal(funcName, varName)) {
