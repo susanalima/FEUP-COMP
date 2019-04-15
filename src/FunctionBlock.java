@@ -15,7 +15,11 @@ public class FunctionBlock {
         return contents.containsKey(varName);
     }
 
-    Type getVarType(String varName) {
+    /*Type getVarType(String varName) {
+        return contents.get(varName).type;
+    }*/
+
+    String getVarType(String varName) {
         return contents.get(varName).type;
     }
 

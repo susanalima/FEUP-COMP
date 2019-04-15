@@ -2,7 +2,12 @@
 public class Var extends Symbol {
     String value;
 
-    Var(Type returnType, String name, String value_) {
+   /* Var(Type returnType, String name, String value_) {
+        super(returnType, name);
+        this.value = value_;
+    }*/
+
+    Var(String returnType, String name, String value_) {
         super(returnType, name);
         this.value = value_;
     }

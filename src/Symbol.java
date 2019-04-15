@@ -1,9 +1,10 @@
 
 public abstract class Symbol { 
-    Type type;
+    //Type type;
+    String type;
     String name;
 
-    Symbol(Type type_, String name_) {
+    Symbol(String type_, String name_) {
         this.type = type_;
         this.name = name_;
     }

@@ -30,13 +30,21 @@ public class SymbolTable {
         return isVarLocal(this.GLOBAL, varName);
     }
 
-    Type getVarType(String funcName, String varName) {
+    /*Type getVarType(String funcName, String varName) {
        if (isVarGlobal(varName))
             funcName = this.GLOBAL;
         
          FunctionBlock fBlock = this.symbolTable.get(funcName);
          return fBlock.getVarType(varName);    
-    }
+    }*/
+
+    String getVarType(String funcName, String varName) {
+        if (isVarGlobal(varName))
+             funcName = this.GLOBAL;
+         
+          FunctionBlock fBlock = this.symbolTable.get(funcName);
+          return fBlock.getVarType(varName);    
+     }
  
     boolean methodExists(String funcName) {
         if(this.symbolTable.get(funcName) != null)
