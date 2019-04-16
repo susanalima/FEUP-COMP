@@ -3,7 +3,7 @@ class Fac extends A{
   int a4;
 
   public int ComputeFac(int num, int a, int b, int[] c) {
-    int num_aux;
+    Fac num_aux; 
     int num;
     boolean a1;
     a[1] = 1;

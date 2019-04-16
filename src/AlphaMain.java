@@ -64,7 +64,7 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTVAR_DECLARATION:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-        if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) { // this means the type is done and the identifier is next
+        if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER && i !=0) { // this means the type is done and the identifier is next
           symbol += tmp;
           String value = "local";
           if (funcname.equals(SymbolTable.GLOBAL))
