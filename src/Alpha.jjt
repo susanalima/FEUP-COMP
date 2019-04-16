@@ -470,7 +470,7 @@ void NoDotExpression() #void: {}
 
 void FuncArgs() #FUNC_ARGS : {}
 {
-  OpenParentesis_token() ( Expression() (NormalComma_token() Expression())* )? CloseParentesis_token()
+  OpenParentesis_token() ( (Expression() #FUNC_ARG) (NormalComma_token()  Expression() #FUNC_ARG)* )? CloseParentesis_token()
 }
 
 
