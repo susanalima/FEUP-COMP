@@ -87,6 +87,8 @@ public class AlphaMain {
         tmp += eval(child_node, symbol, funcname);
       }
       break;
+      case AlphaTreeConstants.JJTFUNC:
+      break;
     default:
       symbol = "";
       break;

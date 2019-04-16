@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 public class SymbolTable {
     static final String GLOBAL = "#GLOBAL_SCOPE";
-    HashMap<String, FunctionBlock> symbolTable; // First key is fn#Param1Type#Param2Type
+    HashMap<String, FunctionBlock> symbolTable; // First key is #fn#Param1Type#Param2Type
     boolean extends_;
 
     SymbolTable() {
@@ -60,29 +60,34 @@ public class SymbolTable {
             return false;
     }
 
-    void addParams(String funcname) {
-        String[] tokens = funcname.split("#");
-        for (int i = 3; i < tokens.length -1; i += 2) {
-            addSymbol(funcname, tokens[i + 1], new Var(tokens[i], tokens[i + 1], "param"));
-        }
-        
+    void addParams(String funcName, String processed_funcName) {
+        String[] tokens = funcName.split("#");
+        for (int i = 3; i < tokens.length -1; i += 2) 
+            this.symbolTable.get(processed_funcName).addSymbol(tokens[i + 1], new Var(tokens[i], tokens[i + 1], "param"));
     }
 
-    void addSymbol(String funcName) {
-        if (this.symbolTable.get(funcName) == null) {
-            FunctionBlock fBlock = new FunctionBlock();
-            this.symbolTable.put(funcName, fBlock);
-            addParams(funcName);
+    String addSymbol(String funcName) {
+        String processed_funcName = funcName;
+        String returnType = "void";
+        if(!funcName.equals(this.GLOBAL)){
+            String[] tokens = funcName.split("#");
+            processed_funcName = "#" + tokens[2];
+            returnType = tokens[1] ;
+            for(int i = 3; i < tokens.length; i+=2) {
+                processed_funcName += "#" + tokens[i];
+            }
+        }
+        if (this.symbolTable.get(processed_funcName) == null) {
+            FunctionBlock fBlock = new FunctionBlock(returnType);
+            this.symbolTable.put(processed_funcName, fBlock);
+            addParams(funcName, processed_funcName);
         } 
+        return processed_funcName;
     }
 
     void addSymbol(String funcName, String varName, Symbol newSymbol) {
-        if (this.symbolTable.get(funcName) == null) {
-            FunctionBlock fBlock = new FunctionBlock();
-            this.symbolTable.put(funcName, fBlock);
-            addParams(funcName);
-        } // else {
-        this.symbolTable.get(funcName).addSymbol(varName, newSymbol); // nao sei se isto e valido
+        String processed_funcName = addSymbol(funcName); // else {
+        this.symbolTable.get(processed_funcName).addSymbol(varName, newSymbol); // nao sei se isto e valido
         // }
     }
 
