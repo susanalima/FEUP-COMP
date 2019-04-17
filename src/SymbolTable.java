@@ -97,6 +97,10 @@ public class SymbolTable {
         return this.symbolTable.get(funcName).checkReturnType(returnType);
     }
 
+    String getFunctionReturnType(String funcName) {
+        return this.symbolTable.get(funcName).getReturnType();
+    }
+
 
     public void printSymbolTable() {
         System.out.println("extends: " + this.extends_);

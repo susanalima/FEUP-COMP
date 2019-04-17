@@ -155,12 +155,14 @@ public class AlphaMain {
       symbol += eval(child_node, symbol, funcname, State.PROCESS);
     }
     break;
-    
+
     case AlphaTreeConstants.JJTDOT:
     if(node.jjtGetChild(0).getId() == AlphaTreeConstants.JJTTHIS) { //if first child is THIS eval function
       symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
       if(!symbolTable.methodExists(symbol)) //se a funçao com aqueles argumentos nao existir
-         System.exit(0);
+         System.exit(0); 
+      else
+        symbol = "&" + symbolTable.getFunctionReturnType(funcname);
     } else {
       symbol = "";
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -186,6 +188,8 @@ public class AlphaMain {
   public static boolean evaluateExpressionType(String expectedType, String expression) {
     String[] tokens = expression.split("&");
     String processed_expectedType = expectedType.split("&")[1];
+    if(processed_expectedType.equals("undefined"))
+      return true;
     for(int i = 1; i < tokens.length; i++) {
         if(!processed_expectedType.equals(tokens[i])) 
           return false;
