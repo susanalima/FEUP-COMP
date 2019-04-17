@@ -72,10 +72,10 @@ public class SymbolTable {
         String returnType = "void";
         if(!funcName.equals(SymbolTable.GLOBAL)){
             String[] tokens = funcName.split("#");
-            processed_funcName = "#" + tokens[2];
+            processed_funcName =  tokens[2];
             returnType = tokens[1] ;
             for(int i = 3; i < tokens.length; i+=2) {
-                processed_funcName += "#" + tokens[i];
+                processed_funcName += "&" + tokens[i];
             }
         }
         if (this.symbolTable.get(processed_funcName) == null) { //if processed funcname is already a function (should throw error?)
