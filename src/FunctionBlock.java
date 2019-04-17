@@ -30,17 +30,21 @@ public class FunctionBlock {
         return contents.get(varName).type;
     }
 
+
     String getReturnType() {
         return this.returnType;
+    }
+
+    Boolean checkReturnType(String returnType) {
+        return this.returnType.equals(returnType);
     }
 
     void addSymbol(String varName, Symbol newSymbol) {
         this.contents.put(varName,newSymbol);
     }
 
-  
     public void printFunctionBlock() {
-        System.out.println(this.returnType);
+        System.out.println("function return type : " + this.returnType);
         contents.forEach((key, value) -> System.out.println(key + " : " + value));
     }
   

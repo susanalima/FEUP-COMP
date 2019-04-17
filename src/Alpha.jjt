@@ -257,7 +257,7 @@ options {
   Class_token() Identifier_token() [Extends_token() Identifier_token()] ClassBody()
  }
 
- void ClassBody() #Body : {}
+ void ClassBody() #ClassBody : {}
  {
   OpenCurlyBracket_token()  (VarDeclaration())* ((Public_token() (MainDeclaration() | MethodDeclaration()))*) CloseCurlyBracket_token()
  }
@@ -304,7 +304,7 @@ options {
 
  void MethodBody() #Body : {}
  {
-  OpenCurlyBracket_token()  (LOOKAHEAD(2) VarDeclaration())* (Statement())* Return_token() Expression() Comma_token() CloseCurlyBracket_token()
+  OpenCurlyBracket_token()  (LOOKAHEAD(2) VarDeclaration())* (Statement())* (Return_token() Expression() #RETURN) Comma_token() CloseCurlyBracket_token()
  }
 
  void Type() #void : {}

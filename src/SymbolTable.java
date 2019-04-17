@@ -16,13 +16,26 @@ public class SymbolTable {
         this.extends_ = true;
     }
 
+    //checks if var is local, global or from a parent class
     boolean varExists(String funcName, String varName) {
         if (isVarLocal(funcName, varName)) {
             return true;
-        } else {
-            return isVarGlobal(varName);
-        }
+        } else if(isVarGlobal(varName))
+            return true;
+            else return this.extends_;
     }
+
+    String getVarType(String funcName, String varName) {
+        if (isVarLocal(funcName, varName)) {
+            return this.symbolTable.get(funcName).getVarType(varName);
+        } else if(isVarGlobal(varName))
+            return this.symbolTable.get(this.GLOBAL).getVarType(varName);
+            else if(this.extends_)
+                return "undefined";
+            return ""; 
+    }
+ 
+
 
     boolean isVarLocal(String funcName, String varName) {
         FunctionBlock fBlock = this.symbolTable.get(funcName);
@@ -37,21 +50,6 @@ public class SymbolTable {
         return isVarLocal(SymbolTable.GLOBAL, varName);
     }
 
-    /*
-     * Type getVarType(String funcName, String varName) { if (isVarGlobal(varName))
-     * funcName = this.GLOBAL;
-     * 
-     * FunctionBlock fBlock = this.symbolTable.get(funcName); return
-     * fBlock.getVarType(varName); }
-     */
-
-    String getVarType(String funcName, String varName) {
-        if (isVarGlobal(varName))
-            funcName = SymbolTable.GLOBAL;
-
-        FunctionBlock fBlock = this.symbolTable.get(funcName);
-        return fBlock.getVarType(varName);
-    }
 
     boolean methodExists(String funcName) {
         if (this.symbolTable.get(funcName) != null)
@@ -66,7 +64,10 @@ public class SymbolTable {
             this.symbolTable.get(processed_funcName).addSymbol(tokens[i + 1], new Var(tokens[i], tokens[i + 1], "param"));
     }
 
-    String addSymbol(String funcName) {
+
+    String addFunction(String funcName) {
+        if (this.symbolTable.get(funcName) != null) //if funcName is already a function
+            return funcName;
         String processed_funcName = funcName;
         String returnType = "void";
         if(!funcName.equals(this.GLOBAL)){
@@ -77,7 +78,7 @@ public class SymbolTable {
                 processed_funcName += "#" + tokens[i];
             }
         }
-        if (this.symbolTable.get(processed_funcName) == null) {
+        if (this.symbolTable.get(processed_funcName) == null) { //if processed funcname is already a function (should throw error?)
             FunctionBlock fBlock = new FunctionBlock(returnType);
             this.symbolTable.put(processed_funcName, fBlock);
             addParams(funcName, processed_funcName);
@@ -85,11 +86,17 @@ public class SymbolTable {
         return processed_funcName;
     }
 
-    void addSymbol(String funcName, String varName, Symbol newSymbol) {
-        String processed_funcName = addSymbol(funcName); // else {
-        this.symbolTable.get(processed_funcName).addSymbol(varName, newSymbol); // nao sei se isto e valido
-        // }
+    String addSymbol(String processed_funcName, String varName, Symbol newSymbol) {
+        addFunction(processed_funcName); //in case it is GLOBAL
+        this.symbolTable.get(processed_funcName).addSymbol(varName, newSymbol); 
+        return processed_funcName;
     }
+
+
+    Boolean checkFunctionReturnType(String funcName, String returnType) {
+        return this.symbolTable.get(funcName).checkReturnType(returnType);
+    }
+
 
     public void printSymbolTable() {
         System.out.println("extends: " + this.extends_);
