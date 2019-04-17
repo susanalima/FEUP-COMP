@@ -45,12 +45,16 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTMINUS:
     case AlphaTreeConstants.JJTPRODUCT:
     case AlphaTreeConstants.JJTDIVISION:
+    case AlphaTreeConstants.JJTMINOR:
+    case AlphaTreeConstants.JJTAND:
     case AlphaTreeConstants.JJTFUNC_ARGS:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
         tmp += eval(child_node, symbol, funcname, State.PROCESS);
       }
       symbol = tmp;
+      if(node.getId() == AlphaTreeConstants.JJTMINOR)
+        symbol = "&boolean";
       break;
     case AlphaTreeConstants.JJTIDENTIFIER:
       // System.out.println(state + " " + node.val);
@@ -95,6 +99,26 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTMAIN:
       symbol = "#main";
       break;
+
+    case AlphaTreeConstants.JJTIF:
+    case AlphaTreeConstants.JJTWHILE:
+    symbol = "";
+    for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+      SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
+      symbol = eval(child_node, symbol, funcname, state);
+    }
+      break;
+    case AlphaTreeConstants.JJTCONDITION:
+    symbol = "";
+    for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+      SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
+      symbol = eval(child_node, symbol, funcname, state);
+    }
+    if(!returnExpressionType(symbol).equals("boolean")) {
+      System.out.println("Invalid Condition!");
+      System.exit(0);
+    }
+    break;
     case AlphaTreeConstants.JJTINDEX:
       symbol = eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS); // validates the identifier
       String index = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.PROCESS); // validates the index

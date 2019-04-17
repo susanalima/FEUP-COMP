@@ -6,11 +6,11 @@ class Fac  {
     int  num_aux; 
     boolean a1;
     c[1] = 1;
-    while (num < 5 && num < 2) {
+    while (num < 5) {
       num = num - 1;
     }
-    if (num < 1)
-      num_aux = 1;
+    if (!true)
+      a4 = 1;
     else
       num_aux = this.ComputeFac(this.ComputeFac(num+1,a*2,b+b,c),a*2,b+b,c);
     return num_aux;
@@ -19,6 +19,6 @@ class Fac  {
   public static void main(String[] a){
     int kapa;
     int[] j;
-    io.println(a.ComputeFac(a.length,kapa,kapa, j)); 
+    io.println(a.ComputeFac(a.length)); 
   }
 }
