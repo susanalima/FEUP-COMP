@@ -112,7 +112,7 @@ public class AlphaMain {
     symbol = "";
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-      symbol = eval(child_node, symbol, funcname, state);
+      symbol = eval(child_node, symbol, funcname, State.PROCESS);
     }
     if(!returnExpressionType(symbol).equals("boolean")) {
       System.out.println("Invalid Condition!");
