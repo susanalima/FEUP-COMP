@@ -88,8 +88,11 @@ public class AlphaMain {
       break;
     case AlphaTreeConstants.JJTINDEX: //format INDEX -> IDENTIFIER , EXPRESSION (TODO VALIDAR EXPRESSION)
       symbol = eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS); //validates the identifier
-      if(!symbol.contains("$array")) // case the variable was declared but is not an array
+      String index = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.PROCESS);
+
+      if(!symbol.contains("$array") || !evaluateExpressionInt(index)) // case the variable was declared but is not an array or the index is not and int
         System.exit(0);
+
       symbol = symbol.split("\\$")[0];
       break;
     case AlphaTreeConstants.JJTEXTENDS:
@@ -97,8 +100,7 @@ public class AlphaMain {
       break;
     case AlphaTreeConstants.JJTEQUAL: // formato &type1&type2 etc...
       SimpleNode identifier = (SimpleNode) node.jjtGetChild(0);
-      String varType = eval(identifier, symbol, funcname, State.PROCESS); // substituir pelo eval do primeiro filho (pode ser um array)
-      //symbol += "&" + varType + "=";
+      String varType = eval(identifier, symbol, funcname, State.PROCESS); 
       for (int i = 1; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
         tmp += eval(child_node, symbol, funcname, State.PROCESS);
@@ -159,4 +161,8 @@ public class AlphaMain {
     return true;
   }
 
+  public static boolean evaluateExpressionInt(String expression) {
+      return evaluateExpressionType("&int", expression);
+  }
+  
 }
