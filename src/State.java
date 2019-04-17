@@ -1,0 +1,4 @@
+enum State {
+    PROCESS,
+    BUILD
+}

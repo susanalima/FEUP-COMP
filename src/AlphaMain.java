@@ -16,7 +16,7 @@ public class AlphaMain {
 
       SimpleNode root = Alpha.Program();
       root.dump("");
-      eval(root, "", SymbolTable.GLOBAL);
+      eval(root, "", SymbolTable.GLOBAL, State.BUILD);
       symbolTable.printSymbolTable();
 
     } catch (Exception e) {
@@ -24,7 +24,7 @@ public class AlphaMain {
     }
   }
 
-  public static String eval(SimpleNode node, String symbol, String funcname) {
+  public static String eval(SimpleNode node, String symbol, String funcname, State state) {
 
     String tmp = "";
 
@@ -32,25 +32,34 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTPROGRAM:
     case AlphaTreeConstants.JJTARGS:
     case AlphaTreeConstants.JJTARG:
+    case AlphaTreeConstants.JJTCLASSBODY:
+      if(node.getId() == AlphaTreeConstants.JJTCLASSBODY)
+        symbol = "";
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-        tmp += eval(child_node, symbol, funcname);
+        tmp += eval(child_node, symbol, funcname, State.BUILD);
       }
       symbol += tmp;
       break;
-    case AlphaTreeConstants.JJTCLASSBODY:
     case AlphaTreeConstants.JJTPLUS:
     case AlphaTreeConstants.JJTMINUS:
     case AlphaTreeConstants.JJTPRODUCT:
     case AlphaTreeConstants.JJTDIVISION:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-        tmp += eval(child_node, symbol, funcname);
+        tmp += eval(child_node, symbol, funcname, State.PROCESS);
       }
       symbol = tmp;
       break;
     case AlphaTreeConstants.JJTIDENTIFIER:
-      symbol = "#" + node.val;
+      if(state == State.BUILD)
+        symbol = "#" + node.val;
+      else if(state == State.PROCESS) {
+        symbol = symbolTable.getVarType(funcname, node.val); 
+        if (symbol.equals("")) // if the variable was not declared aborts the program
+          System.exit(0);
+        symbol = "&" + symbol;
+      }
       break;
     case AlphaTreeConstants.JJTINTEGER: // se estes tiverem um val pode se juntar tudo numa so condiçao
       symbol = "&integer";
@@ -82,26 +91,19 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTEXTENDS:
       symbolTable.setExtends();
       break;
-    case AlphaTreeConstants.JJTEQUAL:
+    case AlphaTreeConstants.JJTEQUAL: // formato &type#variable etc...
       SimpleNode identifier = (SimpleNode) node.jjtGetChild(0);
-      String varType = symbolTable.getVarType(funcname, identifier.val); // substituir pelo eval do primeiro filho (pode
-                                                                         // ser um array)
+      String varType = symbolTable.getVarType(funcname, identifier.val); // substituir pelo eval do primeiro filho (pode ser um array)
       if (varType.equals("")) // if the variable was not declared aborts the program
         System.exit(0);
-
-      symbol += varType;
-      // verificar se o identifier foi declarado
-      // se nao aborta
-      // se sim retorna o seu tipo
-      // avaliar a expressao que se segue -> retorna no symbol string formato
-      // #num1&integer&boolean etc...
-      // funcao de get type va
+      //symbol += "&" + varType + "=";
       for (int i = 1; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-        tmp += eval(child_node, symbol, funcname);
+        tmp += eval(child_node, symbol, funcname, State.PROCESS);
       }
       symbol += tmp;
       System.out.println("symbol: " + symbol);
+      //chamada a funçao de avaliaçao da expressao !! TODO
       break;
     /*
      * case AlphaTreeConstants.JJTRETURN:
@@ -111,15 +113,14 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTVAR_DECLARATION:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-        if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER && i != 0) { // this means the type is done and the
-                                                                                // identifier is next
+        if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER && i != 0) { // this means the type is done and the identifier is next
           symbol += tmp;
           String value = "local";
           if (funcname.equals(SymbolTable.GLOBAL))
             value = "global";
           symbolTable.addSymbol(funcname, child_node.val, new Var(symbol.split("#")[1], child_node.val, value));
         }
-        tmp += eval(child_node, symbol, funcname);
+        tmp += eval(child_node, symbol, funcname, State.BUILD);
       }
       break;
     case AlphaTreeConstants.JJTMAINDECLARATION:
@@ -127,13 +128,11 @@ public class AlphaMain {
       symbol = "";
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-        if (child_node.getId() == AlphaTreeConstants.JJTBODY) { // this means the arguments are over and can create the
-                                                                // symboltable entry
+        if (child_node.getId() == AlphaTreeConstants.JJTBODY) { // this means the arguments are over and can create the symboltable entry
           symbol += tmp;
           funcname = symbolTable.addFunction(symbol);
-          // funcname = symbol;
         }
-        tmp += eval(child_node, symbol, funcname);
+        tmp += eval(child_node, symbol, funcname, State.BUILD);
       }
       break;
     /*
@@ -148,11 +147,17 @@ public class AlphaMain {
       symbol = "";
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-        eval(child_node, symbol, funcname);
+        eval(child_node, symbol, funcname, state);
       }
       break;
     }
     return symbol;
+  }
+
+
+  private boolean evaluateExpressionType(String expectedType, String expression) {
+    String[] tokens;
+    return true;
   }
 
 }

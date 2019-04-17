@@ -29,7 +29,7 @@ public class SymbolTable {
         if (isVarLocal(funcName, varName)) {
             return this.symbolTable.get(funcName).getVarType(varName);
         } else if(isVarGlobal(varName))
-            return this.symbolTable.get(this.GLOBAL).getVarType(varName);
+            return this.symbolTable.get(SymbolTable.GLOBAL).getVarType(varName);
             else if(this.extends_)
                 return "undefined";
             return ""; 
@@ -70,7 +70,7 @@ public class SymbolTable {
             return funcName;
         String processed_funcName = funcName;
         String returnType = "void";
-        if(!funcName.equals(this.GLOBAL)){
+        if(!funcName.equals(SymbolTable.GLOBAL)){
             String[] tokens = funcName.split("#");
             processed_funcName = "#" + tokens[2];
             returnType = tokens[1] ;
