@@ -75,7 +75,7 @@ public class AlphaMain {
       symbol = "#string";
       break;
     case AlphaTreeConstants.JJTARRAY:
-      symbol = "array";
+      symbol = "$array";
       break;
     case AlphaTreeConstants.JJTBOOLEAN:
       symbol = "#boolean";
@@ -86,21 +86,24 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTMAIN:
       symbol = "#main";
       break;
+    case AlphaTreeConstants.JJTINDEX: //format INDEX -> IDENTIFIER , EXPRESSION (TODO VALIDAR EXPRESSION)
+      symbol = eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS); //validates the identifier
+      if(!symbol.contains("$array")) // case the variable was declared but is not an array
+        System.exit(0);
+      symbol = symbol.split("\\$")[0];
+      break;
     case AlphaTreeConstants.JJTEXTENDS:
       symbolTable.setExtends();
       break;
     case AlphaTreeConstants.JJTEQUAL: // formato &type1&type2 etc...
       SimpleNode identifier = (SimpleNode) node.jjtGetChild(0);
-      String varType = symbolTable.getVarType(funcname, identifier.val); // substituir pelo eval do primeiro filho (pode ser um array)
-      if (varType.equals("")) // if the variable was not declared aborts the program
-        System.exit(0);
+      String varType = eval(identifier, symbol, funcname, State.PROCESS); // substituir pelo eval do primeiro filho (pode ser um array)
       //symbol += "&" + varType + "=";
       for (int i = 1; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
         tmp += eval(child_node, symbol, funcname, State.PROCESS);
       }
       symbol += tmp;
-      //chamada a funçao de avaliaçao da expressao !! TODO
       if(!evaluateExpressionType(varType, symbol))
         System.exit(0);
       break;
@@ -134,14 +137,6 @@ public class AlphaMain {
         tmp += eval(child_node, symbol, funcname, State.BUILD);
       }
       break;
-    /*
-     * case AlphaTreeConstants.JJTDOT: if(node.jjtGetChild(0).getId() ==
-     * AlphaTreeConstants.JJTTHIS && node.jjtGetChild(1).getId() ==
-     * AlphaTreeConstants.JJTFUNC) { for (int i = 0; i <
-     * node.jjtGetChild(1).jjtGetNumChildren(); i++) { SimpleNode child_node =
-     * (SimpleNode) node.jjtGetChild(1).jjtGetChild(i); eval(child_node, symbol,
-     * funcname); } } break;
-     */
     default:
       symbol = "";
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -156,34 +151,12 @@ public class AlphaMain {
 
   public static boolean evaluateExpressionType(String expectedType, String expression) {
     String[] tokens = expression.split("&");
+    String processed_expectedType = expectedType.split("&")[1];
     for(int i = 1; i < tokens.length; i++) {
-        if(!expectedType.equals(tokens[i]))
+        if(!processed_expectedType.equals(tokens[i])) 
           return false;
     }
     return true;
   }
 
 }
-
-/* TESTING */
-/*
- * System.out.println(symbolTable.methodExists("#GLOBAL_SCOPE"));
- * System.out.println(symbolTable.isVarGlobal("a4"));
- * System.out.println(symbolTable.methodExists(
- * "#int#ComputeFac#int#num#int#a#int#b#intarray#c"));
- * System.out.println(symbolTable.isVarLocal(
- * "#int#ComputeFac#int#num#int#a#int#b#intarray#c", "num_aux"));
- * System.out.println(symbolTable.isVarLocal(
- * "#int#ComputeFac#int#num#int#a#int#b#intarray#c", "num"));
- * System.out.println(symbolTable.isVarLocal(
- * "#int#ComputeFac#int#num#int#a#int#b#intarray#c", "a1"));
- * System.out.println(symbolTable.isVarLocal(
- * "#int#ComputeFac#int#num#int#a#int#b#intarray#c", "c"));
- * /*System.out.println(symbolTable.methodExists("#int#Compute#int#num"));
- * System.out.println(symbolTable.isVarLocal("#int#Compute#int#num",
- * "num_aux"));
- * System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "num"));
- * System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "a1"));
- * System.out.println(symbolTable.isVarLocal("#int#Compute#int#num", "num"));
- */
-/* TESTING */
