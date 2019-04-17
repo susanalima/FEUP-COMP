@@ -52,9 +52,9 @@ public class AlphaMain {
       symbol = tmp;
       break;
     case AlphaTreeConstants.JJTIDENTIFIER:
-      if(state == State.BUILD)
+      if(state == State.BUILD) // if it is building state the symbol must be the name of the variable
         symbol = "#" + node.val;
-      else if(state == State.PROCESS) {
+      else if(state == State.PROCESS) { //if it is processing state the variable must be validated and and symbol is it's type
         symbol = symbolTable.getVarType(funcname, node.val); 
         if (symbol.equals("")) // if the variable was not declared aborts the program
           System.exit(0);
@@ -62,14 +62,12 @@ public class AlphaMain {
       }
       break;
     case AlphaTreeConstants.JJTINTEGER: // se estes tiverem um val pode se juntar tudo numa so condiçao
-      symbol = "&integer";
+      symbol = "&int";
       break;
-    case AlphaTreeConstants.JJTTRUE: // juntar em &boolean?
-      symbol = "&true";
-      break;
+    case AlphaTreeConstants.JJTTRUE: // separar???
     case AlphaTreeConstants.JJTFALSE:
-      symbol = "&false";
-      break;
+      symbol = "&boolean";
+      break;  
     case AlphaTreeConstants.JJTINT:
       symbol = "#int";
       break;
@@ -91,7 +89,7 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTEXTENDS:
       symbolTable.setExtends();
       break;
-    case AlphaTreeConstants.JJTEQUAL: // formato &type#variable etc...
+    case AlphaTreeConstants.JJTEQUAL: // formato &type1&type2 etc...
       SimpleNode identifier = (SimpleNode) node.jjtGetChild(0);
       String varType = symbolTable.getVarType(funcname, identifier.val); // substituir pelo eval do primeiro filho (pode ser um array)
       if (varType.equals("")) // if the variable was not declared aborts the program
@@ -102,8 +100,9 @@ public class AlphaMain {
         tmp += eval(child_node, symbol, funcname, State.PROCESS);
       }
       symbol += tmp;
-      System.out.println("symbol: " + symbol);
       //chamada a funçao de avaliaçao da expressao !! TODO
+      if(!evaluateExpressionType(varType, symbol))
+        System.exit(0);
       break;
     /*
      * case AlphaTreeConstants.JJTRETURN:
@@ -155,8 +154,12 @@ public class AlphaMain {
   }
 
 
-  private boolean evaluateExpressionType(String expectedType, String expression) {
-    String[] tokens;
+  public static boolean evaluateExpressionType(String expectedType, String expression) {
+    String[] tokens = expression.split("&");
+    for(int i = 1; i < tokens.length; i++) {
+        if(!expectedType.equals(tokens[i]))
+          return false;
+    }
     return true;
   }
 
