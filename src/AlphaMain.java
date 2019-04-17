@@ -59,14 +59,17 @@ public class AlphaMain {
       else if (state == State.PROCESS) { // if it is processing state the variable must be validated and and symbol is
                                          // it's type
         symbol = symbolTable.getVarType(funcname, node.val);
-        if (symbol.equals("")) // if the variable was not declared aborts the program
-          System.exit(0);
+        if (symbol.equals("")) {// if the variable was not declared aborts the program
+          System.out.println("Variable not declared: " + node.val);
+          System.exit(0); 
+        }
         symbol = "&" + symbol;
       }
       break;
     case AlphaTreeConstants.JJTEXTENDS:
       symbolTable.setExtends();
       break;
+    case AlphaTreeConstants.JJTLENGTH:
     case AlphaTreeConstants.JJTINTEGER: // se estes tiverem um val pode se juntar tudo numa so condiçao
       symbol = "&int";
       break;
@@ -96,9 +99,12 @@ public class AlphaMain {
       symbol = eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS); // validates the identifier
       String index = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.PROCESS); // validates the index
 
-      if (!symbol.contains("$array") || !evaluateExpressionInt(index)) // case the variable was declared but is not an
-                                                                       // array or the index is not and int
+      if (!symbol.contains("$array") || !evaluateExpressionInt(index)) // case the variable was declared but is not an array or the index is not and int
+      {
+        System.out.println("Variable not an array or index not an integer");
         System.exit(0);
+      }                                                         
+       
 
       symbol = symbol.split("\\$")[0];
       break;
@@ -110,14 +116,19 @@ public class AlphaMain {
         tmp += eval(child_node, symbol, funcname, State.PROCESS);
       }
       symbol += tmp;
-      if (!evaluateExpressionType(varType, symbol))
+      if (!evaluateExpressionType(varType, symbol)) {
+        System.out.println("Invalid type");
         System.exit(0);
+      }
+        
       break;
 
     case AlphaTreeConstants.JJTRETURN:
       if(!symbolTable.checkFunctionReturnType(funcname,
-          eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS).split("&")[1]))
-          System.exit(1);
+          eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS).split("&")[1])) {
+            System.out.println("Invalid return type");
+            System.exit(1);
+          }
       break;
 
     case AlphaTreeConstants.JJTVAR_DECLARATION:
@@ -151,9 +162,14 @@ public class AlphaMain {
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
         symbol = eval(child_node, symbol, funcname, State.PROCESS);
+        if(symbol.equals(""))
+          continue;
         symbol = "&" + returnExpressionType(symbol); 
-        if(symbol.equals("&"))
+        if(symbol.equals("&")) {
+          System.out.println("Invalid type 1");
           System.exit(0);
+        }
+         
       }
       break;
 
@@ -168,16 +184,16 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTDOT:
       if (node.jjtGetChild(0).getId() == AlphaTreeConstants.JJTTHIS) { // if first child is THIS eval function
         symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
-        System.out.println(symbol);
-        if (!symbolTable.methodExists(symbol)) // se a funçao com aqueles argumentos nao existir
+        if (!symbolTable.methodExists(symbol)) { // se a funçao com aqueles argumentos nao existir
+          System.out.println("Invalid function");
           System.exit(0);
+        }
         else
           symbol = "&" + symbolTable.getFunctionReturnType(funcname);
       } else {
-        symbol = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
           SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
-          eval(child_node, symbol, funcname, state);
+          symbol = eval(child_node, symbol, funcname, state);
         }
       }
 
@@ -196,6 +212,8 @@ public class AlphaMain {
 
 
   public static String returnExpressionType(String expression) {
+    if(!expression.substring(0,1).equals("&")) //if it is a outside function 
+      return "undefined";
     String expectedType = expression.split("&")[1];
     if(evaluateExpressionType("&" + expectedType, expression))
       return expectedType;
