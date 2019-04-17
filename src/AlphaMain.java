@@ -150,18 +150,25 @@ public class AlphaMain {
 
     case AlphaTreeConstants.JJTFUNC:
     symbol = ((SimpleNode) node.jjtGetChild(0)).val;
-    System.out.println("funcname: " + symbol);
     for (int i = 1; i < node.jjtGetNumChildren(); i++) {
       SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
       symbol += eval(child_node, symbol, funcname, State.PROCESS);
     }
     break;
-
+    
     case AlphaTreeConstants.JJTDOT:
-    if(node.jjtGetChild(0).getId() == AlphaTreeConstants.JJTTHIS) //if first child is THIS eval function
-    symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
-    if(!symbolTable.methodExists(symbol)) //se a funçao com aquele argumentos nao existir
-       System.exit(0);
+    if(node.jjtGetChild(0).getId() == AlphaTreeConstants.JJTTHIS) { //if first child is THIS eval function
+      symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
+      if(!symbolTable.methodExists(symbol)) //se a funçao com aqueles argumentos nao existir
+         System.exit(0);
+    } else {
+      symbol = "";
+      for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+        SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
+        eval(child_node, symbol, funcname, state);
+      }
+    }
+
     break;
 
     default:
