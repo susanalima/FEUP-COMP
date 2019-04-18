@@ -198,7 +198,7 @@ public class AlphaMain {
       break;
 
     case AlphaTreeConstants.JJTFUNC:
-      symbol = ((SimpleNode) node.jjtGetChild(0)).val;
+      symbol = ((SimpleNode) node.jjtGetChild(0)).val;    
       for (int i = 1; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
         symbol += eval(child_node, symbol, funcname, State.PROCESS);
@@ -212,15 +212,14 @@ public class AlphaMain {
           System.out.println("Invalid function");
           System.exit(0);
         }
-        else
-          symbol = "&" + symbolTable.getFunctionReturnType(funcname);
+        else 
+          symbol = "&" + symbolTable.getFunctionReturnType(symbol);
       } else {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
           SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
           symbol = eval(child_node, symbol, funcname, state);
         }
       }
-
       break;
 
     default:

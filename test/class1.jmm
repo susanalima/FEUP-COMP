@@ -2,17 +2,22 @@ class Fac  {
 
   int a4;
 
-  public int ComputeFac(int num, int a, int b, int[] c) {
+  public boolean C() {
+    boolean a;
+    return a;
+  }
+
+  public int ComputeFac(int num, int a, int b, boolean c) {
     int  num_aux; 
     boolean a1;
-    c[1] = 1;
-    while (num < 5) {
+    //c[a4] = 1;
+    while (num < 1) {
       num = num - 1;
     }
     if (!true)
       a4 = 1;
     else
-      num_aux = this.ComputeFac(this.ComputeFac(num+1,a*2,b+b,c),a*2,b+b,c);
+      num_aux = this.ComputeFac(this.ComputeFac(num+1,a*2,b+b,c),a*2,b+b,this.C());
     return num_aux;
   }
 
