@@ -1,0 +1,16 @@
+class HelloWorld {
+	public boolean build_test_arr(int s) {
+		ioPlus.printHelloWorld();
+
+		return false;
+	}
+
+	public static void main(String[] args) {
+		int s;
+		s = 5;
+
+		HelloWorld.build_test_arr(s);
+
+		ioPlus.printHelloWorld();
+	}
+}

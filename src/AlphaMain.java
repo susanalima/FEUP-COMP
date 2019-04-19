@@ -1,6 +1,5 @@
 
 import java.util.LinkedList;
-
 public class AlphaMain {
 
   private static SymbolTable symbolTable = new SymbolTable();
@@ -18,6 +17,9 @@ public class AlphaMain {
       root.dump("");
       eval(root, "", SymbolTable.GLOBAL, State.BUILD);
       symbolTable.printSymbolTable();
+      
+      String jasmin = JasminBuilder.printJasmin(root, symbolTable);
+      System.out.println(jasmin);
 
     } catch (Exception e) {
       e.printStackTrace();
