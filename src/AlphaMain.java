@@ -114,7 +114,8 @@ public class AlphaMain {
       SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
       symbol = eval(child_node, symbol, funcname, State.PROCESS);
     }
-    if(!returnExpressionType(symbol).equals("boolean")) {
+    tmp = returnExpressionType(symbol);
+    if(!tmp.equals("boolean") && !tmp.equals("undefined")) {
       System.out.println("Invalid Condition!");
       System.exit(0);
     }
@@ -260,5 +261,7 @@ public class AlphaMain {
   public static boolean evaluateExpressionInt(String expression) {
     return evaluateExpressionType("&int", expression);
   }
+
+ 
 
 }

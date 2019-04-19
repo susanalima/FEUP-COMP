@@ -1,4 +1,4 @@
-class Fac  {
+class Fac extends A {
 
   int a4;
 
@@ -7,23 +7,27 @@ class Fac  {
     return a;
   }
 
+  public int C(int a) {
+    return a;
+  }
+
   public int ComputeFac(int num, int a, int b, boolean c) {
     int  num_aux; 
     boolean a1;
     //c[a4] = 1;
-    while (num < 1) {
+    while (num < this.C(a)) {
       num = num - 1;
     }
-    if (!true)
+    if (g)
       a4 = 1;
     else
-      num_aux = this.ComputeFac(this.ComputeFac(num+1,a*2,b+b,c),a*2,b+b,this.C());
+      num_aux = this.ComputeFac(this.ComputeFac(num+1,a*2,b+b, num < 1),a*2,b+b,this.C());
     return num_aux;
   }
 
   public static void main(String[] a){
     int kapa;
     int[] j;
-    io.println(a.ComputeFac(a.length)); 
+    io.println(g.ComputeFac(a.length)); 
   }
 }
