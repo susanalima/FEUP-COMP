@@ -4,6 +4,7 @@ import java.util.Stack;
 public class JasminBuilder {
   static String fN;
   static Stack instructionsStack = new Stack();
+  String actualFunction = "GLOBAL";
 
   public static String printJasmin(SimpleNode root, SymbolTable sT) {
     String acc = "";
@@ -103,7 +104,12 @@ public class JasminBuilder {
 
 
   public static String arithmeticJasmin(SimpleNode root, SymbolTable sT) {
-      String instruction;
+      String instruction, ident, value;
+
+      if(root.toString().equals("IDENTIFIER") && root.parent.toString().equals("METHOD_DECLARATION")){
+        actualFunction = root.val;
+      }
+
       switch(root.toString()){
         case "PLUS":
           instruction = "iadd";
@@ -124,6 +130,9 @@ public class JasminBuilder {
         case "EQUAL":
           instruction = "istore_"; //TODO: Qual o valor do istore?
           instructionsStack.push(instruction);
+        case "IDENTIFIER":
+          ident = root.val; //TODO: get the value of the variable from the symbol table
+         // value = st.SymbolTable.
         break;
         default:
         break;
