@@ -1,13 +1,15 @@
 public class JasminBuilder {
   String fN;
   String invokingFN;
+  SymbolTable sT;
 
-  public JasminBuilder() {
+  public JasminBuilder(SymbolTable sT_) {
     fN = "";
     invokingFN = "";
+    this.sT = sT_;
   }
 
-  public String printJasmin(SimpleNode root, SymbolTable sT) {
+  public String printJasmin(SimpleNode root) {
     String acc = "";
 
     buildFunctionNameName(root);
@@ -15,6 +17,7 @@ public class JasminBuilder {
 
     if (root.toString().equals("DOT")) {
       // acc += "invokenonvirtual ";
+      acc += this.loadParameters(root);
     } else if ((root.toString().equals("IDENTIFIER") || root.toString().equals("THIS")
         || root.toString().equals("INTEGER") || root.toString().equals("FALSE") || root.toString().equals("TRUE"))
         && root.parent != null) {
@@ -49,7 +52,7 @@ public class JasminBuilder {
     if (root.children != null) {
       for (Node child : root.children) {
         SimpleNode sN = (SimpleNode) child;
-        acc += printJasmin(sN, sT);
+        acc += printJasmin(sN);
       }
     }
     if (root.toString().equals("DOT")) {
@@ -83,6 +86,33 @@ public class JasminBuilder {
 
     return acc;
 
+  }
+
+  private String loadParameters(SimpleNode node) {
+    String acc = "";
+
+    if (node.parent != null && node.parent.toString().equals("FUNC_ARG")) {
+      if (fN.equals("")) {
+        System.out.println("FUNC NAME NOT DEFINED");
+      }
+
+      if (node.toString().equals("INTEGER")) {
+        acc += "ldc " + node.val + ";\n";
+      } else if (node.toString().equals("FALSE") || node.toString().equals("TRUE")) {
+        acc += "ldc boolean " + node.toString().toLowerCase() + ";\n"; // TODO: Corrigir, de certeza que não é assim
+      } else {
+        acc += "push " + sT.getCounter(fN, node.val) + ";\n";
+      }
+    }
+
+    if (node.children != null) {
+      for (Node child : node.children) {
+        SimpleNode sN = (SimpleNode) child;
+        acc += loadParameters(sN);
+      }
+    }
+
+    return acc;
   }
 
   private String insertSubString(String existingString, String insertString, String after) {

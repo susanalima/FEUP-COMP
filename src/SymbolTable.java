@@ -88,7 +88,10 @@ public class SymbolTable {
 
     String addSymbol(String processed_funcName, String varName, Symbol newSymbol) {
         addFunction(processed_funcName); //in case it is GLOBAL
-        this.symbolTable.get(processed_funcName).addSymbol(varName, newSymbol); 
+        FunctionBlock fB = this.symbolTable.get(processed_funcName);
+        Symbol toAdd = newSymbol;
+        toAdd.setCounter(fB.contents.size() - 1);
+        fB.addSymbol(varName, toAdd); 
         return processed_funcName;
     }
 
@@ -99,6 +102,15 @@ public class SymbolTable {
 
     String getFunctionReturnType(String funcName) {
         return this.symbolTable.get(funcName).getReturnType();
+    }
+
+    int getCounter(String funcName, String varName) {
+        Symbol s = this.symbolTable.get(funcName).contents.get(varName);
+        if (s == null) {
+            System.err.println("Symbol " + varName + " in " + funcName + " not found!");
+            return 0;
+        }
+        return s.getCounter();
     }
 
 
