@@ -1,4 +1,8 @@
+import java.util.Stack;
+
+
 public class JasminBuilder {
+  Stack instructionsStack;
   String fN;
   String invokingFN;
   SymbolTable sT;
@@ -7,6 +11,7 @@ public class JasminBuilder {
     fN = "";
     invokingFN = "";
     this.sT = sT_;
+    instructionsStack = new Stack();
   }
 
   public String printJasmin(SimpleNode root) {
@@ -205,5 +210,40 @@ public class JasminBuilder {
     }
 
     return "ERROR";
+  }
+
+
+  public static String arithmeticJasmin(SimpleNode root, SymbolTable sT) {
+      String instruction;
+      switch(root.toString()){
+        case "PLUS":
+          instruction = "iadd";
+          instructionsStack.push(instruction);
+        break;
+        case "MINUS":
+          instruction = "isub";
+          instructionsStack.push(instruction);
+        break;
+        case "PRODUCT":
+          instruction = "imul";
+          instructionsStack.push(instruction);
+        break;
+        case "DIVISION":
+          instruction = "idiv";
+          instructionsStack.push(instruction);
+        break;
+        case "EQUAL":
+          instruction = "istore_"; //TODO: Qual o valor do istore?
+          instructionsStack.push(instruction);
+        break;
+        default:
+        break;
+      }
+      if (root.children != null) {
+        for (Node child : root.children) {
+          SimpleNode sN = (SimpleNode) child;
+          arithmeticJasmin(sN, sT);
+        }
+    }
   }
 }
