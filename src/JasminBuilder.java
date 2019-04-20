@@ -213,8 +213,8 @@ public class JasminBuilder {
   }
 
 
-  public static String arithmeticJasmin(SimpleNode root, SymbolTable sT) {
-      String instruction;
+  public String arithmeticJasmin(SimpleNode root) {
+      String instruction = "";
       switch(root.toString()){
         case "PLUS":
           instruction = "iadd";
@@ -242,8 +242,10 @@ public class JasminBuilder {
       if (root.children != null) {
         for (Node child : root.children) {
           SimpleNode sN = (SimpleNode) child;
-          arithmeticJasmin(sN, sT);
+          arithmeticJasmin(sN);
         }
     }
+
+    return instruction;
   }
 }
