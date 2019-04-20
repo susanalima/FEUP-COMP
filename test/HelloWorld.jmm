@@ -5,12 +5,18 @@ class HelloWorld {
 		return false;
 	}
 
+	public boolean build_test_arr(boolean s) {
+		return s;
+	}
+
 	public static void main(String[] args) {
 		int s;
 		s = 5;
 
 		HelloWorld.build_test_arr(s);
-
+		this.build_test_arr(s);
+		this.build_test_arr(12);
+		this.build_test_arr(false);
 		ioPlus.printHelloWorld();
 	}
 }

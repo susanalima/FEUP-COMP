@@ -18,7 +18,8 @@ public class AlphaMain {
       eval(root, "", SymbolTable.GLOBAL, State.BUILD);
       symbolTable.printSymbolTable();
       
-      String jasmin = JasminBuilder.printJasmin(root, symbolTable);
+      JasminBuilder jBuilder = new JasminBuilder();
+      String jasmin = jBuilder.printJasmin(root, symbolTable);
       System.out.println(jasmin);
 
     } catch (Exception e) {
