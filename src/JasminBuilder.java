@@ -1,6 +1,5 @@
 import java.util.Stack;
 
-
 public class JasminBuilder {
   Stack instructionsStack;
   String fN;
@@ -21,20 +20,30 @@ public class JasminBuilder {
     buildFunctionNameParameters(root, sT);
 
     if (root.toString().equals("DOT")) {
-      // acc += "invokenonvirtual ";
-      acc += this.loadParameters(root);
+      if (isFunc(root)) {
+        acc += this.loadParameters(root);
+      }
+
     } else if ((root.toString().equals("IDENTIFIER") || root.toString().equals("THIS")
         || root.toString().equals("INTEGER") || root.toString().equals("FALSE") || root.toString().equals("TRUE"))
         && root.parent != null) {
       String parent = root.parent.toString();
       if (parent.equals("FUNC")) {
-        acc += root.val;
+        if (((SimpleNode) root.parent).parent.toString().equals("newFunc")) {
+          acc += "invokenonstatic " + root.val + "/" + root.val + "()L" + root.val + "\n";
+        } else {
+          acc += root.val;
+        }
       } else if (parent.equals("DOT")) {
         if (root.toString().equals("IDENTIFIER")) {
-          acc += "invokestatic " + root.val + "/";
+          if (sT.varExists(fN, root.val) && isFunc((SimpleNode) root.parent)) {
+            acc += "invokevirtual " + sT.getVarType(fN, root.val) + "/";
+          } else if (isFunc((SimpleNode) root.parent)) {
+            acc += "invokestatic " + root.val + "/";
+          }
         } else if (root.toString().equals("THIS")) {
           String thisClass = getThisClass(root);
-          acc += "invokenonvirtual " + thisClass + "/";
+          acc += "invokevirtual " + thisClass + "/";
         }
 
       } else if (parent.equals("FUNC_ARG")) {
@@ -53,23 +62,25 @@ public class JasminBuilder {
     } else if (root.toString().equals("FUNC_ARGS")) {
       acc += "(";
     }
-
+    if (root.toString().equals("DOT")) {
+      //acc += "\n\n";
+    }
+    
     if (root.children != null) {
       for (Node child : root.children) {
         SimpleNode sN = (SimpleNode) child;
         acc += printJasmin(sN);
       }
     }
-    if (root.toString().equals("DOT")) {
-      acc += "\n\n";
-    } else if (root.toString().equals("FUNC_ARGS")) {
+    if (root.toString().equals("FUNC_ARGS")) {
       acc += ")";
+      System.out.println(invokingFN);
       if (sT.methodExists(invokingFN)) {
         String returnType = sT.getFunctionReturnType(invokingFN);
 
         switch (returnType) {
         case "boolean":
-          acc += "B";
+          acc += "Z";
           break;
 
         case "void":
@@ -83,10 +94,19 @@ public class JasminBuilder {
         case "string":
           acc += "S";
           break;
+
+        case "int$array":
+          acc += "[I";
+          break;
+
+        default:
+          acc += "L" + returnType;
         }
       } else {
         acc += "externalUndefined";
       }
+      acc += "\n\n";
+
     }
 
     return acc;
@@ -104,9 +124,12 @@ public class JasminBuilder {
       if (node.toString().equals("INTEGER")) {
         acc += "ldc " + node.val + ";\n";
       } else if (node.toString().equals("FALSE") || node.toString().equals("TRUE")) {
-        acc += "ldc boolean " + node.toString().toLowerCase() + ";\n"; // TODO: Corrigir, de certeza que não é assim
+        acc += "aload " + node.toString().toLowerCase() + ";\n";
+      } else if (node.toString().equals("DOT")) {
+
       } else {
-        acc += "push " + sT.getCounter(fN, node.val) + ";\n";
+        System.out.println(node.val + "\t" + node.toString());
+        acc += "iload " + sT.getCounter(fN, node.val) + ";\n";
       }
     }
 
@@ -118,6 +141,23 @@ public class JasminBuilder {
     }
 
     return acc;
+  }
+
+  private boolean isFunc(SimpleNode node) {
+    boolean ret = false;
+
+    if (node.toString().equals("FUNC")) {
+      return true;
+    }
+
+    if (node.children != null) {
+      for (Node n : node.children) {
+        SimpleNode sN = (SimpleNode) n;
+        ret = ret || isFunc(sN);
+      }
+    }
+
+    return ret;
   }
 
   private String insertSubString(String existingString, String insertString, String after) {
@@ -212,38 +252,37 @@ public class JasminBuilder {
     return "ERROR";
   }
 
-
   public String arithmeticJasmin(SimpleNode root) {
-      String instruction = "";
-      switch(root.toString()){
-        case "PLUS":
-          instruction = "iadd";
-          instructionsStack.push(instruction);
-        break;
-        case "MINUS":
-          instruction = "isub";
-          instructionsStack.push(instruction);
-        break;
-        case "PRODUCT":
-          instruction = "imul";
-          instructionsStack.push(instruction);
-        break;
-        case "DIVISION":
-          instruction = "idiv";
-          instructionsStack.push(instruction);
-        break;
-        case "EQUAL":
-          instruction = "istore_"; //TODO: Qual o valor do istore?
-          instructionsStack.push(instruction);
-        break;
-        default:
-        break;
+    String instruction = "";
+    switch (root.toString()) {
+    case "PLUS":
+      instruction = "iadd";
+      instructionsStack.push(instruction);
+      break;
+    case "MINUS":
+      instruction = "isub";
+      instructionsStack.push(instruction);
+      break;
+    case "PRODUCT":
+      instruction = "imul";
+      instructionsStack.push(instruction);
+      break;
+    case "DIVISION":
+      instruction = "idiv";
+      instructionsStack.push(instruction);
+      break;
+    case "EQUAL":
+      instruction = "istore_"; // TODO: Qual o valor do istore?
+      instructionsStack.push(instruction);
+      break;
+    default:
+      break;
+    }
+    if (root.children != null) {
+      for (Node child : root.children) {
+        SimpleNode sN = (SimpleNode) child;
+        arithmeticJasmin(sN);
       }
-      if (root.children != null) {
-        for (Node child : root.children) {
-          SimpleNode sN = (SimpleNode) child;
-          arithmeticJasmin(sN);
-        }
     }
 
     return instruction;
