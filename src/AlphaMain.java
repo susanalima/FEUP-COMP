@@ -15,14 +15,16 @@ public class AlphaMain {
 
       SimpleNode root = Alpha.Program();
       root.dump("");
-      eval(root, "", SymbolTable.GLOBAL, State.BUILD);
+      eval(root, "", SymbolTable.GLOBAL, State.BUILD); 
       symbolTable.printSymbolTable();
       
       System.out.println("---Jasmin---\n");
       JasminBuilder jBuilder = new JasminBuilder(symbolTable);
       String jasmin = jBuilder.printJasmin(root);
-      jasmin += "\n\n" + jBuilder.arithmeticJasmin(root);
+      jasmin = jasmin.concat("\n\nArithmetic \n\n" + jBuilder.arithmeticJasmin(root));
       System.out.println(jasmin);
+      
+      
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -219,12 +221,14 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTDOT:
       if (node.jjtGetChild(0).getId() == AlphaTreeConstants.JJTTHIS) { // if first child is THIS eval function
         symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
-        if (!symbolTable.methodExists(symbol)) { // se a funçao com aqueles argumentos nao existir
+        tmp = symbolTable.methodExistsWithUndefinedValues(symbol);
+        if (tmp.equals("")) { // se a funçao com aqueles argumentos nao existir
           System.out.println("Invalid function");
           System.exit(0);
         }
-        else 
-          symbol = "&" + symbolTable.getFunctionReturnType(symbol);
+        else {
+          symbol = "&" + symbolTable.getFunctionReturnType(tmp);
+        }
       } else {
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
           SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
