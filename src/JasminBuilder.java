@@ -11,7 +11,7 @@ public class JasminBuilder {
   public JasminBuilder(SymbolTable sT_) {
     fN = "";
     invokingFN = "";
-    this.sT = sT_;
+    sT = sT_;
     instructionsStack = new Stack();
   }
 
@@ -214,47 +214,99 @@ public class JasminBuilder {
   }
 
 
-  public String arithmeticJasmin(SimpleNode root) {
-      String instruction, ident, value;
-
-      if(root.toString().equals("IDENTIFIER") && root.parent.toString().equals("METHOD_DECLARATION")){
-        actualFunction = root.val;
-
+  public String getMethodKey(SimpleNode root){
+    String key = "";
+    String paramType;
+    for(Node child : root.children){
+      SimpleNode simpleChild = (SimpleNode) child;
+      if(simpleChild.toString().equals("IDENTIFIER")){
+        key = simpleChild.val;
       }
-      switch(root.toString()){
-        case "PLUS":
-          instruction = "iadd";
-          instructionsStack.push(instruction);
-        break;
-        case "MINUS":
-          instruction = "isub";
-          instructionsStack.push(instruction);
-        break;
-        case "PRODUCT":
-          instruction = "imul";
-          instructionsStack.push(instruction);
-        break;
-        case "DIVISION":
-          instruction = "idiv";
-          instructionsStack.push(instruction);
-        break;
-        case "EQUAL":
-          instruction = "istore_"; //TODO: Qual o valor do istore?
-          instructionsStack.push(instruction);
-        case "IDENTIFIER":
-          ident = root.val; //TODO: get the value of the variable from the symbol table
-         // value = st.SymbolTable.
-        break;
-        default:
-        break;
+      if(simpleChild.toString().equals("Args")){
+        if(simpleChild.children != null){
+          for(Node grandchild : simpleChild.children){
+            SimpleNode simpleGrandChild = (SimpleNode) grandchild;
+            paramType = simpleGrandChild.children[0].toString();
+            key.concat("&" + paramType);
+            if(simpleGrandChild.children[1].toString().equals("ARRAY"))
+              key.concat("$array");
+          }
+        }
+        return key;
+      }
+    }
+    return key;
+  }
+
+  public String fullAritm(SimpleNode root){
+
+      arithmeticJasmin(root);
+      String instructions, instruction;
+      instructions = "";
+
+       while(!instructionsStack.empty()){
+          instruction = (String) instructionsStack.pop();
+          System.out.println(instruction);
+          instructions.concat(instruction + "\n");
+      }
+      return instructions;
+  }
+
+  //TODO: Stack usage is only needed in arithmetic expressions x = (...) -> after/inside an EQUAL ; everything else is just concat
+  //DOUBT: Since variables need to be initialized to be used in a expression, when needed, the jasmin code should put in the stack the variable or the value of the variable? 
+  //DOUBT: Indexes of local variables? 0 - this ; 1 - next variable?parameter? 
+  public void arithmeticJasmin(SimpleNode root) {
+      String instructions, instruction, ident, value, counter;
+      instructions = "";
+
+      if(root.toString().equals("METHOD_DECLARATION"))
+        actualFunction = getMethodKey(root);
+
+      if(root.parent != null && !root.parent.toString().equals("METHOD_DECLARATION") && !root.parent.toString().equals("MainDeclaration") && !root.parent.toString().equals("Arg")){
+        switch(root.toString()){
+          case "PLUS":
+            instruction = "iadd";
+            instructionsStack.push(instruction);
+          break;
+          case "MINUS":
+            instruction = "isub";
+            instructionsStack.push(instruction);
+          break;
+          case "PRODUCT":
+            instruction = "imul";
+            instructionsStack.push(instruction);
+          break;
+          case "DIVISION":
+            instruction = "idiv";
+            instructionsStack.push(instruction);
+          break;
+          case "EQUAL":
+            instruction = "istore_"; //TODO: Qual o valor do istore?
+            instructionsStack.push(instruction);
+            break;
+          case "IDENTIFIER":
+              ident = root.val; 
+              if(sT.varExists(actualFunction, ident)){
+                Var converted = (Var) sT.symbolTable.get(actualFunction).contents.get(ident);
+                counter = converted.counter;//TODO:not over?
+                //instruction = "iload " + ident; //?
+                instruction = "iload_" + counter;
+                instructionsStack.push(instruction); 
+              }
+            break;
+          case "INTEGER":
+            instruction = "ldc l" + root.val;
+            instructionsStack.push(instruction);
+            break;
+          default:
+            break;
+        }
       }
       if (root.children != null) {
         for (Node child : root.children) {
           SimpleNode sN = (SimpleNode) child;
           arithmeticJasmin(sN);
         }
-    }
-
-    return instruction;
+      }
   }
 }

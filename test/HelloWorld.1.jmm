@@ -5,6 +5,12 @@ class HelloWorld {
 		return false;
 	}
 
+	public int test(){
+		int s; 
+		s = 5;
+		return s;
+	}
+
 	public static void main(String[] args) {
 		int s;
 		int k;

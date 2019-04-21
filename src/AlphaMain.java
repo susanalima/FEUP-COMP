@@ -15,14 +15,16 @@ public class AlphaMain {
 
       SimpleNode root = Alpha.Program();
       root.dump("");
-      eval(root, "", SymbolTable.GLOBAL, State.BUILD);
+      eval(root, "", SymbolTable.GLOBAL, State.BUILD); 
       symbolTable.printSymbolTable();
       
       System.out.println("---Jasmin---\n");
       JasminBuilder jBuilder = new JasminBuilder(symbolTable);
       String jasmin = jBuilder.printJasmin(root);
-      jasmin += "\n\n" + jBuilder.arithmeticJasmin(root);
+      jasmin.concat("\n\n Arithmetic \n\n" + jBuilder.fullAritm(root));
       System.out.println(jasmin);
+      
+      
 
     } catch (Exception e) {
       e.printStackTrace();

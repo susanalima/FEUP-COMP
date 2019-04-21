@@ -2,9 +2,9 @@
 import java.util.HashMap;
 
 public class SymbolTable {
-    static final String GLOBAL = "#GLOBAL_SCOPE";
+    static final String GLOBAL = "#GLOBAL_SCOPE"; 
     HashMap<String, FunctionBlock> symbolTable; // First key is #fn#Param1Type#Param2Type
-    boolean extends_;
+    boolean extends_;                           //^- Isto está certo? Não é fn&Param1Type($array)?&Param2Type (?)
 
     SymbolTable() {
         this.symbolTable = new HashMap<>();
