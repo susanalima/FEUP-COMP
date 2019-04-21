@@ -1,18 +1,18 @@
-import java.util.Stack;
+
 
 
 public class JasminBuilder {
-  Stack instructionsStack;
   String fN;
   String invokingFN;
   SymbolTable sT;
   String actualFunction = "GLOBAL";
+  String fullInstructions = "";
 
   public JasminBuilder(SymbolTable sT_) {
     fN = "";
     invokingFN = "";
     sT = sT_;
-    instructionsStack = new Stack();
+    
   }
 
   public String printJasmin(SimpleNode root) {
@@ -243,28 +243,16 @@ public class JasminBuilder {
     return key;
   }
 
-  public String fullAritm(SimpleNode root){
-
-      arithmeticJasmin(root);
-      String instructions, instruction;
-      instructions = "";
-  /*
-       while(!instructionsStack.empty()){
-          instruction = (String) instructionsStack.pop();
-          System.out.println(instruction);
-          instructions = instructions.concat(instruction + "\n");
-      }*/
-      return instructions;
-  }
+  
 
   //TODO: Stack usage is only needed in arithmetic expressions x = (...) -> after/inside an EQUAL ; everything else is just concat
   //DOUBT: Since variables need to be initialized to be used in a expression, when needed, the jasmin code should put in the stack the variable or the value of the variable? 
   //DOUBT: Indexes of local variables? 0 - this ; 1 - next variable?parameter? 
-  public void arithmeticJasmin(SimpleNode root) {
-      String instructions, instruction, ident, value;
+  public String arithmeticJasmin(SimpleNode root) {
+      String instruction, ident, value;
       instruction ="";
       int counter;
-      instructions = "";
+     
 
       if(root.toString().equals("METHOD_DECLARATION") || root.toString().equals("MainDeclaration"))
         actualFunction = getMethodKey(root);
@@ -273,19 +261,15 @@ public class JasminBuilder {
         switch(root.toString()){
           case "PLUS":
             instruction = "iadd";
-            instructionsStack.push(instruction);
           break;
           case "MINUS":
             instruction = "isub";
-            instructionsStack.push(instruction);
           break;
           case "PRODUCT":
             instruction = "imul";
-            instructionsStack.push(instruction);
           break;
           case "DIVISION":
             instruction = "idiv";
-            instructionsStack.push(instruction);
           break;
           case "EQUAL":
             SimpleNode leftSide = (SimpleNode)root.children[0];
@@ -293,23 +277,19 @@ public class JasminBuilder {
             if(sT.varExists(actualFunction, ident)){
               Symbol symb = sT.symbolTable.get(actualFunction).contents.get(ident);
               counter = symb.counter;
-              instruction = "istore_"  + counter + " (" + symb.name + ")"; 
-              instructionsStack.push(instruction);
+              instruction = "istore_"  + counter; 
             }
-           
             break;
           case "IDENTIFIER":
               ident = root.val;
               if(sT.varExists(actualFunction, ident) && !root.parent.toString().equals("VAR_DECLARATION") && !root.parent.toString().equals("EQUAL") && !root.parent.toString().equals("RETURN")){
                 Symbol symb = sT.symbolTable.get(actualFunction).contents.get(ident);
                 counter = symb.counter;
-                instruction = "iload_" + counter + " (" + symb.name + ")";
-                instructionsStack.push(instruction); 
+                instruction = "iload_" + counter;
               }
             break;
           case "INTEGER":
             instruction = "ldc " + root.val;
-            instructionsStack.push(instruction);
             break;
           default:
             break;
@@ -322,6 +302,8 @@ public class JasminBuilder {
         }
       }
       if(instruction != "")
-      System.out.println(instruction);
+        fullInstructions = fullInstructions.concat(instruction + "\n");
+
+      return fullInstructions;
   }
 }

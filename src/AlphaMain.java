@@ -21,7 +21,7 @@ public class AlphaMain {
       System.out.println("---Jasmin---\n");
       JasminBuilder jBuilder = new JasminBuilder(symbolTable);
       String jasmin = jBuilder.printJasmin(root);
-      jasmin.concat("\n\n Arithmetic \n\n" + jBuilder.fullAritm(root));
+      jasmin = jasmin.concat("\n\nArithmetic \n\n" + jBuilder.arithmeticJasmin(root));
       System.out.println(jasmin);
       
       

@@ -90,7 +90,7 @@ public class SymbolTable {
         addFunction(processed_funcName); //in case it is GLOBAL
         FunctionBlock fB = this.symbolTable.get(processed_funcName);
         Symbol toAdd = newSymbol;
-        toAdd.setCounter(fB.contents.size() - 1);
+        toAdd.setCounter(fB.contents.size() + 1);
         fB.addSymbol(varName, toAdd); 
         return processed_funcName;
     }
