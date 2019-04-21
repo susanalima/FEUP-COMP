@@ -5,7 +5,7 @@ public class JasminBuilder {
   String fN;
   String invokingFN;
   SymbolTable sT;
-  String actualFunction = "GLOBAL";
+  String actualFunction = "#GLOBAL_SCOPE";
   String fullInstructions = "";
 
   public JasminBuilder(SymbolTable sT_) {
@@ -272,7 +272,7 @@ public class JasminBuilder {
       if(root.toString().equals("METHOD_DECLARATION") || root.toString().equals("MainDeclaration"))
         actualFunction = getMethodKey(root);
 
-      if(root.parent != null && !root.parent.toString().equals("METHOD_DECLARATION") && !root.parent.toString().equals("MainDeclaration") && !root.parent.toString().equals("Arg")){
+      if(root.parent != null && !root.parent.toString().equals("METHOD_DECLARATION") && !root.parent.toString().equals("MainDeclaration") && !root.parent.toString().equals("Arg")  && !root.parent.toString().equals("FUNC_ARG")){
         switch(root.toString()){
           case "PLUS":
             instruction = "iadd";
@@ -290,15 +290,26 @@ public class JasminBuilder {
             SimpleNode leftSide = (SimpleNode)root.children[0];
             ident = leftSide.val;
             if(sT.varExists(actualFunction, ident)){
-              Symbol symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+              Symbol symb;
+              if(sT.isVarGlobal(ident))
+               symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
+              else
+                symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+
               counter = symb.counter;
               instruction = "istore_"  + counter; 
             }
             break;
           case "IDENTIFIER":
               ident = root.val;
-              if(sT.varExists(actualFunction, ident) && !root.parent.toString().equals("VAR_DECLARATION") && !root.parent.toString().equals("EQUAL") && !root.parent.toString().equals("RETURN")){
-                Symbol symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+             
+              if(sT.varExists(actualFunction, ident) && !root.parent.toString().equals("VAR_DECLARATION") && !root.parent.toString().equals("FUNC") && !root.parent.toString().equals("Program") && !root.parent.toString().equals("EQUAL") && !root.parent.toString().equals("RETURN")){
+                Symbol symb;
+                if(sT.isVarGlobal(ident))
+                  symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
+                else
+                  symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+                System.out.println(symb.toString());
                 counter = symb.counter;
                 instruction = "iload_" + counter;
               }
