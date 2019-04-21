@@ -161,6 +161,11 @@ public class JasminBuilder {
           fN += "&string";
           break;
 
+        case "BOOLEAN":
+          fN += "&boolean";
+          break;
+
+
         case "ARRAY":
           fN += "$array";
           break;
