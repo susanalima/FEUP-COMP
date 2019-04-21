@@ -222,14 +222,19 @@ public class JasminBuilder {
       if(simpleChild.toString().equals("IDENTIFIER")){
         key = simpleChild.val;
       }
+      else if(simpleChild.toString().equals("MAIN")){
+        key = "main";
+      }
+
       if(simpleChild.toString().equals("Args")){
         if(simpleChild.children != null){
           for(Node grandchild : simpleChild.children){
             SimpleNode simpleGrandChild = (SimpleNode) grandchild;
             paramType = simpleGrandChild.children[0].toString();
-            key.concat("&" + paramType);
+            paramType = paramType.toLowerCase();
+            key = key.concat("&" + paramType);
             if(simpleGrandChild.children[1].toString().equals("ARRAY"))
-              key.concat("$array");
+              key = key.concat("$array");
           }
         }
         return key;
@@ -243,12 +248,12 @@ public class JasminBuilder {
       arithmeticJasmin(root);
       String instructions, instruction;
       instructions = "";
-
+  /*
        while(!instructionsStack.empty()){
           instruction = (String) instructionsStack.pop();
           System.out.println(instruction);
-          instructions.concat(instruction + "\n");
-      }
+          instructions = instructions.concat(instruction + "\n");
+      }*/
       return instructions;
   }
 
@@ -256,10 +261,12 @@ public class JasminBuilder {
   //DOUBT: Since variables need to be initialized to be used in a expression, when needed, the jasmin code should put in the stack the variable or the value of the variable? 
   //DOUBT: Indexes of local variables? 0 - this ; 1 - next variable?parameter? 
   public void arithmeticJasmin(SimpleNode root) {
-      String instructions, instruction, ident, value, counter;
+      String instructions, instruction, ident, value;
+      instruction ="";
+      int counter;
       instructions = "";
 
-      if(root.toString().equals("METHOD_DECLARATION"))
+      if(root.toString().equals("METHOD_DECLARATION") || root.toString().equals("MainDeclaration"))
         actualFunction = getMethodKey(root);
 
       if(root.parent != null && !root.parent.toString().equals("METHOD_DECLARATION") && !root.parent.toString().equals("MainDeclaration") && !root.parent.toString().equals("Arg")){
@@ -281,21 +288,27 @@ public class JasminBuilder {
             instructionsStack.push(instruction);
           break;
           case "EQUAL":
-            instruction = "istore_"; //TODO: Qual o valor do istore?
-            instructionsStack.push(instruction);
+            SimpleNode leftSide = (SimpleNode)root.children[0];
+            ident = leftSide.val;
+            if(sT.varExists(actualFunction, ident)){
+              Symbol symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+              counter = symb.counter;
+              instruction = "istore_"  + counter + " (" + symb.name + ")"; 
+              instructionsStack.push(instruction);
+            }
+           
             break;
           case "IDENTIFIER":
-              ident = root.val; 
-              if(sT.varExists(actualFunction, ident)){
-                Var converted = (Var) sT.symbolTable.get(actualFunction).contents.get(ident);
-                counter = converted.counter;//TODO:not over?
-                //instruction = "iload " + ident; //?
-                instruction = "iload_" + counter;
+              ident = root.val;
+              if(sT.varExists(actualFunction, ident) && !root.parent.toString().equals("VAR_DECLARATION") && !root.parent.toString().equals("EQUAL") && !root.parent.toString().equals("RETURN")){
+                Symbol symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+                counter = symb.counter;
+                instruction = "iload_" + counter + " (" + symb.name + ")";
                 instructionsStack.push(instruction); 
               }
             break;
           case "INTEGER":
-            instruction = "ldc l" + root.val;
+            instruction = "ldc " + root.val;
             instructionsStack.push(instruction);
             break;
           default:
@@ -308,5 +321,7 @@ public class JasminBuilder {
           arithmeticJasmin(sN);
         }
       }
+      if(instruction != "")
+      System.out.println(instruction);
   }
 }
