@@ -262,7 +262,7 @@ public class JasminBuilder {
       if(root.toString().equals("METHOD_DECLARATION") || root.toString().equals("MainDeclaration"))
         actualFunction = getMethodKey(root);
 
-      if(root.parent != null && !root.parent.toString().equals("METHOD_DECLARATION") && !root.parent.toString().equals("MainDeclaration") && !root.parent.toString().equals("Arg")){
+      if(root.parent != null && !root.parent.toString().equals("METHOD_DECLARATION") && !root.parent.toString().equals("MainDeclaration") && !root.parent.toString().equals("Arg")  && !root.parent.toString().equals("FUNC_ARG")){
         switch(root.toString()){
           case "PLUS":
             instruction = "iadd";
