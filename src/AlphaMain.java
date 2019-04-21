@@ -221,12 +221,14 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTDOT:
       if (node.jjtGetChild(0).getId() == AlphaTreeConstants.JJTTHIS) { // if first child is THIS eval function
         symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
-        if (!symbolTable.methodExists(symbol)) { // se a funçao com aqueles argumentos nao existir
+        tmp = symbolTable.methodExistsWithUndefinedValues(symbol);
+        if (tmp.equals("")) { // se a funçao com aqueles argumentos nao existir
           System.out.println("Invalid function");
           System.exit(0);
         }
-        else 
-          symbol = "&" + symbolTable.getFunctionReturnType(symbol);
+        else {
+          symbol = "&" + symbolTable.getFunctionReturnType(tmp);
+        }
       } else {
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
           SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);

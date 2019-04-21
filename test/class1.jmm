@@ -21,7 +21,7 @@ class Fac extends A {
     if (g)
       a4 = 1;
     else
-      num_aux = this.ComputeFac(this.ComputeFac(num+1,a*2,b+b, num < 1),a*2,b+b,this.C());
+      num_aux = this.ComputeFac(g,a*2,b+b, num < 1);
     return num_aux;
   }
 
