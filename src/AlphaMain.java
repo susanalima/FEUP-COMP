@@ -142,14 +142,11 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTEQUAL: // formato &type1&type2 etc...
       SimpleNode identifier = (SimpleNode) node.jjtGetChild(0);
       String varType = eval(identifier, symbol, funcname, State.PROCESS);
-      System.out.println("ddd: " + varType);
       for (int i = 1; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
         tmp += eval(child_node, symbol, funcname, State.PROCESS);
       }
       symbol += tmp;
-      System.out.println("symbol: " + symbol);
-      System.out.println("varType: " + varType);
       if (!evaluateExpressionType(varType, symbol)) {
         System.out.println("Invalid type");
         System.exit(0);
@@ -222,7 +219,6 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTDOT:
       if (node.jjtGetChild(0).getId() == AlphaTreeConstants.JJTTHIS) { // if first child is THIS eval function
         symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
-        System.out.println("gggg : " + symbol);
         if (!symbolTable.methodExists(symbol)) { // se a funçao com aqueles argumentos nao existir
           System.out.println("Invalid function");
           System.exit(0);
