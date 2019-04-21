@@ -389,10 +389,15 @@ void ExpressionTerm() #void : {}
   (False_token()) |
   (This_token()) |
   (IntegerLiteral_token()) |
-  (New_token() IntIdentifierExpression())|
+  (newFunc() )|
   (Identifier_token()) |
   (ExclamationPoint_token() Expression()) |
   (OpenParentesis_token() Expression() CloseParentesis_token())
+}
+
+void newFunc() : {}
+{
+New_token()  IntIdentifierExpression()
 }
 
 void NoExpressionExpression() #void : {}
@@ -477,7 +482,7 @@ void FuncArgs() #FUNC_ARGS : {}
 void IntIdentifierExpression() #void : {}
 {
  (Int_token() OpenBracket_token() Expression() CloseBracket_token()) |
-  (Identifier_token() OpenParentesis_token() CloseParentesis_token() ) 
+  (Identifier_token() #FUNC OpenParentesis_token() CloseParentesis_token()) 
 }
 
 

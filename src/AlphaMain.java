@@ -62,7 +62,6 @@ public class AlphaMain {
         symbol = "&boolean";
       break;
     case AlphaTreeConstants.JJTIDENTIFIER:
-      // System.out.println(state + " " + node.val);
       if (state == State.BUILD) // if it is building state the symbol must be the name of the variable
         symbol = "#" + node.val;
       else if (state == State.PROCESS) { // if it is processing state the variable must be validated and and symbol is
@@ -87,7 +86,10 @@ public class AlphaMain {
       symbol = "&boolean";
       break;
     case AlphaTreeConstants.JJTINT:
+    if(state == State.BUILD)
       symbol = "#int";
+    else 
+      symbol = "&int";
       break;
     case AlphaTreeConstants.JJTSTRING:
       symbol = "#string";
@@ -128,7 +130,6 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTINDEX:
       symbol = eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS); // validates the identifier
       String index = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.PROCESS); // validates the index
-
       if (!symbol.contains("$array") || !evaluateExpressionInt(index)) // case the variable was declared but is not an array or the index is not and int
       {
         System.out.println("Variable not an array or index not an integer");
@@ -141,11 +142,14 @@ public class AlphaMain {
     case AlphaTreeConstants.JJTEQUAL: // formato &type1&type2 etc...
       SimpleNode identifier = (SimpleNode) node.jjtGetChild(0);
       String varType = eval(identifier, symbol, funcname, State.PROCESS);
+      System.out.println("ddd: " + varType);
       for (int i = 1; i < node.jjtGetNumChildren(); i++) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
         tmp += eval(child_node, symbol, funcname, State.PROCESS);
       }
       symbol += tmp;
+      System.out.println("symbol: " + symbol);
+      System.out.println("varType: " + varType);
       if (!evaluateExpressionType(varType, symbol)) {
         System.out.println("Invalid type");
         System.exit(0);
@@ -211,9 +215,14 @@ public class AlphaMain {
       }
       break;
 
+      case AlphaTreeConstants.JJTNEWFUNC:
+      symbol = "&undefined";
+      break;
+
     case AlphaTreeConstants.JJTDOT:
       if (node.jjtGetChild(0).getId() == AlphaTreeConstants.JJTTHIS) { // if first child is THIS eval function
         symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
+        System.out.println("gggg : " + symbol);
         if (!symbolTable.methodExists(symbol)) { // se a funçao com aqueles argumentos nao existir
           System.out.println("Invalid function");
           System.exit(0);
@@ -221,7 +230,7 @@ public class AlphaMain {
         else 
           symbol = "&" + symbolTable.getFunctionReturnType(symbol);
       } else {
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+        for (int i = 1; i < node.jjtGetNumChildren(); i++) {
           SimpleNode child_node = (SimpleNode) node.jjtGetChild(i);
           symbol = eval(child_node, symbol, funcname, state);
         }
@@ -257,6 +266,8 @@ public class AlphaMain {
     if (processed_expectedType.equals("undefined"))
       return true;
     for (int i = 1; i < tokens.length; i++) {
+      if(tokens[i].equals("undefined"))
+        continue;
       if (!processed_expectedType.equals(tokens[i]))
         return false;
     }
