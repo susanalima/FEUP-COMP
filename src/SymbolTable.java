@@ -92,6 +92,18 @@ public class SymbolTable {
                     new Var(tokens[i], tokens[i + 1], "param"));
     }
 
+    String processFunction(String funcName) {
+        String processed_funcName = funcName;
+        if (!funcName.equals(SymbolTable.GLOBAL)) {
+            String[] tokens = funcName.split("&");
+            processed_funcName = tokens[0];
+            for (int i = 1; i < tokens.length; i += 2) {
+                processed_funcName += "&" + tokens[i];
+            }
+        }
+        return processed_funcName;
+    }
+
     String addFunction(String funcName) {
         if (this.symbolTable.get(funcName) != null) // if funcName is already a function
             return funcName;

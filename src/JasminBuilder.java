@@ -21,9 +21,10 @@ public class JasminBuilder {
     buildFunctionNameName(root);
     buildFunctionNameParameters(root, sT);
 
+
     if (root.toString().equals("DOT")) {
       // acc += "invokenonvirtual ";
-      acc += this.loadParameters(root);
+      acc += this.loadParameters(root, false);
     } else if ((root.toString().equals("IDENTIFIER") || root.toString().equals("THIS")
         || root.toString().equals("INTEGER") || root.toString().equals("FALSE") || root.toString().equals("TRUE"))
         && root.parent != null) {
@@ -94,14 +95,19 @@ public class JasminBuilder {
 
   }
 
-  private String loadParameters(SimpleNode node) {
+  private String loadParameters(SimpleNode node, boolean processed) {
     String acc = "";
 
+
+    if(!processed) {
+      fN = sT.processFunction(fN);
+    }
+ 
     if (node.parent != null && node.parent.toString().equals("FUNC_ARG")) {
       if (fN.equals("")) {
         System.out.println("FUNC NAME NOT DEFINED");
       }
-
+   
       if (node.toString().equals("INTEGER")) {
         acc += "ldc " + node.val + ";\n";
       } else if (node.toString().equals("FALSE") || node.toString().equals("TRUE")) {
@@ -114,8 +120,11 @@ public class JasminBuilder {
     if (node.children != null) {
       for (Node child : node.children) {
         SimpleNode sN = (SimpleNode) child;
-        acc += loadParameters(sN);
+        acc += loadParameters(sN, true);
       }
+    }
+    else {
+      
     }
 
     return acc;
@@ -131,7 +140,6 @@ public class JasminBuilder {
   }
 
   private void buildFunctionNameName(SimpleNode root) {
-
     if (root.parent != null && root.parent.toString().equals("METHOD_DECLARATION")
         && root.toString().equals("IDENTIFIER")) {
       fN = root.val;
@@ -165,7 +173,10 @@ public class JasminBuilder {
           fN += "&boolean";
           break;
 
-
+        case "IDENTIFIER":
+          fN += "&" + root.val;
+          break;
+  
         case "ARRAY":
           fN += "$array";
           break;
@@ -175,7 +186,6 @@ public class JasminBuilder {
         }
       }
       if (rpp != null && rpp.toString().equals("FUNC_ARGS")) {
-
         switch (root.toString()) {
         case "INTEGER":
           invokingFN += "&int";
