@@ -6,6 +6,7 @@ public class SymbolTable {
     static final String GLOBAL = "#GLOBAL_SCOPE";
     HashMap<String, FunctionBlock> symbolTable; // First key is #fn#Param1Type#Param2Type
     boolean extends_; // ^- Isto está certo? Não é fn&Param1Type($array)?&Param2Type (?)
+    String className;
 
     SymbolTable() {
         this.symbolTable = new HashMap<>();
@@ -152,7 +153,16 @@ public class SymbolTable {
         return s.getCounter();
     }
 
+    String getClassName() {
+        return this.className;
+    }
+
+    void setClassName(String className) {
+        this.className = className;
+    }
+
     public void printSymbolTable() {
+        System.out.println("Class name: " + this.className);
         System.out.println("extends: " + this.extends_);
         symbolTable.forEach((key, value) -> {
             System.out.println(key + " : ");
