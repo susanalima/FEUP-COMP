@@ -292,16 +292,20 @@ public class JasminBuilder {
             break;
           case "IDENTIFIER":
               ident = root.val;
-             
-              if(sT.varExists(actualFunction, ident) && !root.parent.toString().equals("VAR_DECLARATION") && !root.parent.toString().equals("FUNC") && !root.parent.toString().equals("Program") && !root.parent.toString().equals("EQUAL") && !root.parent.toString().equals("RETURN")){
-                Symbol symb;
-                if(sT.isVarGlobal(ident))
-                  symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
-                else
-                  symb = sT.symbolTable.get(actualFunction).contents.get(ident);
-                System.out.println(symb.toString());
-                counter = symb.counter;
-                instruction = "iload_" + counter;
+              try{
+                if(sT.varExists(actualFunction, ident) && !root.parent.toString().equals("VAR_DECLARATION") && !root.parent.toString().equals("FUNC") && !root.parent.toString().equals("Program") && !root.parent.toString().equals("EQUAL") && !root.parent.toString().equals("RETURN")){
+                  Symbol symb;
+                  if(sT.isVarGlobal(ident))
+                    symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
+                  else
+                    symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+                  System.out.println(symb.toString());
+                  counter = symb.counter;
+                  instruction = "iload_" + counter;
+                }
+              }catch(NullPointerException e){
+                System.out.println("The information being accessed is not defined.");
+                return "-2";
               }
             break;
           case "INTEGER":
