@@ -209,16 +209,16 @@ public class SymbolTable {
             break;
         case AlphaTreeConstants.JJTTRUE: // separar???
         case AlphaTreeConstants.JJTFALSE:
-            symbol =  AND_SEPARATOR + "boolean";
+            symbol = AND_SEPARATOR + "boolean";
             break;
         case AlphaTreeConstants.JJTINT:
             if (state == State.BUILD)
-                symbol =  CARDINAL_SEPARATOR + "int";
+                symbol = CARDINAL_SEPARATOR + "int";
             else
                 symbol = AND_SEPARATOR + "int";
             break; 
         case AlphaTreeConstants.JJTSTRING:
-            symbol =  CARDINAL_SEPARATOR + "string";
+            symbol = CARDINAL_SEPARATOR + "string";
             break;
         case AlphaTreeConstants.JJTARRAY:
             symbol = ARRAY_SEPARATOR  + "array";
@@ -227,10 +227,10 @@ public class SymbolTable {
             symbol = CARDINAL_SEPARATOR + "boolean";
             break;
         case AlphaTreeConstants.JJTVOID:
-            symbol =  CARDINAL_SEPARATOR + "void";
+            symbol = CARDINAL_SEPARATOR + "void";
             break;
         case AlphaTreeConstants.JJTMAIN:
-            symbol =  CARDINAL_SEPARATOR + "main";
+            symbol = CARDINAL_SEPARATOR + "main";
             break;
         case AlphaTreeConstants.JJTIF:
         case AlphaTreeConstants.JJTWHILE:
@@ -485,7 +485,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    public static String returnExpressionType(String expression) {
+    private String returnExpressionType(String expression) {
         if (!expression.substring(0, 1).equals(AND_SEPARATOR)) // if it is a outside function
             return UNDEFINED_TYPE;
         String expectedType = expression.split(AND_SEPARATOR)[1];
@@ -495,7 +495,7 @@ public class SymbolTable {
             return "";
     }
 
-    public static boolean evaluateExpressionType(String expectedType, String expression) {
+    private boolean evaluateExpressionType(String expectedType, String expression) {
         String[] tokens = expression.split(AND_SEPARATOR);
         String processed_expectedType = expectedType.split(AND_SEPARATOR)[1];
         if (processed_expectedType.equals(UNDEFINED_TYPE))
@@ -509,7 +509,7 @@ public class SymbolTable {
         return true;
     }
 
-    public static boolean evaluateExpressionInt(String expression) {
+    private boolean evaluateExpressionInt(String expression) {
         return evaluateExpressionType(AND_SEPARATOR + "int", expression);
     }
 
