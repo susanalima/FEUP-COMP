@@ -170,7 +170,7 @@ public class SymbolTable {
     }
 
     public String eval(SimpleNode node, String symbol, String funcname, State state) {
-        
+
         switch (node.getId()) {
 
         case AlphaTreeConstants.JJTPROGRAM:
@@ -303,7 +303,7 @@ public class SymbolTable {
         String tmp = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
-            tmp += eval(child_node, symbol, funcname, State.BUILD);
+            tmp += eval(child_node, symbol, funcname, state);
         }
         symbol = tmp;
         if (node.getId() == AlphaTreeConstants.JJTMINOR)
@@ -446,9 +446,10 @@ public class SymbolTable {
     private String evalNodeDot(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
         String tmp = "";
-        if (child_node.getId() == AlphaTreeConstants.JJTTHIS
-                || getVarType(funcname, child_node.val).equals(getClassName())) { // if first child is THIS eval
-                                                                                  // function
+        tmp = getVarType(funcname, child_node.val);
+        if (child_node.getId() == AlphaTreeConstants.JJTTHIS || tmp.equals(getClassName())) { // if first child is THIS
+                                                                                              // eval
+                                                                                              // function
             symbol = eval((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
             tmp = methodExistsWithUndefinedValues(symbol);
             if (tmp.equals("")) { // se a funçao com aqueles argumentos nao existir
@@ -457,6 +458,8 @@ public class SymbolTable {
             } else {
                 symbol = "&" + getFunctionReturnType(tmp);
             }
+        } else if (tmp.equals("undefined")) {
+            symbol = "undefined";
         } else {
             for (int i = 1; i < node.jjtGetNumChildren(); i++) {
                 child_node = (SimpleNode) node.jjtGetChild(i);
