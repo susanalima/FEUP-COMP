@@ -240,11 +240,7 @@ public class SymbolTable {
             symbol = evalNodeEqual(node, symbol, funcname, state);
             break;
         case AlphaTreeConstants.JJTRETURN:
-            if (!checkFunctionReturnType(funcname,
-                    eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS).split(AND_SEPARATOR)[1])) {
-                System.out.println("Invalid return type");
-                System.exit(1);
-            }
+            evalNodeReturn(node, symbol, funcname, state);
             break;
         case AlphaTreeConstants.JJTVAR_DECLARATION:
             symbol = evalNodeVarDeclaration(node, symbol, funcname, state);
@@ -285,6 +281,17 @@ public class SymbolTable {
         symbol += tmp;
         return symbol;
     }
+
+
+    private void evalNodeReturn(SimpleNode node, String symbol, String funcname, State state) {
+        String tmp = eval((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS);
+        tmp = returnExpressionType(tmp);
+        if (!checkFunctionReturnType(funcname,tmp) && !tmp.equals(UNDEFINED_TYPE)) {
+            System.out.println("Invalid return type");
+            System.exit(1);
+        }
+    }
+
 
     private String evalNodeClassBody(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
