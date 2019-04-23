@@ -218,19 +218,13 @@ public class SymbolTable {
                 symbol = AND_SEPARATOR + "int";
             break; 
         case AlphaTreeConstants.JJTSTRING:
-            symbol = CARDINAL_SEPARATOR + "string";
+        case AlphaTreeConstants.JJTBOOLEAN:
+        case AlphaTreeConstants.JJTVOID:
+        case AlphaTreeConstants.JJTMAIN:
+            symbol = CARDINAL_SEPARATOR + node.toString().toLowerCase();
             break;
         case AlphaTreeConstants.JJTARRAY:
             symbol = ARRAY_SEPARATOR  + "array";
-            break;
-        case AlphaTreeConstants.JJTBOOLEAN:
-            symbol = CARDINAL_SEPARATOR + "boolean";
-            break;
-        case AlphaTreeConstants.JJTVOID:
-            symbol = CARDINAL_SEPARATOR + "void";
-            break;
-        case AlphaTreeConstants.JJTMAIN:
-            symbol = CARDINAL_SEPARATOR + "main";
             break;
         case AlphaTreeConstants.JJTIF:
         case AlphaTreeConstants.JJTWHILE:
@@ -486,7 +480,7 @@ public class SymbolTable {
     }
 
     private String returnExpressionType(String expression) {
-        if (!expression.substring(0, 1).equals(AND_SEPARATOR)) // if it is a outside function
+        if (!expression.substring(0, 1).equals(AND_SEPARATOR)) // if it is an outside function
             return UNDEFINED_TYPE;
         String expectedType = expression.split(AND_SEPARATOR)[1];
         if (evaluateExpressionType(AND_SEPARATOR + expectedType, expression))

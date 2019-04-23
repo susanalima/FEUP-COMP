@@ -145,10 +145,7 @@ public class JasminBuilder {
         acc += loadParameters(sN, true);
       }
     }
-    else {
-      
-    }
-
+    
     return acc;
   }
 
