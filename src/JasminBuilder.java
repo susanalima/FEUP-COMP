@@ -286,6 +286,8 @@ public class JasminBuilder {
             SimpleNode simpleGrandChild = (SimpleNode) grandchild;
             paramType = simpleGrandChild.children[0].toString();
             paramType = paramType.toLowerCase();
+            if(paramType.equals("identifier")) //in case is an identifier
+              paramType = ((SimpleNode) simpleGrandChild.children[0]).val;
             key = key.concat("&" + paramType);
             if(simpleGrandChild.children[1].toString().equals("ARRAY"))
               key = key.concat("$array");
@@ -331,7 +333,7 @@ public class JasminBuilder {
               ident = leftSide.val;
             if(sT.varExists(actualFunction, ident)){
               Symbol symb;
-  
+
               if(sT.isVarGlobal(ident))
                 symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
 
