@@ -237,11 +237,9 @@ public class SymbolTable {
         case AlphaTreeConstants.JJTCLASSBODY:
             symbol = evalNodeClassBody(node, symbol, funcname, state);
             break;
-    
         case AlphaTreeConstants.JJTEXTENDS:
             setExtends();
             break;
-
         case AlphaTreeConstants.JJTVAR_DECLARATION:
             symbol = "";
             break;
@@ -553,7 +551,7 @@ public class SymbolTable {
         } else if (tmp.equals(UNDEFINED_TYPE)) {
             symbol = UNDEFINED_TYPE;
         } else {
-            for (int i = 1; i < node.jjtGetNumChildren(); i++) {
+            for (int i = 0; i < node.jjtGetNumChildren(); i++) {
                 child_node = (SimpleNode) node.jjtGetChild(i);
                 symbol = eval_process(child_node, symbol, funcname, state);
             }

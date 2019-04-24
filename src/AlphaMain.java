@@ -4,8 +4,6 @@ public class AlphaMain {
 
   private static SymbolTable symbolTable = new SymbolTable();
 
-  private LinkedList<String> calledClassFunctions = new LinkedList<>(); //TODO AGORA USA ANALISE SEQUENCIAL
-
   public static void main(String args[]) throws ParseException {
     if (args.length != 1) {
       System.out.println("Usage: Alpha <FileToParse>");
@@ -18,7 +16,7 @@ public class AlphaMain {
       symbolTable.eval_build(root, "", SymbolTable.GLOBAL, State.BUILD); 
       symbolTable.printSymbolTable();
       symbolTable.eval_process(root, "", SymbolTable.GLOBAL, State.PROCESS); 
-      
+
       System.out.println("---Jasmin---\n");
       JasminBuilder jBuilder = new JasminBuilder(symbolTable);
       String jasmin = jBuilder.printJasmin(root);
