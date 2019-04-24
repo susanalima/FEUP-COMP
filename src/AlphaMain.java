@@ -15,8 +15,9 @@ public class AlphaMain {
 
       SimpleNode root = Alpha.Program();
       root.dump("");
-      symbolTable.eval(root, "", SymbolTable.GLOBAL, State.BUILD); 
+      symbolTable.eval_build(root, "", SymbolTable.GLOBAL, State.BUILD); 
       symbolTable.printSymbolTable();
+      symbolTable.eval_process(root, "", SymbolTable.GLOBAL, State.PROCESS); 
       
       System.out.println("---Jasmin---\n");
       JasminBuilder jBuilder = new JasminBuilder(symbolTable);
