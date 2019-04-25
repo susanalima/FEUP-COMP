@@ -111,7 +111,7 @@ public class SymbolTable {
         return processed_funcName;
     }
 
-    String addFunction(String funcName) {
+    String addFunction(String funcName, boolean add) {
         if (this.symbolTable.get(funcName) != null) // if funcName is already a function
             return funcName;
         String processed_funcName = funcName;
@@ -124,7 +124,7 @@ public class SymbolTable {
                 processed_funcName += AND_SEPARATOR + tokens[i];
             }
         }
-        if (this.symbolTable.get(processed_funcName) == null) { // if processed funcname is already a function (should
+        if (this.symbolTable.get(processed_funcName) == null && add) { // if processed funcname is already a function (should
                                                                 // throw error?)
             FunctionBlock fBlock = new FunctionBlock(returnType);
             this.symbolTable.put(processed_funcName, fBlock);
@@ -134,7 +134,7 @@ public class SymbolTable {
     }
 
     String addSymbol(String processed_funcName, String varName, Symbol newSymbol) {
-        addFunction(processed_funcName); // in case it is GLOBAL
+        addFunction(processed_funcName, true); // in case it is GLOBAL
         FunctionBlock fB = this.symbolTable.get(processed_funcName);
         Symbol toAdd = newSymbol;
         toAdd.setCounter(fB.contents.size() + 1);
@@ -483,22 +483,24 @@ public class SymbolTable {
         SimpleNode child_node;
         String tmp = "";
         State currState = State.BUILD;
+        boolean add = true;
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
-            if (child_node.getId() == AlphaTreeConstants.JJTBODY) { // this means the arguments are over and can create
-                                                                    // the
-                                                                // symboltable entry
-                symbol += tmp;
-                funcname = addFunction(symbol);
-                if(state == State.PROCESS)
+            if (child_node.getId() == AlphaTreeConstants.JJTBODY) { 
+                
+                if(state == State.PROCESS) {
+                    add = false;
                     currState = state;
+                }
+                symbol += tmp;
+                funcname = addFunction(symbol, add);
+              
             }
 
             if(currState == State.BUILD)
                 tmp += eval_build(child_node, symbol, funcname, currState);
             else if(currState == State.PROCESS)
                 tmp += eval_process(child_node, symbol, funcname, currState);
-
         }
         return funcname;
     }

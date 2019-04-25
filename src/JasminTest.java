@@ -7,59 +7,80 @@ public class JasminTest {
     this.symbolTable = sT;
   }
 
-  public String jasmin_process(SimpleNode node, String symbol, State state) {
+  public String jasmin_process(SimpleNode node, String symbol, String funcname, State state) {
 
     SimpleNode child_node;
-    String tmp = "", funcname; //TODO buscar o nome da funçao atual
+    String tmp = "" ;
+
+
+    //buildFunctionNameName(root);
+    //buildFunctionNameParameters(root, sT);
+
+
     switch (node.getId()) {
+
+    case AlphaTreeConstants.JJTMAINDECLARATION:
+    case AlphaTreeConstants.JJTMETHOD_DECLARATION:
+      funcname = getFuncname(node, "", funcname, State.PROCESS); //TODO MUDAR PARA USAR AS FUNÇOES DO GREGU
+       break;
     case AlphaTreeConstants.JJTIDENTIFIER:
       symbol +=  node.val;
-      if(state == State.PROCESS)
-        System.out.println( "iload " + symbolTable.getCounter("main&string$array", node.val) + ";");
+      if(state == State.PROCESS) {
+        System.out.println( "iload " + symbolTable.getCounter(funcname, node.val) + ";\n");
+      }
       break;
+    case AlphaTreeConstants.JJTINT:
     case AlphaTreeConstants.JJTLENGTH:
+      symbol += "int";
+      break;
     case AlphaTreeConstants.JJTINTEGER:
       symbol += "int";
+      if(state == State.PROCESS) {
+        System.out.println( "ldc " + node.val + ";\n");
+      }
       break;
     case AlphaTreeConstants.JJTTRUE:
     case AlphaTreeConstants.JJTFALSE:
       symbol +=  "boolean";
-      System.out.println("aload " + node.toString().toLowerCase() + ";");
-      break;
-    case AlphaTreeConstants.JJTARRAY:
+      System.out.println("aload " + node.toString().toLowerCase() + ";\n");
       break;
     case AlphaTreeConstants.JJTINDEX:
       break;
     case AlphaTreeConstants.JJTNEWFUNC:
+      child_node = (SimpleNode) node.jjtGetChild(1).jjtGetChild(0);
+      System.out.println("invokenonstatic " + child_node.val + "/" + child_node.val + "()L" + child_node.val + "\n");
+      symbol = "";
       break;
-      case AlphaTreeConstants.JJTFUNC_ARG:
+    case AlphaTreeConstants.JJTFUNC_ARG:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         child_node = (SimpleNode) node.jjtGetChild(i);
-        tmp += "&" + jasmin_process(child_node, symbol, State.PROCESS);
+        tmp += "&" + jasmin_process(child_node, symbol, funcname, State.PROCESS);
       }
       symbol += tmp;
       break;
+      case AlphaTreeConstants.JJTARGS:
+      case AlphaTreeConstants.JJTARG:
       case AlphaTreeConstants.JJTFUNC_ARGS:
       case AlphaTreeConstants.JJTFUNC:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         child_node = (SimpleNode) node.jjtGetChild(i);
-        tmp += jasmin_process(child_node, symbol, State.BUILD);
+        tmp += jasmin_process(child_node, symbol, funcname, State.BUILD);
       }
       symbol += tmp;
       break;
-    case AlphaTreeConstants.JJTDOT:
+    case AlphaTreeConstants.JJTDOT:  //TODO VER QUANDO E INVOKENONVIRTUAL OU INVOKESTATIC
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         child_node = (SimpleNode) node.jjtGetChild(i);
-        tmp +=  jasmin_process(child_node, symbol, state) ;
+        tmp +=  jasmin_process(child_node, symbol,funcname, state) ;
       }
       symbol += tmp;
-      System.out.println("invokevirtual " + symbolTable.getClassName() + "/" + process_func_call("main&string$array",symbol));
-      symbol = symbolTable.eval_process(node, "", "main&string$array", State.PROCESS).split("&")[1];
+      System.out.println("invokevirtual " + symbolTable.getClassName() + "/" + process_func_call(funcname,symbol) + ";\n");
+      symbol = symbolTable.eval_process(node, "", funcname, State.PROCESS).split("&")[1];
       break;
     default:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         child_node = (SimpleNode) node.jjtGetChild(i);
-        jasmin_process(child_node, symbol, state);
+        jasmin_process(child_node, symbol, funcname, State.BUILD);
       }
       break;
     }
@@ -79,7 +100,7 @@ private String process_func_call(String funcname, String expression) {
     expression += "&" + tokens[i];
   }
   processed += ")";
-  if (symbolTable.methodExists(expression)) {
+  if (symbolTable.methodExists(expression)) {  //TODO usar methodExistsWithUndefinedValues
     String returnType = symbolTable.getFunctionReturnType(expression);
     switch (returnType) {
     case "boolean":
@@ -104,6 +125,32 @@ private String process_func_call(String funcname, String expression) {
     processed += "externalUndefined";
   }
   return processed;
+}
+
+
+public String getFuncname(SimpleNode node, String symbol, String funcname, State state) {        
+  SimpleNode child_node;
+  String tmp = "";
+  State currState = State.BUILD;
+  boolean add = true;
+  for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+      child_node = (SimpleNode) node.jjtGetChild(i);
+      if (child_node.getId() == AlphaTreeConstants.JJTBODY) { 
+          
+          if(state == State.PROCESS) {
+              add = false;
+              currState = state;
+          }
+          symbol += tmp;
+          funcname = symbolTable.addFunction(symbol, add);
+      }
+
+      if(currState == State.BUILD)
+          tmp += symbolTable.eval_build(child_node, symbol, funcname, currState);
+      else if(currState == State.PROCESS)
+          tmp += jasmin_process(child_node, "", funcname, currState);
+  }
+  return funcname;
 }
 
 }
