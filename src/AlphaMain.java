@@ -22,6 +22,10 @@ public class AlphaMain {
       String jasmin = jBuilder.printJasmin(root);
       jasmin = jasmin.concat("\n\nArithmetic \n\n" + jBuilder.arithmeticJasmin(root));
       System.out.println(jasmin);
+
+      System.out.println("---JasminTEST---\n");
+      JasminTest jTest = new JasminTest(symbolTable);
+       jTest.jasmin_process(root, "", State.BUILD);
     
 
     } catch (Exception e) {

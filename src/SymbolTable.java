@@ -479,7 +479,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeFuncDeclaration(SimpleNode node, String symbol, String funcname, State state) {        
+    public String evalNodeFuncDeclaration(SimpleNode node, String symbol, String funcname, State state) {        
         SimpleNode child_node;
         String tmp = "";
         State currState = State.BUILD;
@@ -496,7 +496,7 @@ public class SymbolTable {
 
             if(currState == State.BUILD)
                 tmp += eval_build(child_node, symbol, funcname, currState);
-            else 
+            else if(currState == State.PROCESS)
                 tmp += eval_process(child_node, symbol, funcname, currState);
 
         }
@@ -549,12 +549,13 @@ public class SymbolTable {
                 symbol = AND_SEPARATOR + getFunctionReturnType(tmp);
             }
         } else if (tmp.equals(UNDEFINED_TYPE)) {
-            symbol = UNDEFINED_TYPE;
+            symbol = AND_SEPARATOR + UNDEFINED_TYPE;
         } else {
-            for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            for (int i = 1; i < node.jjtGetNumChildren(); i++) {  // i= 0 no caso de de se ter de analisar as variaveis antes do dot
                 child_node = (SimpleNode) node.jjtGetChild(i);
                 symbol = eval_process(child_node, symbol, funcname, state);
             }
+            symbol = AND_SEPARATOR + UNDEFINED_TYPE;
         }
         return symbol;
     }
