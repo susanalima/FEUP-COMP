@@ -74,7 +74,8 @@ public class SymbolTable {
     String checkMethod(String funcName) {
         String[] expected_functionBlock = funcName.split(AND_SEPARATOR);
         String[] key_functionBlock;
-
+        int count_func = 0;
+        String return_key = "";
         for (String key : symbolTable.keySet()) {
             key_functionBlock = key.split(AND_SEPARATOR);
             if (key_functionBlock.length != expected_functionBlock.length
@@ -86,10 +87,16 @@ public class SymbolTable {
                         || expected_functionBlock[i].equals(UNDEFINED_TYPE))
                     counter++;
             }
-            if (counter == key_functionBlock.length)
-                return key;
+            if (counter == key_functionBlock.length) {
+                if(count_func == 0) {
+                    return_key = key;
+                } else {
+                    return_key = "";
+                }
+            }
+            count_func++;
         }
-        return "";
+        return return_key;
     }
 
     void addParams(String funcName, String processed_funcName) {
