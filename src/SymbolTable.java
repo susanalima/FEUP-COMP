@@ -407,6 +407,10 @@ public class SymbolTable {
                 System.out.println("Variable not declared: " + node.val);
                 System.exit(0);
             }
+            if(node.val.equals(getClassName())){
+                System.out.println("Invalid var : " + node.val);
+                 System.exit(0);
+             }
             symbol = AND_SEPARATOR + symbol;
         }
         return symbol;
@@ -459,6 +463,8 @@ public class SymbolTable {
             tmp += eval_process(child_node, symbol, funcname, State.PROCESS);
         }
         symbol += tmp;
+        /*System.out.println("vt: " + varType);
+        System.out.println("sy " + symbol);*/
         if (!evaluateExpressionType(varType, symbol)) {
             System.out.println("Invalid type");
             System.exit(0);
@@ -531,6 +537,9 @@ public class SymbolTable {
             child_node = (SimpleNode) node.jjtGetChild(i);
             symbol += eval_process(child_node, symbol, funcname, State.PROCESS);
         }
+        symbol = methodExistsWithUndefinedValues(symbol);
+        if(symbol.equals(""))
+            symbol = AND_SEPARATOR + UNDEFINED_TYPE;
         return symbol;
     }
 
@@ -558,6 +567,7 @@ public class SymbolTable {
                                                                                               // eval
                                                                                               // function
             symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
+            //System.out.println("symbol1 : " + symbol);
             tmp = methodExistsWithUndefinedValues(symbol);
             if (tmp.equals("")) { // se a funçao com aqueles argumentos nao existir
                 System.out.println("Invalid function");
@@ -572,7 +582,8 @@ public class SymbolTable {
                 child_node = (SimpleNode) node.jjtGetChild(i);
                 symbol = eval_process(child_node, symbol, funcname, state);
             }
-            symbol = AND_SEPARATOR + UNDEFINED_TYPE;
+           // System.out.println("symbol2 : " + symbol);
+           // symbol = AND_SEPARATOR + UNDEFINED_TYPE;
         }
         return symbol;
     }

@@ -94,7 +94,10 @@ public class JasminTest {
         symbol += tmp;
         code += header + "/" + process_func_call(funcname,symbol, checkMethod) + "\n";
         symbol = symbolTable.eval_process(node, "", funcname, State.PROCESS).split("&")[1];
+      } else if(child_node.getId() == AlphaTreeConstants.JJTLENGTH) {
+        symbol = "int";
       }
+
       break;
     default:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
