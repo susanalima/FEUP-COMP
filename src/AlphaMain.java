@@ -26,8 +26,7 @@ public class AlphaMain {
       System.out.println("---JasminTEST---\n");
       JasminTest jTest = new JasminTest(symbolTable);
        jTest.jasmin_process(root, "", SymbolTable.GLOBAL, State.BUILD);
-    
-
+      System.out.println(jTest.code);
     } catch (Exception e) {
       e.printStackTrace();
     }

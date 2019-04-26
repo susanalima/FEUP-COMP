@@ -111,7 +111,7 @@ public class SymbolTable {
         return processed_funcName;
     }
 
-    String addFunction(String funcName, boolean add) {
+    String processFunction(String funcName, boolean add) {
         if (this.symbolTable.get(funcName) != null) // if funcName is already a function
             return funcName;
         String processed_funcName = funcName;
@@ -134,7 +134,7 @@ public class SymbolTable {
     }
 
     String addSymbol(String processed_funcName, String varName, Symbol newSymbol) {
-        addFunction(processed_funcName, true); // in case it is GLOBAL
+        processFunction(processed_funcName, true); // in case it is GLOBAL
         FunctionBlock fB = this.symbolTable.get(processed_funcName);
         Symbol toAdd = newSymbol;
         toAdd.setCounter(fB.contents.size() + 1);
@@ -493,7 +493,7 @@ public class SymbolTable {
                     currState = state;
                 }
                 symbol += tmp;
-                funcname = addFunction(symbol, add);
+                funcname = processFunction(symbol, add);
               
             }
 
