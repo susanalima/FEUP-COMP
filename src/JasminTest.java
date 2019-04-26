@@ -86,7 +86,18 @@ public class JasminTest {
             header = "invokestatic " + child_node.val;
             checkMethod = false;
           }
+        } else if(child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) {
+            child_node = (SimpleNode) child_node.jjtGetChild(1);
+            if(child_node.getId() == AlphaTreeConstants.JJTFUNC) {
+              child_node = (SimpleNode) child_node.jjtGetChild(0);
+              if (child_node.val.equals(symbolTable.getClassName())) {
+                header = "invokevirtual " + symbolTable.getClassName() ;
+             }
+           }
         }
+        else {
+          checkMethod = false;
+      }
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
           child_node = (SimpleNode) node.jjtGetChild(i);
           tmp +=  jasmin_process(child_node, symbol,funcname, state) ;
@@ -97,7 +108,6 @@ public class JasminTest {
       } else if(child_node.getId() == AlphaTreeConstants.JJTLENGTH) {
         symbol = "int";
       }
-
       break;
     default:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -120,13 +130,18 @@ private String process_func_call(String funcname, String expression, boolean che
     }
     expression += "&" + tokens[i];
   }
+
   if(checkMethod)
     expression = symbolTable.methodExistsWithUndefinedValues(expression);
+
   tokens = expression.split("&");
   for (int i = 1; i < tokens.length; i++){
     processed += tokens[i] + ";";
   }
   processed += ")";
+
+
+  
 
   if (!expression.equals("") && checkMethod) {  
     String returnType = symbolTable.getFunctionReturnType(expression);
