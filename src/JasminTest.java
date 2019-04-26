@@ -27,7 +27,6 @@ public class JasminTest {
       }
       break;
     case AlphaTreeConstants.JJTINT:
-    case AlphaTreeConstants.JJTLENGTH:
       symbol += "int";
       break;
     case AlphaTreeConstants.JJTINTEGER:
@@ -39,7 +38,8 @@ public class JasminTest {
     case AlphaTreeConstants.JJTTRUE:
     case AlphaTreeConstants.JJTFALSE:
       symbol +=  "boolean";
-      code += "aload " + node.toString().toLowerCase() + "\n";
+      if(state == State.PROCESS)
+        code += "aload " + node.toString().toLowerCase() + "\n";
       break;
     case AlphaTreeConstants.JJTINDEX:
       break;
