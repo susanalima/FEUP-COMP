@@ -39,8 +39,11 @@ public class FunctionBlock {
         return this.returnType.equals(returnType);
     }
 
-    void addSymbol(String varName, Symbol newSymbol) {
+    boolean addSymbol(String varName, Symbol newSymbol) {
+        if(this.contents.get(varName) != null)
+            return false;
         this.contents.put(varName,newSymbol);
+        return true;
     }
 
     public void printFunctionBlock() {

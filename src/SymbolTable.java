@@ -11,8 +11,8 @@ public class SymbolTable {
     private static String UNDEFINED_TYPE = "undefined";
 
     static final String GLOBAL = "#GLOBAL_SCOPE";
-    HashMap<String, FunctionBlock> symbolTable; // First key is #fn#Param1Type#Param2Type
-    boolean extends_; // ^- Isto está certo? Não é fn&Param1Type($array)?&Param2Type (?)
+    HashMap<String, FunctionBlock> symbolTable; // First key is  fn&Param1Type($array)?&Param2Type 
+    boolean extends_;
     String className;
 
     SymbolTable() {
@@ -133,13 +133,12 @@ public class SymbolTable {
         return processed_funcName;
     }
 
-    String addSymbol(String processed_funcName, String varName, Symbol newSymbol) {
+    boolean addSymbol(String processed_funcName, String varName, Symbol newSymbol) {
         processFunction(processed_funcName, true); // in case it is GLOBAL
         FunctionBlock fB = this.symbolTable.get(processed_funcName);
         Symbol toAdd = newSymbol;
         toAdd.setCounter(fB.contents.size() + 1);
-        fB.addSymbol(varName, toAdd);
-        return processed_funcName;
+        return fB.addSymbol(varName, toAdd);
     }
 
     Boolean checkFunctionReturnType(String funcName, String returnType) {
@@ -468,11 +467,20 @@ public class SymbolTable {
             if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER && i != 0) { // this means the type is done and
                                                                                     // the
                                                                                     // identifier is next
-                symbol += tmp;
+           
+                if(child_node.val.equals(getClassName())){
+                    System.out.println("Invalid var declaration : " + child_node.val);
+                     System.exit(0);
+                 }
+
+                symbol += tmp;                                                                    
                 String value = "local";
                 if (funcname.equals(SymbolTable.GLOBAL))
                     value = "global";
-                addSymbol(funcname, child_node.val, new Var(symbol.split(CARDINAL_SEPARATOR)[1], child_node.val, value));
+                if(!addSymbol(funcname, child_node.val, new Var(symbol.split(CARDINAL_SEPARATOR)[1], child_node.val, value))) {
+                   System.out.println("Duplicated var declaration : " + child_node.val);
+                    System.exit(0);
+                }
             }
             tmp += eval_build(child_node, symbol, funcname, State.BUILD);
         }

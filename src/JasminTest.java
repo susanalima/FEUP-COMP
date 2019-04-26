@@ -144,7 +144,6 @@ public String getFuncname(SimpleNode node, String symbol, String funcname, State
   SimpleNode child_node;
   String tmp = "";
   State currState = State.BUILD;
-  boolean add = true;
   for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       child_node = (SimpleNode) node.jjtGetChild(i);
       if (child_node.getId() == AlphaTreeConstants.JJTBODY) { 
