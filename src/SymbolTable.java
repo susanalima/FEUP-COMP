@@ -577,12 +577,27 @@ public class SymbolTable {
             }
         } else if (tmp.equals(UNDEFINED_TYPE)) {
             symbol = AND_SEPARATOR + UNDEFINED_TYPE;
-        } else {
+        } else if (child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) {
+            child_node = (SimpleNode) child_node.jjtGetChild(1);
+            if(child_node.getId() == AlphaTreeConstants.JJTFUNC) {
+              child_node = (SimpleNode) child_node.jjtGetChild(0);
+              if (child_node.val.equals(getClassName())) {
+                symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
+                tmp = methodExistsWithUndefinedValues(symbol);
+                if (tmp.equals("")) { // se a funçao com aqueles argumentos nao existir
+                    System.out.println("Invalid function");
+                    System.exit(0);
+                } else {
+                    symbol = AND_SEPARATOR + getFunctionReturnType(tmp);
+                }
+             }
+           }
+         } else {
             for (int i = 1; i < node.jjtGetNumChildren(); i++) {  // i= 0 no caso de de se ter de analisar as variaveis antes do dot
                 child_node = (SimpleNode) node.jjtGetChild(i);
                 symbol = eval_process(child_node, symbol, funcname, state);
             }
-           // System.out.println("symbol2 : " + symbol);
+            //System.out.println("symbol2 : " + symbol);
            // symbol = AND_SEPARATOR + UNDEFINED_TYPE;
         }
         return symbol;
