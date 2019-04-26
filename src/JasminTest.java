@@ -111,7 +111,8 @@ private String process_func_call(String funcname, String expression, boolean che
     }
     expression += "&" + tokens[i];
   }
-  expression = symbolTable.methodExistsWithUndefinedValues(expression);
+  if(checkMethod)
+    expression = symbolTable.methodExistsWithUndefinedValues(expression);
   tokens = expression.split("&");
   for (int i = 1; i < tokens.length; i++){
     processed += tokens[i] + ";";
