@@ -397,7 +397,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
+    private String evalNodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {        
         if (state == State.BUILD) // if it is building state the symbol must be the name of the variable
             symbol = CARDINAL_SEPARATOR + node.val;
         else if (state == State.PROCESS) { // if it is processing state the variable must be validated and and symbol is

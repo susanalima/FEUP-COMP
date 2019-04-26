@@ -44,9 +44,12 @@ public class JasminTest {
     case AlphaTreeConstants.JJTINDEX:
       break;
     case AlphaTreeConstants.JJTNEWFUNC:
-      child_node = (SimpleNode) node.jjtGetChild(1).jjtGetChild(0);
-      code +="invokenonstatic " + child_node.val + "/" + child_node.val + "()L" + child_node.val + "\n";
+    child_node =  (SimpleNode) node.jjtGetChild(1);
+    if(child_node.getId() == AlphaTreeConstants.JJTFUNC) {
+        child_node = (SimpleNode) child_node.jjtGetChild(0);
+        code +="invokenonstatic " + child_node.val + "/" + child_node.val + "()L" + child_node.val + "\n";
       symbol = "";
+      }
       break;
     case AlphaTreeConstants.JJTFUNC_ARG:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -66,29 +69,32 @@ public class JasminTest {
       symbol += tmp;
       break;
     case AlphaTreeConstants.JJTDOT: 
-      child_node = (SimpleNode) node.jjtGetChild(0);
+      symbol = "";
+      child_node = (SimpleNode) node.jjtGetChild(1); //left child
       String header = "";
       boolean checkMethod = true;
-      if(child_node.getId() == AlphaTreeConstants.JJTTHIS) {
-        header = "invokevirtual " + symbolTable.getClassName() ;
-      } else if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
-        if(symbolTable.varExists(funcname, child_node.val) && !symbolTable.extends_) {
-          if(!symbolTable.getClassName().equals(symbolTable.getVarType(funcname, child_node.val)))
+      if(child_node.getId() == AlphaTreeConstants.JJTFUNC) {
+        child_node = (SimpleNode) node.jjtGetChild(0); //right child
+        if(child_node.getId() ==  AlphaTreeConstants.JJTTHIS) {
+          header = "invokevirtual " + symbolTable.getClassName() ;
+        } else if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
+          if(symbolTable.varExists(funcname, child_node.val) && !symbolTable.extends_) {
+            if(!symbolTable.getClassName().equals(symbolTable.getVarType(funcname, child_node.val)))
+              checkMethod = false;
+            header = "invokevirtual " + symbolTable.getVarType(funcname, child_node.val);
+          } else {
+            header = "invokestatic " + child_node.val;
             checkMethod = false;
-          header = "invokevirtual " + symbolTable.getVarType(funcname, child_node.val);
-        } else {
-          header = "invokestatic " + child_node.val;
-          checkMethod = false;
+          }
         }
+        for (int i = 1; i < node.jjtGetNumChildren(); i++) {
+          child_node = (SimpleNode) node.jjtGetChild(i);
+          tmp +=  jasmin_process(child_node, symbol,funcname, state) ;
+        }
+        symbol += tmp;
+        code += header + "/" + process_func_call(funcname,symbol, checkMethod) + "\n";
+        symbol = symbolTable.eval_process(node, "", funcname, State.PROCESS).split("&")[1];
       }
-      for (int i = 1; i < node.jjtGetNumChildren(); i++) {
-        child_node = (SimpleNode) node.jjtGetChild(i);
-        tmp +=  jasmin_process(child_node, symbol,funcname, state) ;
-      }
-      symbol += tmp;
-      code += header + "/" + process_func_call(funcname,symbol, checkMethod) + "\n";
-      symbol = symbolTable.eval_process(node, "", funcname, State.PROCESS).split("&")[1];
-
       break;
     default:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
