@@ -4,11 +4,10 @@ import java.util.Map;
 
 public class SymbolTable {
 
-    private static String CARDINAL_SEPARATOR = "#";
-    private static String AND_SEPARATOR = "&";
-    private static String ARRAY_SEPARATOR = "$";
-    private static String UNDEFINED_TYPE = "undefined";
-
+    static String CARDINAL_SEPARATOR = "#";
+    static String AND_SEPARATOR = "&";
+    static String ARRAY_SEPARATOR = "$";
+    static String UNDEFINED_TYPE = "undefined";
     static final String GLOBAL = "#GLOBAL_SCOPE";
     HashMap<String, FunctionBlock> symbolTable; // First key is fn&Param1Type($array)?&Param2Type
     boolean extends_;
@@ -321,7 +320,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeProgram_build(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeProgram_build(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         String tmp = "";
         child_node = (SimpleNode) node.jjtGetChild(1);
@@ -334,7 +333,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeProgram_process(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeProgram_process(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         String tmp = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -348,7 +347,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private void evalNodeReturn(SimpleNode node, String symbol, String funcname, State state) {
+    public void evalNodeReturn(SimpleNode node, String symbol, String funcname, State state) {
         String tmp = eval_process((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS);
         tmp = returnExpressionType(tmp);
         if (!checkFunctionReturnType(funcname, tmp) && !tmp.equals(UNDEFINED_TYPE)) {
@@ -357,7 +356,7 @@ public class SymbolTable {
         }
     }
 
-    private String evalNodeClassBody(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeClassBody(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         String tmp = "";
         if (node.getId() == AlphaTreeConstants.JJTCLASSBODY)
@@ -374,7 +373,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeFuncArgs(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeFuncArgs(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         String tmp = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -394,7 +393,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
         if (state == State.BUILD) // if it is building state the symbol must be the name of the variable
             symbol = CARDINAL_SEPARATOR + node.val;
         else if (state == State.PROCESS) { // if it is processing state the variable must be validated and and symbol is
@@ -413,7 +412,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeIndex(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeIndex(SimpleNode node, String symbol, String funcname, State state) {
         symbol = eval_process((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS); // validates the
                                                                                                   // identifier
         String index = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.PROCESS); // validates the
@@ -429,7 +428,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeIfWhile(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeIfWhile(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
@@ -438,7 +437,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeCondition(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeCondition(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         String tmp = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -453,7 +452,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeEqual(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeEqual(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode identifier = (SimpleNode) node.jjtGetChild(0);
         SimpleNode child_node;
         String tmp = "";
@@ -473,7 +472,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeVarDeclaration(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeVarDeclaration(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         String tmp = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -528,7 +527,7 @@ public class SymbolTable {
         return funcname;
     }
 
-    private String evalNodeFunc(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeFunc(SimpleNode node, String symbol, String funcname, State state) {
         symbol = ((SimpleNode) node.jjtGetChild(0)).val;
         SimpleNode child_node;
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
@@ -541,7 +540,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeFuncArg(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeFuncArg(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
@@ -557,7 +556,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeDot(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeDot(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
         String tmp = "";
         tmp = getVarType(funcname, child_node.val);
@@ -602,7 +601,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeDefault_build(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeDefault_build(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
@@ -611,7 +610,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String evalNodeDefault_process(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeDefault_process(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
@@ -620,7 +619,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    private String returnExpressionType(String expression) {
+    public String returnExpressionType(String expression) {
         if (!expression.substring(0, 1).equals(AND_SEPARATOR)) // if it is an outside function
             return UNDEFINED_TYPE;
         String expectedType = expression.split(AND_SEPARATOR)[1];
@@ -630,7 +629,7 @@ public class SymbolTable {
             return "";
     }
 
-    private boolean evaluateExpressionType(String expectedType, String expression) {
+    public boolean evaluateExpressionType(String expectedType, String expression) {
         String[] tokens = expression.split(AND_SEPARATOR);
         String processed_expectedType = expectedType.split(AND_SEPARATOR)[1];
         if (processed_expectedType.equals(UNDEFINED_TYPE))
@@ -644,7 +643,7 @@ public class SymbolTable {
         return true;
     }
 
-    private boolean evaluateExpressionInt(String expression) {
+    public boolean evaluateExpressionInt(String expression) {
         return evaluateExpressionType(AND_SEPARATOR + "int", expression);
     }
 

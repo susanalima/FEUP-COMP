@@ -21,9 +21,11 @@ public class JasminTest {
       funcname = getFuncname(node, "", funcname, State.PROCESS);
       break;
     case AlphaTreeConstants.JJTIDENTIFIER:
-      symbol += node.val;
       if (state == State.PROCESS) {
+        symbol += symbolTable.getVarType(funcname,node.val);
         code += "iload " + symbolTable.getCounter(funcname, node.val) + "\n";
+      } else {
+        symbol += node.val;
       }
       break;
     case AlphaTreeConstants.JJTINT:
@@ -47,8 +49,9 @@ public class JasminTest {
     case AlphaTreeConstants.JJTDIVISION:
       for (int i = 0; i < node.jjtGetNumChildren(); i++) {
         child_node = (SimpleNode) node.jjtGetChild(i);
-        jasmin_process(child_node, symbol, funcname, State.PROCESS);
+        tmp += "&" + jasmin_process(child_node, symbol, funcname, State.PROCESS);
       }
+      symbol= symbolTable.returnExpressionType(tmp);
       code += getOperatorInstruction(node);
       break;
     case AlphaTreeConstants.JJTNEWFUNC:
@@ -141,17 +144,17 @@ public class JasminTest {
   private String process_func_call(String funcname, String expression, boolean checkMethod) {
     String[] tokens = expression.split("&");
     String processed = tokens[0] + "(";
-    expression = tokens[0];
-    for (int i = 1; i < tokens.length; i++) {
+    //expression = tokens[0];
+    /*for (int i = 1; i < tokens.length; i++) {
       if (!tokens[i].equals("boolean") && !tokens[i].equals("int") && !tokens[i].equals("int$array")) { // TODO
         tokens[i] = symbolTable.getVarType(funcname, tokens[i]);
       }
       expression += "&" + tokens[i];
-    }
+    }*/
 
     if (checkMethod)
       expression = symbolTable.methodExistsWithUndefinedValues(expression);
-
+ 
     tokens = expression.split("&");
     for (int i = 1; i < tokens.length; i++) {
       processed += tokens[i] + ";";
