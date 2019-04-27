@@ -260,6 +260,8 @@ public class SymbolTable {
         case AlphaTreeConstants.JJTDIVISION:
         case AlphaTreeConstants.JJTMINOR:
         case AlphaTreeConstants.JJTAND:
+            symbol = evalNodeOperator(node, symbol, funcname, state);
+            break;
         case AlphaTreeConstants.JJTFUNC_ARGS:
             symbol = evalNodeFuncArgs(node, symbol, funcname, state);
             break;
@@ -381,7 +383,26 @@ public class SymbolTable {
             tmp += eval_process(child_node, symbol, funcname, state);
         }
         symbol = tmp;
+        return symbol;
+    }
 
+
+
+    
+    public String evalNodeOperator(SimpleNode node, String symbol, String funcname, State state) {
+        SimpleNode child_node;
+        String tmp = "";
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            child_node = (SimpleNode) node.jjtGetChild(i);
+            tmp += eval_process(child_node, symbol, funcname, state);
+        }
+        symbol = tmp;
+
+        if(!evaluateExpressionInt(symbol)) {
+            System.out.println("Invalid Operation!");
+                System.exit(0);
+        }
+        
         if (node.getId() == AlphaTreeConstants.JJTMINOR) {
             if (returnExpressionType(symbol).equals("")) {
                 System.out.println("Invalid Condition!");
@@ -392,6 +413,8 @@ public class SymbolTable {
 
         return symbol;
     }
+
+
 
     public String evalNodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
         if (state == State.BUILD) // if it is building state the symbol must be the name of the variable
@@ -555,6 +578,8 @@ public class SymbolTable {
         }
         return symbol;
     }
+
+    
 
     public String evalNodeDot(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);

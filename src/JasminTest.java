@@ -70,7 +70,7 @@ public class JasminTest {
   }
 
   private String process_func_call(String funcname, String expression, boolean checkMethod) {
-    String[] tokens = expression.split("&");
+    String[] tokens = expression.split(SymbolTable.AND_SEPARATOR);
     String processed = tokens[0] + "(";
     //expression = tokens[0];
     /*for (int i = 1; i < tokens.length; i++) {
@@ -83,7 +83,7 @@ public class JasminTest {
     if (checkMethod)
       expression = symbolTable.methodExistsWithUndefinedValues(expression);
  
-    tokens = expression.split("&");
+    tokens = expression.split(SymbolTable.AND_SEPARATOR);
     for (int i = 1; i < tokens.length; i++) {
       processed += tokens[i] + ";";
     }
@@ -177,7 +177,7 @@ public class JasminTest {
     SimpleNode child_node;
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       child_node = (SimpleNode) node.jjtGetChild(i);
-      tmp += "&" + jasmin_process(child_node, symbol, funcname, State.PROCESS);
+      tmp += SymbolTable.AND_SEPARATOR + jasmin_process(child_node, symbol, funcname, State.PROCESS);
     }
     symbol= symbolTable.returnExpressionType(tmp);
     code += getOperatorInstruction(node);
@@ -202,7 +202,7 @@ public class JasminTest {
     SimpleNode child_node;
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       child_node = (SimpleNode) node.jjtGetChild(i);
-      tmp += "&" + jasmin_process(child_node, symbol, funcname, State.PROCESS);
+      tmp += SymbolTable.AND_SEPARATOR + jasmin_process(child_node, symbol, funcname, State.PROCESS);
     }
     symbol += tmp;
     return symbol;
@@ -257,7 +257,7 @@ public class JasminTest {
         }
         symbol += tmp;
         code += header + "/" + process_func_call(funcname, symbol, checkMethod) + "\n";
-        symbol = symbolTable.eval_process(node, "", funcname, State.PROCESS).split("&")[1];
+        symbol = symbolTable.eval_process(node, "", funcname, State.PROCESS).split(SymbolTable.AND_SEPARATOR)[1];
       } else if (child_node.getId() == AlphaTreeConstants.JJTLENGTH) {
         symbol = "int";
       }
