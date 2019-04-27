@@ -11,8 +11,10 @@ public class AlphaMain {
       Alpha myCalc = new Alpha(new java.io.FileInputStream(args[0]));
 
       SimpleNode root = Alpha.Program();
+      System.out.println("\n\n---AST---\n\n");
       root.dump("");
       symbolTable.eval_build(root, "", SymbolTable.GLOBAL, State.BUILD); 
+      System.out.println("\n\n---SYMBOL TABLE---\n\n");
       symbolTable.printSymbolTable();
       symbolTable.eval_process(root, "", SymbolTable.GLOBAL, State.PROCESS); 
 
@@ -22,7 +24,7 @@ public class AlphaMain {
       jasmin = jasmin.concat("\n\nArithmetic \n\n" + jBuilder.arithmeticJasmin(root));
       System.out.println(jasmin);
 
-      System.out.println("---JasminTEST---\n");
+      System.out.println("\n\n---JasminTEST---\n");
       JasminTest jTest = new JasminTest(symbolTable);
        jTest.jasmin_process(root, "", SymbolTable.GLOBAL, State.BUILD);
       System.out.println(jTest.code);
