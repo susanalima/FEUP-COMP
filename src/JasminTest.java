@@ -23,7 +23,7 @@ public class JasminTest {
     case AlphaTreeConstants.JJTIDENTIFIER:
       if (state == State.PROCESS) {
         symbol += symbolTable.getVarType(funcname,node.val);
-        code += "iload " + symbolTable.getCounter(funcname, node.val) + "\n";
+        code += "iload_" + symbolTable.getCounter(funcname, node.val) + "\n";
       } else {
         symbol += node.val;
       }
@@ -124,7 +124,10 @@ public class JasminTest {
         child_node = (SimpleNode) node.jjtGetChild(i);
         jasmin_process(child_node, symbol, funcname, State.BUILD);
       }
-      child_node = (SimpleNode) node.children[0];
+      child_node = (SimpleNode) node.children[1]; //right child
+      if(child_node.getId() == AlphaTreeConstants.JJTMINOR)  //TODO WHAT TO DO WHEN IS A BOOLEAN ASSIGMENT WITH MINOR???
+        break;
+      child_node = (SimpleNode) node.children[0]; //left child -> identifier
       if (child_node.getId() == AlphaTreeConstants.JJTINDEX) // in case it is an array assignment
         child_node = (SimpleNode) child_node.jjtGetChild(0);
       code += "istore_" + symbolTable.getCounter(funcname, child_node.val) + "\n"; // TODO CHANGE ACCORDING WITH THE
