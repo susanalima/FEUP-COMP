@@ -33,9 +33,11 @@ public class JasminTest {
       break;
     case AlphaTreeConstants.JJTINTEGER:
       symbol += "int";
-      if (state == State.PROCESS) {
+     // if (state == State.PROCESS) {  //TODO TEST IF NEEDED, DONT THINK SO
         code += "ldc " + node.val + "\n";
-      }
+      //}
+      break;
+    case AlphaTreeConstants.JJTINDEX:
       break;
     case AlphaTreeConstants.JJTTRUE:
     case AlphaTreeConstants.JJTFALSE:
@@ -219,16 +221,16 @@ public class JasminTest {
 
     switch (node.getId()) {
     case AlphaTreeConstants.JJTPLUS:
-      instruction = "iadd " + "\n";
+      instruction = "iadd \n";
       break;
     case AlphaTreeConstants.JJTMINUS:
-      instruction = "isub " + "\n";
+      instruction = "isub \n";
       break;
     case AlphaTreeConstants.JJTPRODUCT:
-      instruction = "imul " + "\n";
+      instruction = "imul \n";
       break;
     case AlphaTreeConstants.JJTDIVISION:
-      instruction = "idiv " + "\n";
+      instruction = "idiv \n";
       break;
     }
 

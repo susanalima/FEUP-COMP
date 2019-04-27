@@ -1,5 +1,4 @@
 
-import java.util.LinkedList;
 public class AlphaMain {
 
   private static SymbolTable symbolTable = new SymbolTable();
