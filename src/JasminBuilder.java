@@ -10,7 +10,29 @@ public class JasminBuilder {
     fN = "";
     invokingFN = "";
     sT = sT_;
-    
+
+  }
+
+  private String paramType(String returnType) {
+    switch (returnType) {
+    case "boolean":
+      return "Z";
+
+    case "void":
+      return "V";
+
+    case "int":
+      return "I";
+
+    case "string":
+      return "S";
+
+    case "int$array":
+      return "[I";
+
+    default:
+      return "L" + returnType + ";";
+    }
   }
 
   public String printJasmin(SimpleNode root) {
@@ -18,7 +40,6 @@ public class JasminBuilder {
 
     buildFunctionNameName(root);
     buildFunctionNameParameters(root, sT);
-
 
     if (root.toString().equals("DOT")) {
       if (isFunc(root)) {
@@ -57,16 +78,16 @@ public class JasminBuilder {
         } else if (root.toString().equals("FALSE") || root.toString().equals("TRUE")) {
           acc += "boolean;";
         } else {
-          acc += sT.getVarType(fN, root.val) + ";";
+          acc += paramType(sT.getVarType(fN, root.val)) + ";";
         }
       }
     } else if (root.toString().equals("FUNC_ARGS")) {
       acc += "(";
     }
     if (root.toString().equals("DOT")) {
-      //acc += "\n\n";
+      // acc += "\n\n";
     }
-    
+
     if (root.children != null) {
       for (Node child : root.children) {
         SimpleNode sN = (SimpleNode) child;
@@ -79,30 +100,7 @@ public class JasminBuilder {
       if (sT.methodExists(invokingFN)) {
         String returnType = sT.getFunctionReturnType(invokingFN);
 
-        switch (returnType) {
-        case "boolean":
-          acc += "Z";
-          break;
-
-        case "void":
-          acc += "V";
-          break;
-
-        case "int":
-          acc += "I";
-          break;
-
-        case "string":
-          acc += "S";
-          break;
-
-        case "int$array":
-          acc += "[I";
-          break;
-
-        default:
-          acc += "L" + returnType;
-        }
+        acc += paramType(returnType);
       } else {
         acc += "externalUndefined";
       }
@@ -117,16 +115,15 @@ public class JasminBuilder {
   private String loadParameters(SimpleNode node, boolean processed) {
     String acc = "";
 
-
-    if(!processed) {
+    if (!processed) {
       fN = sT.processFunction(fN);
     }
- 
+
     if (node.parent != null && node.parent.toString().equals("FUNC_ARG")) {
       if (fN.equals("")) {
         System.out.println("FUNC NAME NOT DEFINED");
       }
-   
+
       if (node.toString().equals("INTEGER")) {
         acc += "ldc " + node.val + ";\n";
       } else if (node.toString().equals("FALSE") || node.toString().equals("TRUE")) {
@@ -145,7 +142,7 @@ public class JasminBuilder {
         acc += loadParameters(sN, true);
       }
     }
-    
+
     return acc;
   }
 
@@ -212,7 +209,7 @@ public class JasminBuilder {
         case "IDENTIFIER":
           fN += "&" + root.val;
           break;
-  
+
         case "ARRAY":
           fN += "$array";
           break;
@@ -264,29 +261,27 @@ public class JasminBuilder {
     return "ERROR";
   }
 
-
-  public String getMethodKey(SimpleNode root){
+  public String getMethodKey(SimpleNode root) {
     String key = "";
     String paramType;
-    for(Node child : root.children){
+    for (Node child : root.children) {
       SimpleNode simpleChild = (SimpleNode) child;
-      if(simpleChild.toString().equals("IDENTIFIER")){
+      if (simpleChild.toString().equals("IDENTIFIER")) {
         key = simpleChild.val;
-      }
-      else if(simpleChild.toString().equals("MAIN")){
+      } else if (simpleChild.toString().equals("MAIN")) {
         key = "main";
       }
 
-      if(simpleChild.toString().equals("Args")){
-        if(simpleChild.children != null){
-          for(Node grandchild : simpleChild.children){
+      if (simpleChild.toString().equals("Args")) {
+        if (simpleChild.children != null) {
+          for (Node grandchild : simpleChild.children) {
             SimpleNode simpleGrandChild = (SimpleNode) grandchild;
             paramType = simpleGrandChild.children[0].toString();
             paramType = paramType.toLowerCase();
-            if(paramType.equals("identifier")) //in case is an identifier
+            if (paramType.equals("identifier")) // in case is an identifier
               paramType = ((SimpleNode) simpleGrandChild.children[0]).val;
             key = key.concat("&" + paramType);
-            if(simpleGrandChild.children[1].toString().equals("ARRAY"))
+            if (simpleGrandChild.children[1].toString().equals("ARRAY"))
               key = key.concat("$array");
           }
         }
@@ -296,85 +291,90 @@ public class JasminBuilder {
     return key;
   }
 
-  
-
-  //TODO: Stack usage is only needed in arithmetic expressions x = (...) -> after/inside an EQUAL ; everything else is just concat
-  //DOUBT: Since variables need to be initialized to be used in a expression, when needed, the jasmin code should put in the stack the variable or the value of the variable? 
-  //DOUBT: Indexes of local variables? 0 - this ; 1 - next variable?parameter? 
+  // TODO: Stack usage is only needed in arithmetic expressions x = (...) ->
+  // after/inside an EQUAL ; everything else is just concat
+  // DOUBT: Since variables need to be initialized to be used in a expression,
+  // when needed, the jasmin code should put in the stack the variable or the
+  // value of the variable?
+  // DOUBT: Indexes of local variables? 0 - this ; 1 - next variable?parameter?
   public String arithmeticJasmin(SimpleNode root) {
-      String instruction, ident, value;
-      instruction ="";
-      int counter;
-  
-      if(root.toString().equals("METHOD_DECLARATION") || root.toString().equals("MainDeclaration"))
-        actualFunction = getMethodKey(root);
+    String instruction, ident, value;
+    instruction = "";
+    int counter;
 
-      if(root.parent != null && !root.parent.toString().equals("METHOD_DECLARATION") && !root.parent.toString().equals("MainDeclaration") && !root.parent.toString().equals("Arg")  && !root.parent.toString().equals("FUNC_ARG")){   
-        switch(root.toString()){
-          case "PLUS":
-            instruction = "iadd";
-          break;
-          case "MINUS":
-            instruction = "isub";
-          break;
-          case "PRODUCT":
-            instruction = "imul";
-          break;
-          case "DIVISION":
-            instruction = "idiv";
-          break;
-          case "EQUAL":
-            SimpleNode leftSide = (SimpleNode)root.children[0];
-            if(leftSide.toString().equals("INDEX"))  //in case it is an array assignment
-              leftSide = (SimpleNode)leftSide.jjtGetChild(0);
-              ident = leftSide.val;
-            if(sT.varExists(actualFunction, ident)){
-              Symbol symb;
+    if (root.toString().equals("METHOD_DECLARATION") || root.toString().equals("MainDeclaration"))
+      actualFunction = getMethodKey(root);
 
-              if(sT.isVarGlobal(ident))
-                symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
+    if (root.parent != null && !root.parent.toString().equals("METHOD_DECLARATION")
+        && !root.parent.toString().equals("MainDeclaration") && !root.parent.toString().equals("Arg")
+        && !root.parent.toString().equals("FUNC_ARG")) {
+      switch (root.toString()) {
+      case "PLUS":
+        instruction = "iadd";
+        break;
+      case "MINUS":
+        instruction = "isub";
+        break;
+      case "PRODUCT":
+        instruction = "imul";
+        break;
+      case "DIVISION":
+        instruction = "idiv";
+        break;
+      case "EQUAL":
+        SimpleNode leftSide = (SimpleNode) root.children[0];
+        if (leftSide.toString().equals("INDEX")) // in case it is an array assignment
+          leftSide = (SimpleNode) leftSide.jjtGetChild(0);
+        ident = leftSide.val;
+        if (sT.varExists(actualFunction, ident)) {
+          Symbol symb;
 
-              else
-                symb = sT.symbolTable.get(actualFunction).contents.get(ident);
-               
-              counter = symb.counter;
-              instruction = "istore_"  + counter; 
-            }
-            break;
-          case "IDENTIFIER":
-              ident = root.val;
-              try{
-                if(sT.varExists(actualFunction, ident) && !root.parent.toString().equals("VAR_DECLARATION") && !root.parent.toString().equals("FUNC") && !root.parent.toString().equals("Program") && !root.parent.toString().equals("EQUAL") && !root.parent.toString().equals("RETURN")){
-                  Symbol symb;
-                  if(sT.isVarGlobal(ident))
-                    symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
-                  else
-                    symb = sT.symbolTable.get(actualFunction).contents.get(ident);
-                  System.out.println(symb.toString());
-                  counter = symb.counter;
-                  instruction = "iload_" + counter;
-                }
-              }catch(NullPointerException e){
-                System.out.println("The information being accessed is not defined.");
-                return "-2";
-              }
-            break;
-          case "INTEGER":
-            instruction = "ldc " + root.val;
-            break;
-          default:
-            break;
+          if (sT.isVarGlobal(ident))
+            symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
+
+          else
+            symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+
+          counter = symb.counter;
+          instruction = "istore_" + counter;
         }
-      }
-      if (root.children != null) {
-        for (Node child : root.children) {
-          SimpleNode sN = (SimpleNode) child;
-          arithmeticJasmin(sN);
+        break;
+      case "IDENTIFIER":
+        ident = root.val;
+        try {
+          if (sT.varExists(actualFunction, ident) && !root.parent.toString().equals("VAR_DECLARATION")
+              && !root.parent.toString().equals("FUNC") && !root.parent.toString().equals("Program")
+              && !root.parent.toString().equals("EQUAL") && !root.parent.toString().equals("RETURN")) {
+            Symbol symb;
+            if (sT.isVarGlobal(ident))
+              symb = sT.symbolTable.get("#GLOBAL_SCOPE").contents.get(ident);
+            else
+              symb = sT.symbolTable.get(actualFunction).contents.get(ident);
+            System.out.println(symb.toString());
+            counter = symb.counter;
+            instruction = "iload_" + counter;
+          }
+        } catch (NullPointerException e) {
+          System.out.println("The information being accessed is not defined.");
+          return "-2";
         }
+        break;
+      case "INTEGER":
+        instruction = "ldc " + root.val;
+        break;
+      default:
+        break;
       }
-      if(instruction != "")
-        fullInstructions = fullInstructions.concat(instruction + "\n");
+    }
+    if (root.children != null) {
+      for (Node child : root.children) {
+        SimpleNode sN = (SimpleNode) child;
+        arithmeticJasmin(sN);
+      }
+    }
+    if (instruction != "")
+      fullInstructions = fullInstructions.concat(instruction + "\n");
 
-      return fullInstructions;
+    return fullInstructions;
   }
 }
