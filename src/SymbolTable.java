@@ -7,7 +7,7 @@ public class SymbolTable {
     static String CARDINAL_SEPARATOR = "#";
     static String AND_SEPARATOR = "&";
     static String ARRAY_SEPARATOR = "$";
-    static String UNDEFINED_TYPE = "undefined";
+    static String UNDEFINED_TYPE = "@";
     static final String GLOBAL = "#GLOBAL_SCOPE";
     HashMap<String, FunctionBlock> symbolTable; // First key is fn&Param1Type($array)?&Param2Type
     boolean extends_;
@@ -89,7 +89,7 @@ public class SymbolTable {
             int counter = 0;
             for (int i = 0; i < key_functionBlock.length; i++) {
                 if (key_functionBlock[i].equals(expected_functionBlock[i])
-                        || expected_functionBlock[i].equals(UNDEFINED_TYPE))
+                        || checkUndefinedType(expected_functionBlock[i]))
                     counter++;
             }
             if (counter == key_functionBlock.length) {
@@ -102,6 +102,13 @@ public class SymbolTable {
             count_func++;
         }
         return return_key;
+    }
+
+
+    boolean checkUndefinedType(String expression) {
+        if(expression.equals(""))
+            return false;
+        return expression.substring(0,1).equals(UNDEFINED_TYPE);
     }
 
     void addParams(String funcName, String processed_funcName) {
@@ -183,6 +190,10 @@ public class SymbolTable {
 
     void setClassName(String className) {
         this.className = className;
+    }
+
+    void setGlobalSymbolType(String varName, String varType) {
+        this.symbolTable.get(GLOBAL).setSymbolType(varName, varType);
     }
 
     public void printSymbolTable() {
@@ -357,9 +368,9 @@ public class SymbolTable {
     }
 
     public void evalNodeReturn(SimpleNode node, String symbol, String funcname, State state) {
-        String tmp = eval_process((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS);
+        String tmp = eval_process((SimpleNode) node.jjtGetChild(0), getFunctionReturnType(funcname), funcname, State.PROCESS);
         tmp = returnExpressionType(tmp);
-        if (!checkFunctionReturnType(funcname, tmp) && !tmp.equals(UNDEFINED_TYPE)) {
+        if (!checkFunctionReturnType(funcname, tmp) && !checkUndefinedType(tmp)) {
             System.out.println("Invalid return type");
             System.exit(1);
         }
@@ -432,11 +443,14 @@ public class SymbolTable {
         else if (state == State.PROCESS) { // if it is processing state the variable must be validated and and symbol is
                                            // it's type
             if(this.extends_ && !wasVarDeclared(funcname,node.val)) {
-                System.out.println("identifer " + node.val);
-                System.out.println("symbol " + symbol);
-                addSymbol(SymbolTable.GLOBAL, node.val, new Var(symbol, node.val, "global"));       
+                System.out.println("Symbol: " + symbol);
+                System.out.println("val: " + node.val);
+                addSymbol(SymbolTable.GLOBAL, node.val, new Var(symbol, node.val, "global"));     
             }
             symbol = getVarType(funcname, node.val);
+            if(symbol.equals(UNDEFINED_TYPE))
+                symbol = UNDEFINED_TYPE + node.val;
+
             if (symbol.equals("")) {// if the variable was not declared aborts the program
                 System.out.println("Variable not declared: " + node.val);
                 System.exit(0);
@@ -445,6 +459,7 @@ public class SymbolTable {
                 System.out.println("Invalid var : " + node.val);
                 System.exit(0);
             }
+        
             symbol = AND_SEPARATOR + symbol;
         }
         return symbol;
@@ -483,7 +498,7 @@ public class SymbolTable {
             symbol = eval_process(child_node, "boolean", funcname, State.PROCESS);
         }
         tmp = returnExpressionType(symbol);
-        if (!tmp.equals("boolean") && !tmp.equals(UNDEFINED_TYPE)) {
+        if (!tmp.equals("boolean") && !checkUndefinedType(tmp)) {
             System.out.println("Invalid Condition!");
             System.exit(0);
         }
@@ -512,9 +527,9 @@ public class SymbolTable {
         if(process_identifier)
             varType = eval_process(identifier, expressionType, funcname, State.PROCESS);
 
-        System.out.println("\nvarType: " + varType);
+       /* System.out.println("\nvarType: " + varType);
         System.out.println("expressionType: " + AND_SEPARATOR + expressionType);  
-
+        */
         if (!evaluateExpressionType(varType, expressionType)) {
             System.out.println("Invalid type");
             System.exit(0);
@@ -577,24 +592,45 @@ public class SymbolTable {
         return funcname;
     }
 
+    private void setUndefinedArgsType(String expression_undefined, String expression) {
+        String[] undefined_tokens = expression_undefined.split(AND_SEPARATOR);
+        String[] expression_tokens = expression.split(AND_SEPARATOR);
+        String varName, varType;
+
+        for(int i = 1; i < undefined_tokens.length; i++ ) {
+            if(!undefined_tokens[i].equals(expression_tokens[i])) {
+                varName = undefined_tokens[i].split(UNDEFINED_TYPE)[1];
+                varType = expression_tokens[i];
+                setGlobalSymbolType(varName, varType);
+            }
+        }
+    }
+
     public String evalNodeFunc(SimpleNode node, String symbol, String funcname, State state) {
         symbol = ((SimpleNode) node.jjtGetChild(0)).val;
         SimpleNode child_node;
+        String new_symbol;
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
             symbol += eval_process(child_node, symbol, funcname, State.PROCESS);
         }
-        symbol = methodExistsWithUndefinedValues(symbol);
-        if (symbol.equals(""))
-            symbol = AND_SEPARATOR + UNDEFINED_TYPE;
-        return symbol;
+        new_symbol = methodExistsWithUndefinedValues(symbol);
+        if (new_symbol.equals("")) {
+            new_symbol = AND_SEPARATOR + UNDEFINED_TYPE;
+            return new_symbol;
+        } 
+        if(!new_symbol.equals(symbol)) {
+            setUndefinedArgsType(symbol, new_symbol);
+        }
+
+        return new_symbol;
     }
 
     public String evalNodeFuncArg(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
-            symbol = eval_process(child_node, "undefined", funcname, State.PROCESS);
+            symbol = eval_process(child_node,  UNDEFINED_TYPE, funcname, State.PROCESS);
             if (symbol.equals(""))
                 continue;
             symbol = AND_SEPARATOR + returnExpressionType(symbol);
@@ -610,22 +646,24 @@ public class SymbolTable {
 
     public String evalNodeDot(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
-        String tmp = "";
+        String tmp = ""; 
         tmp = getVarType(funcname, child_node.val);
         if (child_node.getId() == AlphaTreeConstants.JJTTHIS || tmp.equals(getClassName())) { // if first child is THIS
                                                                                               // eval
-                                                                                              // function
+                                                                               // function
             symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, state);
-            // System.out.println("symbol1 : " + symbol);
-            tmp = methodExistsWithUndefinedValues(symbol);
+          
+            if(checkUndefinedType(symbol))
+                symbol = symbol.split(UNDEFINED_TYPE)[0];
+            tmp = methodExistsWithUndefinedValues(symbol); 
             if (tmp.equals("")) { // se a funçao com aqueles argumentos nao existir
                 System.out.println("Invalid function");
                 System.exit(0);
             } else {
                 symbol = AND_SEPARATOR + getFunctionReturnType(tmp);
             }
-        } else if (tmp.equals(UNDEFINED_TYPE)) {
-            symbol = AND_SEPARATOR + UNDEFINED_TYPE;
+        /*} else if (checkUndefinedType(tmp)) {
+            symbol = AND_SEPARATOR + UNDEFINED_TYPE;*/ //TODO TEST THIS, CANNOT REMEMBER WHY THIS WAS WERE
         } else if (child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) {
             child_node = (SimpleNode) child_node.jjtGetChild(1);
             if (child_node.getId() == AlphaTreeConstants.JJTFUNC) {
