@@ -239,7 +239,9 @@ public class JasminTest {
 
   private String jasmin_process_nodeDot(SimpleNode node, String symbol, String funcname, State state) {
     System.out.println("symbol: " + symbol);
-    String tmp = "", possible_return_type = symbol;
+    String tmp = "" , possible_return_type = "int";  //the default value is int
+    if(!symbol.equals(""))
+      possible_return_type = symbol;
     SimpleNode child_node;
     symbol = "";
     child_node = (SimpleNode) node.jjtGetChild(1); // left child
@@ -288,8 +290,9 @@ public class JasminTest {
     left_child_node = (SimpleNode) node.children[0]; // left child -> identifier
     if (left_child_node.getId() == AlphaTreeConstants.JJTINDEX) // in case it is an array assignment
       left_child_node = (SimpleNode) left_child_node.jjtGetChild(0);
+      
     String left_child_type = symbolTable.getVarType(funcname, left_child_node.val);
-    System.out.println("left_child_type: " + left_child_type);
+
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       child_node = (SimpleNode) node.jjtGetChild(i);
       jasmin_process(child_node, left_child_type, funcname, State.BUILD);
