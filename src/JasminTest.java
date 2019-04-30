@@ -61,6 +61,9 @@ public class JasminTest {
     case AlphaTreeConstants.JJTEQUAL:
       symbol = jasmin_process_nodeEqual(node, symbol, funcname, state); // TYPE
       break;
+    case AlphaTreeConstants.JJTMINOR:
+      symbol = "boolean";
+      break;
     default:
       jasmin_process_nodeDefault(node, symbol, funcname, state);
       break;
@@ -86,12 +89,16 @@ public class JasminTest {
     case "int$array":
       return "[I";
 
+    case SymbolTable.UNDEFINED_TYPE: // TODO CHECK IF THIS SHOULD BE DONE SOMEWHERE ELSE
+      return "I";
+
     default:
       return "L" + returnType + ";";
     }
   }
 
-  private String process_func_call(String funcname, String expression, boolean checkMethod) {
+  private String process_func_call(String funcname, String expression, boolean checkMethod,
+      String possible_return_type) {
     String[] tokens = expression.split(SymbolTable.AND_SEPARATOR);
     String processed = tokens[0] + "(";
     // expression = tokens[0];
@@ -114,6 +121,8 @@ public class JasminTest {
     if (!expression.equals("") && checkMethod) {
       String returnType = symbolTable.getFunctionReturnType(expression);
       processed += paramType(returnType);
+    } else { // TODO return type
+      processed += paramType(possible_return_type);
     }
 
     return processed;
@@ -219,7 +228,8 @@ public class JasminTest {
   }
 
   private String jasmin_process_nodeDot(SimpleNode node, String symbol, String funcname, State state) {
-    String tmp = "";
+    System.out.println("symbol: " + symbol);
+    String tmp = "", possible_return_type = symbol;
     SimpleNode child_node;
     symbol = "";
     child_node = (SimpleNode) node.jjtGetChild(1); // left child
@@ -254,7 +264,7 @@ public class JasminTest {
         tmp += jasmin_process(child_node, symbol, funcname, state);
       }
       symbol += tmp;
-      code += header + "/" + process_func_call(funcname, symbol, checkMethod) + "\n";
+      code += header + "/" + process_func_call(funcname, symbol, checkMethod, possible_return_type) + "\n";
       symbol = symbolTable.eval_process(node, "", funcname, State.PROCESS).split(SymbolTable.AND_SEPARATOR)[1];
     } else if (child_node.getId() == AlphaTreeConstants.JJTLENGTH) {
       symbol = "int";
@@ -263,20 +273,24 @@ public class JasminTest {
   }
 
   private String jasmin_process_nodeEqual(SimpleNode node, String symbol, String funcname, State state) {
-    SimpleNode child_node;
+    SimpleNode child_node, left_child_node;
+
+    left_child_node = (SimpleNode) node.children[0]; // left child -> identifier
+    if (left_child_node.getId() == AlphaTreeConstants.JJTINDEX) // in case it is an array assignment
+      left_child_node = (SimpleNode) left_child_node.jjtGetChild(0);
+    String left_child_type = symbolTable.getVarType(funcname, left_child_node.val);
+    System.out.println("left_child_type: " + left_child_type);
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       child_node = (SimpleNode) node.jjtGetChild(i);
-      jasmin_process(child_node, symbol, funcname, State.BUILD);
+      jasmin_process(child_node, left_child_type, funcname, State.BUILD);
     }
     child_node = (SimpleNode) node.children[1]; // right child
     if (child_node.getId() == AlphaTreeConstants.JJTMINOR) // TODO WHAT TO DO WHEN IS A BOOLEAN ASSIGMENT WITH MINOR???
       return symbol;
-    if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) // CASE IT IS AN IDENTIFIER LIKE  a = s
+    if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) // CASE IT IS AN IDENTIFIER LIKE a = s
       jasmin_process(child_node, symbol, funcname, State.PROCESS);
-    child_node = (SimpleNode) node.children[0]; // left child -> identifier
-    if (child_node.getId() == AlphaTreeConstants.JJTINDEX) // in case it is an array assignment
-      child_node = (SimpleNode) child_node.jjtGetChild(0);
-    code += "istore_" + symbolTable.getCounter(funcname, child_node.val) + "\n"; // TODO CHANGE ACCORDING WITH THE
+
+    code += "istore_" + symbolTable.getCounter(funcname, left_child_node.val) + "\n"; // TODO CHANGE ACCORDING WITH THE
 
     return symbol;
   }

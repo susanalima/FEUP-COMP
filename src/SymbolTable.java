@@ -4,10 +4,10 @@ import java.util.Map;
 
 public class SymbolTable {
 
-    static String CARDINAL_SEPARATOR = "#";
-    static String AND_SEPARATOR = "&";
-    static String ARRAY_SEPARATOR = "$";
-    static String UNDEFINED_TYPE = "@";
+    static final String CARDINAL_SEPARATOR = "#";
+    static final String AND_SEPARATOR = "&";
+    static final String ARRAY_SEPARATOR = "$";
+    static final String UNDEFINED_TYPE = "@";
     static final String GLOBAL = "#GLOBAL_SCOPE";
     HashMap<String, FunctionBlock> symbolTable; // First key is fn&Param1Type($array)?&Param2Type
     boolean extends_;
@@ -38,6 +38,8 @@ public class SymbolTable {
         } else
             return isVarGlobal(varName);
     }
+
+  
 
     String getVarType(String funcName, String varName) {
         if (isVarLocal(funcName, varName)) {
@@ -442,15 +444,19 @@ public class SymbolTable {
         }
         else if (state == State.PROCESS) { // if it is processing state the variable must be validated and and symbol is
                                            // it's type
-            if(this.extends_ && !wasVarDeclared(funcname,node.val)) {
-                System.out.println("Symbol: " + symbol);
-                System.out.println("val: " + node.val);
-                addSymbol(SymbolTable.GLOBAL, node.val, new Var(symbol, node.val, "global"));     
+            if(this.extends_ ) {
+                /*System.out.println("Symbol: " + symbol);
+                System.out.println("val: " + node.val);*/
+                if(!wasVarDeclared(funcname,node.val))
+                    addSymbol(SymbolTable.GLOBAL, node.val, new Var(symbol, node.val, "global"));     
+                else if(getVarType(funcname, node.val).equals(UNDEFINED_TYPE))
+                    setGlobalSymbolType(node.val, symbol);
             }
             symbol = getVarType(funcname, node.val);
-            if(symbol.equals(UNDEFINED_TYPE))
+            if(symbol.equals(UNDEFINED_TYPE)) {
                 symbol = UNDEFINED_TYPE + node.val;
-
+            }
+               
             if (symbol.equals("")) {// if the variable was not declared aborts the program
                 System.out.println("Variable not declared: " + node.val);
                 System.exit(0);
