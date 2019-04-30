@@ -32,6 +32,13 @@ public class SymbolTable {
             return this.extends_;
     }
 
+    boolean wasVarDeclared(String funcName, String varName) {
+        if (isVarLocal(funcName, varName)) {
+            return true;
+        } else
+            return isVarGlobal(varName);
+    }
+
     String getVarType(String funcName, String varName) {
         if (isVarLocal(funcName, varName)) {
             return this.symbolTable.get(funcName).getVarType(varName);
@@ -151,7 +158,7 @@ public class SymbolTable {
         return this.symbolTable.get(funcName).checkReturnType(returnType);
     }
 
-    String getFunctionReturnType(String funcName) {
+    String getFunctionReturnType(String funcName) { //TODO MUDAR PARA VER SE EXISTE UMA GLOBAL COM O MESMO NOME
         return this.symbolTable.get(funcName).getReturnType();
     }
 
@@ -391,14 +398,16 @@ public class SymbolTable {
     
     public String evalNodeOperator(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
-        String tmp = "";
+        String tmp = "", varType = "int";
+        if (node.getId() == AlphaTreeConstants.JJTAND)
+            varType = "boolean";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
-            tmp += eval_process(child_node, symbol, funcname, state);
+            tmp += eval_process(child_node, varType, funcname, state); 
         }
         symbol = tmp;
 
-        if(!evaluateExpressionInt(symbol)) {
+        if(node.getId() != AlphaTreeConstants.JJTAND && !evaluateExpressionInt(symbol)) {
             System.out.println("Invalid Operation!");
                 System.exit(0);
         }
@@ -417,10 +426,16 @@ public class SymbolTable {
 
 
     public String evalNodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
-        if (state == State.BUILD) // if it is building state the symbol must be the name of the variable
+        if (state == State.BUILD) {// if it is building state the symbol must be the name of the variable
             symbol = CARDINAL_SEPARATOR + node.val;
+        }
         else if (state == State.PROCESS) { // if it is processing state the variable must be validated and and symbol is
                                            // it's type
+            if(this.extends_ && !wasVarDeclared(funcname,node.val)) {
+                System.out.println("identifer " + node.val);
+                System.out.println("symbol " + symbol);
+                addSymbol(SymbolTable.GLOBAL, node.val, new Var(symbol, node.val, "global"));       
+            }
             symbol = getVarType(funcname, node.val);
             if (symbol.equals("")) {// if the variable was not declared aborts the program
                 System.out.println("Variable not declared: " + node.val);
@@ -465,7 +480,7 @@ public class SymbolTable {
         String tmp = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
-            symbol = eval_process(child_node, symbol, funcname, State.PROCESS);
+            symbol = eval_process(child_node, "boolean", funcname, State.PROCESS);
         }
         tmp = returnExpressionType(symbol);
         if (!tmp.equals("boolean") && !tmp.equals(UNDEFINED_TYPE)) {
@@ -476,19 +491,31 @@ public class SymbolTable {
     }
 
     public String evalNodeEqual(SimpleNode node, String symbol, String funcname, State state) {
-        SimpleNode identifier = (SimpleNode) node.jjtGetChild(0);
-        SimpleNode child_node;
-        String tmp = "";
-        String varType = eval_process(identifier, symbol, funcname, State.PROCESS);
+        SimpleNode identifier = (SimpleNode) node.jjtGetChild(0), child_node;
+        String tmp = "", varType =  AND_SEPARATOR +"int";
+        boolean process_identifier = true;
+
+        if(wasVarDeclared(funcname, identifier.val)) {
+            varType = eval_process(identifier, "", funcname, State.PROCESS);
+            process_identifier = false;
+        }
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
-            tmp += eval_process(child_node, symbol, funcname, State.PROCESS);
+            tmp += eval_process(child_node, varType.split(AND_SEPARATOR)[1], funcname, State.PROCESS);
         }
         symbol += tmp;
-        /*
-         * System.out.println("vt: " + varType); System.out.println("sy " + symbol);
-         */
-        if (!evaluateExpressionType(varType, symbol)) {
+ 
+        String expressionType = returnExpressionType(symbol);
+       
+     
+       
+        if(process_identifier)
+            varType = eval_process(identifier, expressionType, funcname, State.PROCESS);
+
+        System.out.println("\nvarType: " + varType);
+        System.out.println("expressionType: " + AND_SEPARATOR + expressionType);  
+
+        if (!evaluateExpressionType(varType, expressionType)) {
             System.out.println("Invalid type");
             System.exit(0);
         }
@@ -567,7 +594,7 @@ public class SymbolTable {
         SimpleNode child_node;
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
-            symbol = eval_process(child_node, symbol, funcname, State.PROCESS);
+            symbol = eval_process(child_node, "undefined", funcname, State.PROCESS);
             if (symbol.equals(""))
                 continue;
             symbol = AND_SEPARATOR + returnExpressionType(symbol);

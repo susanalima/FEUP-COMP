@@ -14,10 +14,9 @@ public class AlphaMain {
       System.out.println("\n\n---AST---\n\n");
       root.dump("");
       symbolTable.eval_build(root, "", SymbolTable.GLOBAL, State.BUILD); 
+      symbolTable.eval_process(root, "", SymbolTable.GLOBAL, State.PROCESS); 
       System.out.println("\n\n---SYMBOL TABLE---\n\n");
       symbolTable.printSymbolTable();
-      symbolTable.eval_process(root, "", SymbolTable.GLOBAL, State.PROCESS); 
-
       System.out.println("---Jasmin---\n");
       JasminBuilder jBuilder = new JasminBuilder(symbolTable);
       String jasmin = jBuilder.printJasmin(root);

@@ -271,6 +271,8 @@ public class JasminTest {
     child_node = (SimpleNode) node.children[1]; // right child
     if (child_node.getId() == AlphaTreeConstants.JJTMINOR) // TODO WHAT TO DO WHEN IS A BOOLEAN ASSIGMENT WITH MINOR???
       return symbol;
+    if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) // CASE IT IS AN IDENTIFIER LIKE  a = s
+      jasmin_process(child_node, symbol, funcname, State.PROCESS);
     child_node = (SimpleNode) node.children[0]; // left child -> identifier
     if (child_node.getId() == AlphaTreeConstants.JJTINDEX) // in case it is an array assignment
       child_node = (SimpleNode) child_node.jjtGetChild(0);
