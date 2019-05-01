@@ -52,7 +52,7 @@ public class FunctionBlock {
 
     public void printFunctionBlock() {
         System.out.println("function return type : " + this.returnType);
-        contents.forEach((key, value) -> System.out.println(key + " : " + value));
+        contents.forEach((key, value) -> System.out.println( key + " : " +  value));
     }
   
 }

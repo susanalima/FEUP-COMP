@@ -12,10 +12,12 @@ public class SymbolTable {
     HashMap<String, FunctionBlock> symbolTable; // First key is fn&Param1Type($array)?&Param2Type
     boolean extends_;
     String className;
+    int maxCounter;
 
     SymbolTable() {
         this.symbolTable = new HashMap<>();
         this.extends_ = false;
+        this.maxCounter = 0;
     }
 
     public void setExtends() {
@@ -115,9 +117,20 @@ public class SymbolTable {
 
     void addParams(String funcName, String processed_funcName) {
         String[] tokens = funcName.split(CARDINAL_SEPARATOR);
-        for (int i = 3; i < tokens.length - 1; i += 2)
-            this.symbolTable.get(processed_funcName).addSymbol(tokens[i + 1],
-                    new Var(tokens[i], tokens[i + 1], "param"));
+        int counter; 
+        Var toAdd;
+        for (int i = 3; i < tokens.length - 1; i += 2) {
+            toAdd = new Var(tokens[i], tokens[i + 1], "param");
+            
+            counter = this.symbolTable.get(processed_funcName).contents.size() + 1;
+            toAdd.setCounter(counter);
+
+            if(counter > this.maxCounter)
+                this.maxCounter = counter;
+
+            this.symbolTable.get(processed_funcName).addSymbol(tokens[i + 1], toAdd);
+        }
+         
     }
 
     String processFunction(String funcName) {
@@ -159,7 +172,10 @@ public class SymbolTable {
         processFunction(processed_funcName, true); // in case it is GLOBAL
         FunctionBlock fB = this.symbolTable.get(processed_funcName);
         Symbol toAdd = newSymbol;
-        toAdd.setCounter(fB.contents.size() + 1);
+        int counter = fB.contents.size() + 1;
+        toAdd.setCounter(counter);
+        if(counter > this.maxCounter)
+            this.maxCounter = counter;
         return fB.addSymbol(varName, toAdd);
     }
 
@@ -199,6 +215,7 @@ public class SymbolTable {
     }
 
     public void printSymbolTable() {
+        System.out.println("\n\n---SYMBOL TABLE---\n\n");
         System.out.println("Class name: " + this.className);
         System.out.println("extends: " + this.extends_);
         symbolTable.forEach((key, value) -> {
@@ -206,6 +223,24 @@ public class SymbolTable {
             value.printFunctionBlock();
         });
     }
+
+    private void setClobalCounter() {
+        symbolTable.get(GLOBAL).contents.forEach((key, value) -> {
+            value.setCounter(value.getCounter() + this.maxCounter);
+        });
+    }
+
+
+    public void buildAndAnalise(SimpleNode root) {
+        eval_build(root, "", GLOBAL, State.BUILD); 
+        eval_process(root, "", GLOBAL, State.PROCESS); 
+        setClobalCounter();
+        printSymbolTable();
+    }
+
+ 
+
+
 
     // build symbol table
     public String eval_build(SimpleNode node, String symbol, String funcname, State state) {
@@ -528,8 +563,6 @@ public class SymbolTable {
  
         String expressionType = returnExpressionType(symbol);
        
-     
-       
         if(process_identifier)
             varType = eval_process(identifier, expressionType, funcname, State.PROCESS);
 
@@ -745,5 +778,7 @@ public class SymbolTable {
     public boolean evaluateExpressionInt(String expression) {
         return evaluateExpressionType(AND_SEPARATOR + "int", expression);
     }
+
+  
 
 }

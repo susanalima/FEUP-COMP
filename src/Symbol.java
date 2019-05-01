@@ -24,6 +24,7 @@ public abstract class Symbol {
         return "Symbol{" +
                 "type=" + type +
                 ", name=" + name +
+                ", counter=" + counter +
                 '}';
     }
 
