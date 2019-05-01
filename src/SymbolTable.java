@@ -599,17 +599,20 @@ public class SymbolTable {
     }
 
     private void setUndefinedArgsType(String expression_undefined, String expression) {
+
         String[] undefined_tokens = expression_undefined.split(AND_SEPARATOR);
         String[] expression_tokens = expression.split(AND_SEPARATOR);
         String varName, varType;
 
         for(int i = 1; i < undefined_tokens.length; i++ ) {
-            if(!undefined_tokens[i].equals(expression_tokens[i])) {
+
+            if(!undefined_tokens[i].equals(expression_tokens[i]) && !undefined_tokens[i].equals(UNDEFINED_TYPE) ) {
                 varName = undefined_tokens[i].split(UNDEFINED_TYPE)[1];
                 varType = expression_tokens[i];
                 setGlobalSymbolType(varName, varType);
             }
         }
+ 
     }
 
     public String evalNodeFunc(SimpleNode node, String symbol, String funcname, State state) {
