@@ -9,6 +9,7 @@ public class AlphaMain {
   //3. RESOLVER CENA DOS INDEXES DAS GLOBAIS (aparentemente esta resolvido)
   //4. FAZER ALTO REFACTORING NESTE TRETA
   //5. JUNTAR VAR COM SYMBOL PORQUE SAO A MESMA MERDA
+  //6. CHANGE istore TO BE ACCORDING WITH THE TYPE
   public static void main(String args[]) throws ParseException {
     if (args.length != 1) {
       System.out.println("Usage: Alpha <FileToParse>");
