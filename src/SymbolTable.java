@@ -118,9 +118,9 @@ public class SymbolTable {
     void addParams(String funcName, String processed_funcName) {
         String[] tokens = funcName.split(CARDINAL_SEPARATOR);
         int counter; 
-        Var toAdd;
+        Symbol toAdd;
         for (int i = 3; i < tokens.length - 1; i += 2) {
-            toAdd = new Var(tokens[i], tokens[i + 1], "param");
+            toAdd = new Symbol(tokens[i], tokens[i + 1], "param");
             
             counter = this.symbolTable.get(processed_funcName).contents.size() + 1;
             toAdd.setCounter(counter);
@@ -483,7 +483,7 @@ public class SymbolTable {
                 /*System.out.println("Symbol: " + symbol);
                 System.out.println("val: " + node.val);*/
                 if(!wasVarDeclared(funcname,node.val))
-                    addSymbol(SymbolTable.GLOBAL, node.val, new Var(symbol, node.val, "global"));     
+                    addSymbol(SymbolTable.GLOBAL, node.val, new Symbol(symbol, node.val, "global"));     
                 else if(getVarType(funcname, node.val).equals(UNDEFINED_TYPE))
                     setGlobalSymbolType(node.val, symbol);
             }
@@ -595,7 +595,7 @@ public class SymbolTable {
                 if (funcname.equals(SymbolTable.GLOBAL))
                     value = "global";
                 if (!addSymbol(funcname, child_node.val,
-                        new Var(symbol.split(CARDINAL_SEPARATOR)[1], child_node.val, value))) {
+                        new Symbol(symbol.split(CARDINAL_SEPARATOR)[1], child_node.val, value))) {
                     System.out.println("Duplicated var declaration : " + child_node.val);
                     System.exit(0);
                 }

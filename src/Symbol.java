@@ -1,13 +1,15 @@
 
-public abstract class Symbol { 
-    //Type type;
+public class Symbol { 
+
     String type;
     String name;
+    String value;
     int counter;
 
-    Symbol(String type_, String name_) {
+    Symbol(String type_, String name_, String value_) {
         this.type = type_;
         this.name = name_;
+        this.value = value_;
         counter = 0;
     }
     
@@ -24,6 +26,7 @@ public abstract class Symbol {
         return "Symbol{" +
                 "type=" + type +
                 ", name=" + name +
+                ", value=" + value +
                 ", counter=" + counter +
                 '}';
     }
