@@ -32,9 +32,8 @@ public class JasminTest {
       break;
     case AlphaTreeConstants.JJTINDEX : 
       process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
-      if(node.jjtGetParent().getId() == AlphaTreeConstants.JJTEQUAL) {
+      if(node.jjtGetParent().getId() != AlphaTreeConstants.JJTEQUAL) {
         code += "iaload\n";
-        System.out.println("helllloooooooooo");
       }
   
       break;
@@ -311,9 +310,6 @@ public class JasminTest {
     String tmp_symbol = symbolTable.eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.PROCESS);
     String tmp = "";
 
-    //symbol = tmp_symbol;
-
-
     if(!symbolTable.checkUndefinedType(tmp_symbol)) {
       tmp_symbol = symbolTable.methodExistsWithUndefinedValues(tmp_symbol);
       if (tmp_symbol.equals(""))
@@ -395,12 +391,15 @@ public class JasminTest {
       child_node = (SimpleNode) node.jjtGetChild(i);
       process(child_node, symbol, funcname, State.BUILD, left_child_type);
     }
-    child_node = (SimpleNode) node.children[1]; // right child
+    child_node = (SimpleNode) node.jjtGetChild(1); // right child
     if (child_node.getId() == AlphaTreeConstants.JJTMINOR) // TODO WHAT TO DO WHEN IS A BOOLEAN ASSIGMENT WITH MINOR???
       return symbol;
       
     if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) // CASE IT IS AN IDENTIFIER LIKE a = s
       process(child_node, symbol, funcname, State.PROCESS, symbol);
+
+    if (child_node.getId() == AlphaTreeConstants.JJTINDEX) // CASE IT IS AN INDEX LIKE a = x[2]
+        code += "iaload\n";
 
     if(symbolTable.isVarGlobal(left_child_node.val)) {
       code += "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + "\n";

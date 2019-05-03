@@ -9,7 +9,7 @@ public class AlphaMain {
   //6. CHANGE istore TO BE ACCORDING WITH THE TYPE
   //8. Cena do aload true e false  -> Na JVM o valor "true" é representado pelo inteiro 1 e o "false" pelo 0.
   //9. Check cena do string&array -> se é [S
-
+  //10. invocaçoes com elementos de arrays
 
   public static void main(String args[]) throws ParseException {
     if (args.length != 1) {
