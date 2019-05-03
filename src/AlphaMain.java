@@ -5,13 +5,11 @@ public class AlphaMain {
 
   //TODO LIST:
   //1. RESOLVER CENA DO MENOS
-  //2. RESOLVER CENA DO RETURN (nao esta a verificar se as variaveis retornadas sao globais so ver se for local)
-  //3. RESOLVER CENA DOS INDEXES DAS GLOBAIS (aparentemente esta resolvido)
   //4. FAZER ALTO REFACTORING NESTE TRETA
-  //5. JUNTAR VAR COM SYMBOL PORQUE SAO A MESMA MERDA (done)
   //6. CHANGE istore TO BE ACCORDING WITH THE TYPE
-  //7. MUDAR A CHAMADA AS GLOBAIS PARA USAR CENAS QUE O PROF DISSE :) (done)
-  //8. Cena do aload true e false
+  //8. Cena do aload true e false  -> Na JVM o valor "true" é representado pelo inteiro 1 e o "false" pelo 0.
+  //9. Check cena do string&array -> se é [S
+
 
   public static void main(String args[]) throws ParseException {
     if (args.length != 1) {
@@ -34,7 +32,7 @@ public class AlphaMain {
 
   
       JasminTest jTest = new JasminTest(symbolTable);
-      jTest.jasmin_process(root, "", SymbolTable.GLOBAL, State.BUILD, "int");
+      jTest.process(root, "", SymbolTable.GLOBAL, State.BUILD, "int");
       System.out.println("\n\n---JasminTEST---\n");
       System.out.println(jTest.code);
 

@@ -91,9 +91,14 @@ public class SymbolTable {
                 continue;
             int counter = 0;
             for (int i = 0; i < key_functionBlock.length; i++) {
+
                 if (key_functionBlock[i].equals(expected_functionBlock[i])
                         || checkUndefinedType(expected_functionBlock[i]))
                     counter++;
+                else {
+                    count_func--;
+                    break;
+                }
             }
             if (counter == key_functionBlock.length) {
                 if (count_func == 0) {
