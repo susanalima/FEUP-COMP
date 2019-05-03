@@ -12,12 +12,11 @@ public class SymbolTable {
     HashMap<String, FunctionBlock> symbolTable; // First key is fn&Param1Type($array)?&Param2Type
     boolean extends_;
     String className;
-    int maxCounter;
+
 
     SymbolTable() {
         this.symbolTable = new HashMap<>();
         this.extends_ = false;
-        this.maxCounter = 0;
     }
 
     public void setExtends() {
@@ -125,9 +124,6 @@ public class SymbolTable {
             counter = this.symbolTable.get(processed_funcName).contents.size() + 1;
             toAdd.setCounter(counter);
 
-            if(counter > this.maxCounter)
-                this.maxCounter = counter;
-
             this.symbolTable.get(processed_funcName).addSymbol(tokens[i + 1], toAdd);
         }
          
@@ -174,8 +170,6 @@ public class SymbolTable {
         Symbol toAdd = newSymbol;
         int counter = fB.contents.size() + 1;
         toAdd.setCounter(counter);
-        if(counter > this.maxCounter)
-            this.maxCounter = counter;
         return fB.addSymbol(varName, toAdd);
     }
 
@@ -224,17 +218,12 @@ public class SymbolTable {
         });
     }
 
-    private void setClobalCounter() {
-        symbolTable.get(GLOBAL).contents.forEach((key, value) -> {
-            value.setCounter(value.getCounter() + this.maxCounter);
-        });
-    }
+  
 
 
     public void buildAndAnalise(SimpleNode root) {
         eval_build(root, "", GLOBAL, State.BUILD); 
         eval_process(root, "", GLOBAL, State.PROCESS); 
-        setClobalCounter();
         printSymbolTable();
     }
 

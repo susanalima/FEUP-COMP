@@ -10,6 +10,8 @@ public class AlphaMain {
   //4. FAZER ALTO REFACTORING NESTE TRETA
   //5. JUNTAR VAR COM SYMBOL PORQUE SAO A MESMA MERDA (done)
   //6. CHANGE istore TO BE ACCORDING WITH THE TYPE
+  //7. MUDAR A CHAMADA AS GLOBAIS PARA USAR CENAS QUE O PROF DISSE :) (done)
+  //8. Cena do aload true e false
 
   public static void main(String args[]) throws ParseException {
     if (args.length != 1) {

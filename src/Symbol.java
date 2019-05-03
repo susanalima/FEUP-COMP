@@ -10,7 +10,7 @@ public class Symbol {
         this.type = type_;
         this.name = name_;
         this.value = value_;
-        counter = 0;
+        this.counter = 0;
     }
     
     void setCounter(int counter_) {

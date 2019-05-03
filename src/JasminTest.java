@@ -169,8 +169,12 @@ public class JasminTest {
 
   private String jasmin_process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
     if (state == State.PROCESS) {
-      symbol += symbolTable.getVarType(funcname, node.val);
-      code += "iload_" + symbolTable.getCounter(funcname, node.val) + "\n";
+      if(symbolTable.isVarGlobal(node.val)) {
+        code += "getfield " + symbolTable.getClassName() + "/" + node.val + "\n";
+      }
+      else {
+        code += "iload_" + symbolTable.getCounter(funcname, node.val) + "\n";
+      }
     } else {
       symbol += node.val;
     }
@@ -307,7 +311,7 @@ public class JasminTest {
 
 
   private String jasmin_process_nodeDot(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
-    String tmp = "" ;  
+
     SimpleNode child_node = (SimpleNode) node.jjtGetChild(1); // left child
     String header = "", tmp_symbol;
     boolean checkMethod = true;
@@ -358,7 +362,12 @@ public class JasminTest {
     if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) // CASE IT IS AN IDENTIFIER LIKE a = s
       jasmin_process(child_node, symbol, funcname, State.PROCESS, symbol);
 
-    code += "istore_" + symbolTable.getCounter(funcname, left_child_node.val) + "\n"; // TODO CHANGE ACCORDING WITH THE
+    if(symbolTable.isVarGlobal(left_child_node.val)) {
+      code += "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + "\n";
+    }
+    else {
+      code += "istore_" + symbolTable.getCounter(funcname, left_child_node.val) + "\n"; // TODO CHANGE ACCORDING WITH THE
+    }
 
     return symbol;
   }
