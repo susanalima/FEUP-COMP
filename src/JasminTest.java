@@ -31,11 +31,7 @@ public class JasminTest {
       // }
       break;
     case AlphaTreeConstants.JJTINDEX : 
-      process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
-      if(node.jjtGetParent().getId() != AlphaTreeConstants.JJTEQUAL) {
-        code += "iaload\n";
-      }
-  
+      symbol = process_nodeIndex(node, symbol, funcname, state, possibleReturnType);
       break;
     case AlphaTreeConstants.JJTTRUE:
     case AlphaTreeConstants.JJTFALSE:
@@ -209,8 +205,15 @@ public class JasminTest {
   }
 
 
-
-
+  private String process_nodeIndex(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
+    SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
+    process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
+    if(node.jjtGetParent().getId() != AlphaTreeConstants.JJTEQUAL) {
+      code += "iaload\n";
+    }
+    symbol += symbolTable.getVarType(funcname, child_node.val).split("\\" + SymbolTable.ARRAY_SEPARATOR)[0];
+    return symbol;
+  }
 
 
   private String process_nodeOperator(SimpleNode node, String symbol, String funcname, State state) {
@@ -242,6 +245,9 @@ public class JasminTest {
       child_node = (SimpleNode) child_node.jjtGetChild(0);
       code += "invokenonstatic " + child_node.val + "/" + child_node.val + "()L" + child_node.val + ";\n";
       symbol = "";
+    } else if(child_node.getId() == AlphaTreeConstants.JJTINT) {
+      process((SimpleNode) node.jjtGetChild(2), "", funcname, State.PROCESS, "");
+      code += "newarray int\n";
     }
     return symbol;
   }

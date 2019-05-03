@@ -9,7 +9,10 @@ public class AlphaMain {
   //6. CHANGE istore TO BE ACCORDING WITH THE TYPE
   //8. Cena do aload true e false  -> Na JVM o valor "true" é representado pelo inteiro 1 e o "false" pelo 0.
   //9. Check cena do string&array -> se é [S
-  //10. invocaçoes com elementos de arrays
+  //11. x = new C();  -> x tem de ser do tipo C ne??
+  //12. new x[1].funçao -> codigo para isso
+  //13. o getfield e putfield precisam do aload_0 antes???
+  //14. nao esta a fazer analise semantica do NEWFUNC -> isto passa boolean a; x = new int[a]; -> nao devia passar
 
   public static void main(String args[]) throws ParseException {
     if (args.length != 1) {
