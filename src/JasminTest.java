@@ -248,6 +248,7 @@ public class JasminTest {
     } else if(child_node.getId() == AlphaTreeConstants.JJTINT) {
       process((SimpleNode) node.jjtGetChild(2), "", funcname, State.PROCESS, "");
       code += "newarray int\n";
+      symbol = "int$array";
     }
     return symbol;
   }
@@ -316,12 +317,12 @@ public class JasminTest {
     String[] tmp_symbol_tokens = null;
     SimpleNode child_node;
     String tmp_symbol = symbolTable.eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
-    System.out.println("tmp_s : " + tmp_symbol);
     String tmp = "";
     if(!symbolTable.checkUndefinedType(tmp_symbol)) {
       tmp_symbol = symbolTable.methodExistsWithUndefinedValues(tmp_symbol);
-      if (tmp_symbol.equals(""))
+      if (tmp_symbol.equals("")) {
         tmp_symbol = SymbolTable.UNDEFINED_TYPE;
+      }
       else {
         tmp_symbol_tokens = tmp_symbol.split(SymbolTable.AND_SEPARATOR);
       }
@@ -342,6 +343,8 @@ public class JasminTest {
     }
 
     symbol += tmp;
+
+    //System.out.println("symbol : " + symbol);
 
     AbstractMap.SimpleEntry<String, String> returnValues = new AbstractMap.SimpleEntry<>(symbol, tmp_symbol);
     return returnValues;
