@@ -359,6 +359,18 @@ public class SymbolTable {
             break;
         case AlphaTreeConstants.JJTNEWFUNC:
             symbol = AND_SEPARATOR + UNDEFINED_TYPE;
+            SimpleNode child_node = (SimpleNode) node.jjtGetChild(1);
+            if(child_node.getId() == AlphaTreeConstants.JJTFUNC) {
+                symbol = eval_process(child_node, symbol, funcname, State.PROCESS);
+            } else if(child_node.getId() == AlphaTreeConstants.JJTINT) {
+                child_node = (SimpleNode) node.jjtGetChild(2);
+                symbol = eval_process(child_node, symbol, funcname, State.PROCESS);
+                if(!evaluateExpressionInt(symbol)){
+                    System.out.println("Invalid array index!");
+                    System.exit(0);
+                }
+                symbol =  AND_SEPARATOR + "int$array";
+            }
             break;
         case AlphaTreeConstants.JJTDOT:
             symbol = evalNodeDot(node, symbol, funcname, state);
@@ -555,15 +567,17 @@ public class SymbolTable {
         }
         symbol += tmp;
  
+        //System.out.println("\nsymbol: " + symbol);
+        
         String expressionType = returnExpressionType(symbol);
        
         if(process_identifier)
             varType = eval_process(identifier, expressionType, funcname, State.PROCESS);
 
-       /* System.out.println("\nvarType: " + varType);
-        System.out.println("expressionType: " + AND_SEPARATOR + expressionType);  
-        */
-        if (!evaluateExpressionType(varType, expressionType)) {
+         /*System.out.println("\nvarType: " + varType);
+        System.out.println("expressionType: " + AND_SEPARATOR + expressionType);  */
+        
+        if (!evaluateExpressionType(varType, AND_SEPARATOR + expressionType)) {
             System.out.println("Invalid type");
             System.exit(0);
         }
@@ -756,11 +770,14 @@ public class SymbolTable {
     }
 
     public boolean evaluateExpressionType(String expectedType, String expression) {
+
         String[] tokens = expression.split(AND_SEPARATOR);
         String processed_expectedType = expectedType.split(AND_SEPARATOR)[1];
-        if (processed_expectedType.equals(UNDEFINED_TYPE))
+        if (processed_expectedType.equals(UNDEFINED_TYPE)) {  //TODO verificar se nao deveria ser checkUndefined
             return true;
+        }  
         for (int i = 1; i < tokens.length; i++) {
+
             if (tokens[i].equals(UNDEFINED_TYPE))
                 continue;
             if (!processed_expectedType.equals(tokens[i]))
