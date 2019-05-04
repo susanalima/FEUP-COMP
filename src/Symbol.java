@@ -30,5 +30,5 @@ public class Symbol {
                 ", counter=" + counter +
                 '}';
     }
-
+    
 }

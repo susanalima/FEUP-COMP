@@ -474,14 +474,16 @@ public class SymbolTable {
         else if (state == State.PROCESS) { // if it is processing state the variable must be validated and and symbol is
                                            // it's type
             if(this.extends_ ) {
-                /*System.out.println("Symbol: " + symbol);
-                System.out.println("val: " + node.val);*/
                 if(!wasVarDeclared(funcname,node.val))
                     addSymbol(SymbolTable.GLOBAL, node.val, new Symbol(symbol, node.val, "global"));     
-                else if(getVarType(funcname, node.val).equals(UNDEFINED_TYPE))
-                    setGlobalSymbolType(node.val, symbol);
+                else if(getVarType(funcname, node.val).equals(UNDEFINED_TYPE)) {
+                    if(!symbol.equals(""))
+                        setGlobalSymbolType(node.val, symbol);
+                }
+                   
             }
             symbol = getVarType(funcname, node.val);
+            
             if(symbol.equals(UNDEFINED_TYPE)) {
                 symbol = UNDEFINED_TYPE + node.val;
             }
@@ -555,7 +557,7 @@ public class SymbolTable {
         }
         symbol += tmp;
  
-        //System.out.println("\nsymbol: " + symbol);
+       // System.out.println("\nsymbol: " + node.toString());
         
         String expressionType = returnExpressionType(symbol);
        
@@ -563,12 +565,17 @@ public class SymbolTable {
             varType = eval_process(identifier, expressionType, funcname, State.PROCESS);
 
          /*System.out.println("\nvarType: " + varType);
-        System.out.println("expressionType: " + AND_SEPARATOR + expressionType);  */
+        System.out.println("expressionType: " + AND_SEPARATOR + expressionType); */
         
         if (!evaluateExpressionType(varType, AND_SEPARATOR + expressionType)) {
             System.out.println("Invalid type");
             System.exit(0);
         }
+
+        if(isVarGlobal(identifier.val) && getVarType(GLOBAL, identifier.val).equals(UNDEFINED_TYPE)) { //nao percebo o porque de isto ser necessario
+            setGlobalSymbolType(identifier.val, expressionType); 
+        }
+
         return symbol;
     }
 
@@ -651,15 +658,19 @@ public class SymbolTable {
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
             symbol += eval_process(child_node, symbol, funcname, State.PROCESS);
-        }
-        new_symbol = methodExistsWithUndefinedValues(symbol);
-        if (new_symbol.equals("")) {
-            new_symbol = AND_SEPARATOR + UNDEFINED_TYPE;
-            return new_symbol;
         } 
-        if(!new_symbol.equals(symbol)) {
-            setUndefinedArgsType(symbol, new_symbol);
-        }
+        if(state == State.PROCESS) {
+            new_symbol = methodExistsWithUndefinedValues(symbol);
+            if (new_symbol.equals("")) {
+                new_symbol = AND_SEPARATOR + UNDEFINED_TYPE;
+                return new_symbol;
+            } 
+            if(!new_symbol.equals(symbol)) {
+                setUndefinedArgsType(symbol, new_symbol);
+            }
+        } else
+            new_symbol = symbol;
+       
 
         return new_symbol;
     }
@@ -736,15 +747,22 @@ public class SymbolTable {
                     } else {
                         symbol = AND_SEPARATOR + getFunctionReturnType(tmp);
                     }
+                } else {
+                    symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
+                    System.out.println("sss " + symbol);
                 }
             }  //else se for array TODO
+            else {
+                symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
+                System.out.println("sss1 " + symbol);
+            }
         } else {
             for (int i = 1; i < node.jjtGetNumChildren(); i++) { // i= 0 no caso de de se ter de analisar as variaveis
                                                                  // antes do dot
                 child_node = (SimpleNode) node.jjtGetChild(i);
-                symbol = eval_process(child_node, symbol, funcname, state);
+                symbol = eval_process(child_node, symbol, funcname, State.BUILD);
             }
-            // System.out.println("symbol2 : " + symbol);
+             System.out.println("symbol2 : " + symbol);
             // symbol = AND_SEPARATOR + UNDEFINED_TYPE;
         }
         return symbol;
@@ -782,7 +800,7 @@ public class SymbolTable {
 
         String[] tokens = expression.split(AND_SEPARATOR);
         String processed_expectedType = expectedType.split(AND_SEPARATOR)[1];
-        if (processed_expectedType.equals(UNDEFINED_TYPE)) {  //TODO verificar se nao deveria ser checkUndefined
+        if (processed_expectedType.equals(UNDEFINED_TYPE) || checkUndefinedType(processed_expectedType)) {  
             return true;
         }  
         for (int i = 1; i < tokens.length; i++) {

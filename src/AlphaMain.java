@@ -12,7 +12,8 @@ public class AlphaMain {
   //12. new x[1].funçao -> codigo para isso
   //12. new C().funçao -> codigo para isso
   //13. o getfield e putfield precisam do aload_0 antes???
-  //15. CODIGO PARA variavel.length 
+  //15. CODIGO PARA variavel.length -> arraylength?
+  //16.  x = new I().C(p);  -> ele vai ver esta funcao no A nao devia fazer isso (class2)
 
   public static void main(String args[]) throws ParseException {
     if (args.length != 1) {
