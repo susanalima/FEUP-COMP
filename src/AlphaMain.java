@@ -9,8 +9,6 @@ public class AlphaMain {
   //6. CHANGE istore TO BE ACCORDING WITH THE TYPE
   //8. Cena do aload true e false  -> Na JVM o valor "true" é representado pelo inteiro 1 e o "false" pelo 0.
   //9. Check cena do string&array -> se é [S
-  //12. new x[1].funçao -> codigo para isso
-  //12. new C().funçao -> codigo para isso
   //13. o getfield e putfield precisam do aload_0 antes???
   //15. CODIGO PARA variavel.length -> arraylength?
   //17. Nao me cheira que isto esteja bem -> ios/pp(LC;;)I

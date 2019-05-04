@@ -39,7 +39,7 @@ public class Symbol {
     }
 
 
-   /* int getCounter(int a) {
+    /*int getCounter(int a) {
         return this.counter;
     }
     public void Test(int[] array) {

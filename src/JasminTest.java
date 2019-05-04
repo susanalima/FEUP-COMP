@@ -243,7 +243,7 @@ public class JasminTest {
     child_node = (SimpleNode) node.jjtGetChild(1);
     if (child_node.getId() == AlphaTreeConstants.JJTFUNC) {
       child_node = (SimpleNode) child_node.jjtGetChild(0);
-      code += "invokenonstatic " + child_node.val + "/" + child_node.val + "()L" + child_node.val + ";\n";
+      code += "invokenonstatic " + child_node.val + "/" + child_node.val + "()L" + child_node.val + ";\n"; //TODO NAO DEVIA SER invokenonvirtual? (To invoke a constructor)
       symbol = child_node.val;
     } else if(child_node.getId() == AlphaTreeConstants.JJTINT) {
       process((SimpleNode) node.jjtGetChild(2), "", funcname, State.PROCESS, "");
@@ -276,7 +276,7 @@ public class JasminTest {
   }
 
 
-  private  AbstractMap.SimpleEntry<String, Boolean>  process_nodeDot_buildHeader(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
+  private AbstractMap.SimpleEntry<String, Boolean> process_nodeDot_buildHeader(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
     
     String header = "";
     boolean checkMethod = true;
@@ -289,7 +289,7 @@ public class JasminTest {
           checkMethod = false;
         header = "invokevirtual " + symbolTable.getVarType(funcname, child_node.val);
       } else {
-        header = "invokestatic " + child_node.val;
+        header = "invokestatic " + child_node.val; //TODO eu acho que devia ser invokevirtual aqui
         checkMethod = false;
       }
     } else if (child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) {
@@ -301,7 +301,11 @@ public class JasminTest {
         if (child_node.val.equals(symbolTable.getClassName())) {
           header = "invokevirtual " + symbolTable.getClassName();
           checkMethod = true;
-        } 
+        } else {
+          header = "invokevirtual " + child_node.val; //TODO CHECK THIS (invokevirtual: To invoke a public non-static method)
+          }
+      } else if(child_node.getId() == AlphaTreeConstants.JJTINT){
+          header = "invokevirtual " + "[I"; //TODO qual é a instrução?
       }
     } else {
       checkMethod = false;
