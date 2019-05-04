@@ -244,7 +244,7 @@ public class JasminTest {
     if (child_node.getId() == AlphaTreeConstants.JJTFUNC) {
       child_node = (SimpleNode) child_node.jjtGetChild(0);
       code += "invokenonstatic " + child_node.val + "/" + child_node.val + "()L" + child_node.val + ";\n";
-      symbol = "";
+      symbol = child_node.val;
     } else if(child_node.getId() == AlphaTreeConstants.JJTINT) {
       process((SimpleNode) node.jjtGetChild(2), "", funcname, State.PROCESS, "");
       code += "newarray int\n";
