@@ -358,19 +358,7 @@ public class SymbolTable {
             symbol = evalNodeFunc(node, symbol, funcname, state);
             break;
         case AlphaTreeConstants.JJTNEWFUNC:
-            symbol = AND_SEPARATOR + UNDEFINED_TYPE;
-            SimpleNode child_node = (SimpleNode) node.jjtGetChild(1);
-            if(child_node.getId() == AlphaTreeConstants.JJTFUNC) {
-                symbol = eval_process(child_node, symbol, funcname, State.PROCESS);
-            } else if(child_node.getId() == AlphaTreeConstants.JJTINT) {
-                child_node = (SimpleNode) node.jjtGetChild(2);
-                symbol = eval_process(child_node, symbol, funcname, State.PROCESS);
-                if(!evaluateExpressionInt(symbol)){
-                    System.out.println("Invalid array index!");
-                    System.exit(0);
-                }
-                symbol =  AND_SEPARATOR + "int$array";
-            }
+            symbol = evalNodeNewFunc(node, symbol, funcname, state);
             break;
         case AlphaTreeConstants.JJTDOT:
             symbol = evalNodeDot(node, symbol, funcname, state);
@@ -676,6 +664,27 @@ public class SymbolTable {
         return new_symbol;
     }
 
+
+    public String evalNodeNewFunc(SimpleNode node, String symbol, String funcname, State state) {
+        
+        symbol = AND_SEPARATOR + UNDEFINED_TYPE;
+        SimpleNode child_node = (SimpleNode) node.jjtGetChild(1);
+        if(child_node.getId() == AlphaTreeConstants.JJTFUNC) {  //se for func significa que é um contrutor e que retorna uma classe
+            child_node = (SimpleNode) child_node.jjtGetChild(0);
+            symbol = AND_SEPARATOR + child_node.val;
+        } else if(child_node.getId() == AlphaTreeConstants.JJTINT) { //se for int significa que é um array de inteiros pelo que retorna um int$array
+            child_node = (SimpleNode) node.jjtGetChild(2);
+            symbol = eval_process(child_node, symbol, funcname, State.PROCESS);
+            if(!evaluateExpressionInt(symbol)){
+                System.out.println("Invalid array index!");
+                System.exit(0);
+            }
+            symbol =  AND_SEPARATOR + "int$array";
+        }
+
+        return symbol;
+    }
+
     public String evalNodeFuncArg(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -728,7 +737,7 @@ public class SymbolTable {
                         symbol = AND_SEPARATOR + getFunctionReturnType(tmp);
                     }
                 }
-            }
+            }  //else se for array TODO
         } else {
             for (int i = 1; i < node.jjtGetNumChildren(); i++) { // i= 0 no caso de de se ter de analisar as variaveis
                                                                  // antes do dot
