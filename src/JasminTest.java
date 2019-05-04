@@ -293,6 +293,7 @@ public class JasminTest {
         checkMethod = false;
       }
     } else if (child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) {
+      process(child_node, symbol, funcname, state, possibleReturnType);
       child_node = (SimpleNode) child_node.jjtGetChild(1);
       checkMethod = false;
       if (child_node.getId() == AlphaTreeConstants.JJTFUNC) {

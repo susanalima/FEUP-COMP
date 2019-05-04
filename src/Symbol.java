@@ -6,6 +6,13 @@ public class Symbol {
     String value;
     int counter;
 
+    /*Symbol() {
+        this.type = "int";
+        this.name = "a";
+        this.value = "local";
+        this.counter = 0;
+    }*/
+
     Symbol(String type_, String name_, String value_) {
         this.type = type_;
         this.name = name_;
@@ -30,5 +37,13 @@ public class Symbol {
                 ", counter=" + counter +
                 '}';
     }
-    
+
+
+   /* int getCounter(int a) {
+        return this.counter;
+    }
+    public void Test(int[] array) {
+        int x = new Symbol().getCounter(1);
+    }*/
+
 }
