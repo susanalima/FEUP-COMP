@@ -64,8 +64,14 @@ public class JasminTest {
       symbol = process_nodeEqual(node, symbol, funcname, state); // TYPE
       break;
     case AlphaTreeConstants.JJTMINOR:
-    symbol = process_nodeMinor(node, symbol, funcname, state); 
+      symbol = process_nodeMinor(node, symbol, funcname, state); 
       break;
+    /*case AlphaTreeConstants.JJTIF:
+      //if_icmplt label ; If the first-pushed value is less than the second-pushed value
+      break;
+    case AlphaTreeConstants.JJTCONDITION:
+      
+      break;*/
     default:
       process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
       break;
@@ -234,8 +240,8 @@ public class JasminTest {
       child_node = (SimpleNode) node.jjtGetChild(i);
       process(child_node, "", funcname, State.PROCESS, "boolean");
     }
-    code += getOperatorInstruction(node);
-    return "boolean";
+    code += "if_icmpge\n" +"iconst_1\n"+ "goto\n" + "iconst_0\n"; //TODO CHECK IF IT IS if_icmpge
+    return "boolean"; 
   }
 
   private String process_nodeNewFunc(SimpleNode node, String symbol, String funcname, State state) {
@@ -408,9 +414,7 @@ public class JasminTest {
       process(child_node, symbol, funcname, State.BUILD, left_child_type);
     }
     child_node = (SimpleNode) node.jjtGetChild(1); // right child
-    if (child_node.getId() == AlphaTreeConstants.JJTMINOR) // TODO WHAT TO DO WHEN IS A BOOLEAN ASSIGMENT WITH MINOR???
-      return symbol;
-      
+          
     if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) // CASE IT IS AN IDENTIFIER LIKE a = s
       process(child_node, symbol, funcname, State.PROCESS, symbol);
 

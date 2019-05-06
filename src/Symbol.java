@@ -44,6 +44,7 @@ public class Symbol {
     }
     public void Test(int[] array) {
         int x = new Symbol().getCounter(1);
+        boolean a = x < 1;
     }*/
 
 }
