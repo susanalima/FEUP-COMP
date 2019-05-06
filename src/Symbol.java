@@ -6,7 +6,7 @@ public class Symbol {
     String value;
     int counter;
 
-    /*Symbol() {
+   /* Symbol() {
         this.type = "int";
         this.name = "a";
         this.value = "local";
@@ -41,10 +41,16 @@ public class Symbol {
 
     /*int getCounter(int a) {
         return this.counter;
-    }
-    public void Test(int[] array) {
-        int x = new Symbol().getCounter(1);
-        boolean a = x < 1;
     }*/
+
+    public void Test(int[] array) {
+        //int x = new Symbol().getCounter(1);
+        boolean x = true;
+        int c = 1;
+        if (x) 
+            c = 1;
+        else 
+        c = 0 ;
+    }
 
 }
