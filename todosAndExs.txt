@@ -2,11 +2,11 @@ TODO LIST:
   1. RESOLVER CENA DO MENOS
   4. FAZER ALTO REFACTORING NESTE TRETA
   6. CHANGE istore TO BE ACCORDING WITH THE TYPE
-  8. Cena do aload true e false  -> Na JVM o valor "true" é representado pelo inteiro 1 e o "false" pelo 0.
   9. Check cena do string&array -> se é [S
-  13. o getfield e putfield precisam do aload_0 antes???
   15. CODIGO PARA variavel.length -> arraylength?
   17. Nao me cheira que isto esteja bem -> ios/pp(LC;;)I
+  18. Verificar instruçoes (nomeadamente aload 1/0 true/false)
+  19. faltam as labels
 
 ************************************************************************
     public void Test(int[] array) {

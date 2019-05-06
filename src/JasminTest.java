@@ -4,10 +4,12 @@ public class JasminTest {
 
   SymbolTable symbolTable;
   String code;
+  int labelCount;
 
   JasminTest(SymbolTable sT) {
     this.symbolTable = sT;
     this.code = "";
+    this.labelCount = 0;
   }
 
   public String process(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
@@ -65,17 +67,19 @@ public class JasminTest {
       symbol = process_nodeMinor(node, symbol, funcname, true);
       break;
     case AlphaTreeConstants.JJTAND:
-      process_nodeAnd(node, symbol, funcname, state, possibleReturnType);
+      symbol = process_nodeAnd(node, symbol, funcname, state, possibleReturnType, symbol);
       break;
-    case AlphaTreeConstants.JJTCONDITION:
-      symbol = process_nodeCondition(node, symbol, funcname, possibleReturnType);
-      break;
+    /*case AlphaTreeConstants.JJTCONDITION:
+      String label;
+      label = process_nodeCondition(node, symbol, funcname, possibleReturnType);
+      System.out.println("label " + label);
+      break;*/
     case AlphaTreeConstants.JJTIF:
       symbol = process_nodeIf(node, symbol, funcname, state, possibleReturnType);
       break;
-    case AlphaTreeConstants.JJTELSE:
+    /*case AlphaTreeConstants.JJTELSE:
       symbol = process_nodeElse(node, symbol, funcname, possibleReturnType);
-      break;
+      break;*/
     default:
       process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
       break;
@@ -261,67 +265,90 @@ public class JasminTest {
 
   private String process_nodeCondition(SimpleNode node, String symbol, String funcname, String possibleReturnType) {
     SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
+    String label = buildLabel();
+
     switch (child_node.getId()) {
     case AlphaTreeConstants.JJTMINOR:
       process_nodeMinor(child_node, symbol, funcname, false); // o menor faz parte de um if
-      code += "if_icmpge\n";
+      code += "if_icmpge    " + label + "\n";
       break;
     case AlphaTreeConstants.JJTAND:
-      process_nodeAnd(child_node, symbol, funcname, State.CONDITION, possibleReturnType);
+      label = process_nodeAnd(child_node, symbol, funcname, State.CONDITION, possibleReturnType, label);
       break;
     default:
       process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
-      code += "ifeq\n";
+      code += "ifeq    " + label + "\n";
       break;
-
     }
-    return symbol;
+    return label;
   }
 
   private String process_nodeIf(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
+    String label;
     SimpleNode child_node = (SimpleNode) node.jjtGetChild(0).jjtGetChild(0); //condition first child
     if(child_node.getId() == AlphaTreeConstants.JJTTRUE || child_node.getId() == AlphaTreeConstants.JJTFALSE) {
       child_node = (SimpleNode) node.jjtGetChild(1); //body
       symbol = process(child_node, symbol, funcname, state, possibleReturnType);
     } else  {
-      process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
+      //process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
+      child_node = (SimpleNode) node.jjtGetChild(0); //condition
+      label = process_nodeCondition(child_node, symbol, funcname, possibleReturnType); //process condition
+
+      child_node = (SimpleNode) node.jjtGetChild(1); //body
+      process_nodeDefault(child_node, symbol, funcname, State.BUILD, possibleReturnType); //process body
+
+      child_node = (SimpleNode) node.jjtGetChild(2); //else
+      process_nodeElse(child_node, symbol, funcname, possibleReturnType, label);
     }
     return symbol;
   }
 
-  private void process_nodeAnd(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
+  private String process_nodeAnd(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType, String label) {
+
+
+    if(node.jjtGetParent().getId() != AlphaTreeConstants.JJTAND)
+      label = buildLabel();
 
     if(state == State.BUILD)
       state = State.PROCESS;
 
     SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0); // left child
-    process_nodeAnd_side(left_child_node, symbol, funcname, state, possibleReturnType);
+    process_nodeAnd_side(left_child_node, label, funcname, state, possibleReturnType,  label);
 
     SimpleNode right_child_node = (SimpleNode) node.jjtGetChild(1); // rigth child
-    process_nodeAnd_side(right_child_node, symbol, funcname, state, possibleReturnType);
+    process_nodeAnd_side(right_child_node, label, funcname, state, possibleReturnType, label);
 
     if(state != State.CONDITION)
       code += "iconst_1\n" + "goto\n" + "iconst_0\n"; 
+
+    return label;
   }
 
   private void process_nodeAnd_side(SimpleNode node, String symbol, String funcname,
-      State state, String possibleReturnType) {
+      State state, String possibleReturnType, String label) {
 
-        System.out.println("node : " + node.toString());
     process(node, symbol, funcname, state, possibleReturnType);
 
     if(node.getId() == AlphaTreeConstants.JJTAND)
         return;
 
     if (node.getId() == AlphaTreeConstants.JJTMINOR)
-      code += "if_icmpge\n";
+      code += "if_icmpge    " + label + "\n";
     else
-      code += "ifeq\n";
+      code += "ifeq    " + label + "\n";
   }
 
-  private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType) {
-    code += "goto\n";
-    process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
+  private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType, String label) {
+    String new_label = buildLabel();
+    code += "goto     " + new_label +"\n";
+    SimpleNode child_node;
+    for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+      if(i == 0)
+        code += label + ":  ";
+      child_node = (SimpleNode) node.jjtGetChild(i);
+      process(child_node, symbol, funcname, State.PROCESS, possibleReturnType);
+    }
+    code += new_label + ":  ";
     return symbol;
   }
 
@@ -510,7 +537,8 @@ public class JasminTest {
     }
     child_node = (SimpleNode) node.jjtGetChild(1); // right child
 
-    if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER || child_node.getId() == AlphaTreeConstants.JJTTRUE || child_node.getId() == AlphaTreeConstants.JJTFALSE ) // CASE IT IS AN IDENTIFIER LIKE a = s
+    if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER || child_node.getId() == AlphaTreeConstants.JJTTRUE 
+      || child_node.getId() == AlphaTreeConstants.JJTFALSE ) // CASE IT IS AN IDENTIFIER LIKE a = s
       process(child_node, symbol, funcname, State.PROCESS, symbol);
 
     if (child_node.getId() == AlphaTreeConstants.JJTINDEX) // CASE IT IS AN INDEX LIKE a = x[2]
@@ -532,6 +560,13 @@ public class JasminTest {
       child_node = (SimpleNode) node.jjtGetChild(i);
       process(child_node, symbol, funcname, state, possibleReturnType);
     }
+  }
+
+
+  private String buildLabel() {
+    String label = "L" + this.labelCount;
+    this.labelCount++;
+    return label;
   }
 
 }

@@ -51,8 +51,10 @@ public class Symbol {
         //int x = new Symbol().getCounter(1);
         boolean a= true;
         int c = 1;
-        while(a) {
-            c = c + 1;
+        if(a && this.check_test(a) && this.check_test(true)) {
+            c = c+1;
+        } else {
+            c = c-1;
         }
         
         
