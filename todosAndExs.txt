@@ -266,4 +266,31 @@ public void Test(int[]);
       15: return
 
 ************************************************************************
+ public void Test(int[] array) {
+        //int x = new Symbol().getCounter(1);
+        boolean a= true;
+        int c = 1;
+        while(a && c < 1) {
+            c = c+1;
+        } 
+    }
+
+ public void Test(int[]);
+    Code:
+       0: iconst_1
+       1: istore_2
+       2: iconst_1
+       3: istore_3
+       4: iload_2
+       5: ifeq          20
+       8: iload_3
+       9: iconst_1
+      10: if_icmpge     20
+      13: iload_3
+      14: iconst_1
+      15: iadd
+      16: istore_3
+      17: goto          4
+      20: return
+
 ************************************************************************
