@@ -74,37 +74,21 @@ public class JasminTest {
         child_node = (SimpleNode) node.jjtGetChild(i);
         process(child_node, symbol, funcname, state, possibleReturnType);
       }
-
       //avaliar body
       //code += goto;
       //avaliar else
-
       break;*/
     case AlphaTreeConstants.JJTCONDITION:
-       SimpleNode child_node = (SimpleNode) node.jjtGetChild(0) ;
-       switch(child_node.getId()) {
-         case AlphaTreeConstants.JJTMINOR: 
-          process_nodeMinor(child_node, symbol, funcname, false); //o menor faz parte de um if
-          code += "if_icmpge\n";
-          break;
-        default :
-          process_nodeDefault(child_node, symbol, funcname, State.PROCESS, possibleReturnType);
-          break;
-       }
+      symbol = process_nodeCondition(node, symbol, funcname, possibleReturnType);
       break;
-  
     case AlphaTreeConstants.JJTELSE:
-    code += "goto\n";
-    process_nodeDefault((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS, possibleReturnType);
-
-
-    break;
+      symbol = process_nodeElse(node, symbol, funcname, possibleReturnType);
+      break;
     default:
       process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
       break;
     }
     return symbol;
-
   }
 
   private String paramType(String returnType) {
@@ -222,6 +206,7 @@ public class JasminTest {
     return instruction;
   }
 
+  
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
     if (state == State.PROCESS) {
       symbol += symbolTable.getVarType(funcname, node.val);
@@ -261,6 +246,7 @@ public class JasminTest {
     return symbol;
   }
 
+  
   private String process_nodeMinor(SimpleNode node, String symbol, String funcname, boolean default_) {
     SimpleNode child_node;
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -272,6 +258,30 @@ public class JasminTest {
       code += "if_icmpge\n" + "iconst_1\n"+ "goto\n" + "iconst_0\n"; //TODO CHECK IF IT IS if_icmpge
     return "boolean"; 
   }
+
+
+  private String process_nodeCondition(SimpleNode node, String symbol, String funcname, String possibleReturnType) {
+    SimpleNode child_node = (SimpleNode) node.jjtGetChild(0) ;
+    switch(child_node.getId()) {
+      case AlphaTreeConstants.JJTMINOR: 
+       process_nodeMinor(child_node, symbol, funcname, false); //o menor faz parte de um if
+       code += "if_icmpge\n";
+       break;
+     default :
+       process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
+       code += "ifeq\n";
+       break;
+    }
+    return symbol;
+  }
+
+
+  private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType) {
+    code += "goto\n";
+    process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
+    return symbol;
+  }
+
 
   private String process_nodeNewFunc(SimpleNode node, String symbol, String funcname, State state) {
     SimpleNode child_node;
