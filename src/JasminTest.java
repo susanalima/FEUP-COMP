@@ -268,6 +268,9 @@ public class JasminTest {
 
   private void process_nodeAnd(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
 
+    if(state == State.BUILD)
+      state = State.PROCESS;
+
     SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0); // left child
     process_nodeAnd_side(left_child_node, symbol, funcname, state, possibleReturnType);
 
@@ -283,8 +286,10 @@ public class JasminTest {
 
         System.out.println("node : " + node.toString());
     process(node, symbol, funcname, state, possibleReturnType);
+
     if(node.getId() == AlphaTreeConstants.JJTAND)
         return;
+
     if (node.getId() == AlphaTreeConstants.JJTMINOR)
       code += "if_icmpge\n";
     else
