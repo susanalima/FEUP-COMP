@@ -16,9 +16,15 @@ public class JasminTest {
 
     switch (node.getId()) {
 
+    case AlphaTreeConstants.JJTPROGRAM:
+      process_nodeProgram(node, symbol, funcname, state, possibleReturnType);
+      break;
     case AlphaTreeConstants.JJTMAINDECLARATION:
     case AlphaTreeConstants.JJTMETHOD_DECLARATION:
       funcname = getFuncname(node, "", funcname, State.PROCESS);
+      break;
+    case AlphaTreeConstants.JJTVAR_DECLARATION:
+      process_nodeVarDeclaration(node);
       break;
     case AlphaTreeConstants.JJTIDENTIFIER:
       symbol = process_nodeIdentifier(node, symbol, funcname, state);
@@ -156,6 +162,7 @@ public class JasminTest {
         + paramType(symbolTable.getFunctionReturnType(funcname)) + "\n";
   }
 
+
   private String getFuncname(SimpleNode node, String symbol, String funcname, State state) {
     this.labelCount = 0; //reset label count
     SimpleNode child_node;
@@ -177,7 +184,7 @@ public class JasminTest {
       else if (currState == State.PROCESS) {
         code += build_funcDeclaration(funcname);
         tmp += process(child_node, "", funcname, currState, "int");
-        code += getReturnInstruction( funcname) ;
+        code += getReturnInstruction(funcname)  + "\n\n";
       }
     }
     return funcname;
@@ -216,6 +223,23 @@ public class JasminTest {
     }
     return instruction;
   }
+
+
+  private void process_nodeVarDeclaration(SimpleNode node) {
+    SimpleNode child_node = (SimpleNode) node.jjtGetChild(1);
+    if(symbolTable.isVarGlobal(child_node.val)) {
+      code += symbolTable.getVarType(SymbolTable.GLOBAL, child_node.val) + "  " + child_node.val + ";\n\n";
+    }
+  }
+
+
+
+  private void process_nodeProgram(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
+    code += "public class " + symbolTable.getClassName() + " {\n";
+    process_nodeDefault(node, symbol, funcname, state, possibleReturnType);
+    code += "}";
+  }
+
 
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
     if (state == State.PROCESS || state == State.CONDITION) {
