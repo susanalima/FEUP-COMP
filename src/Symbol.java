@@ -49,15 +49,9 @@ public class Symbol {
 
     public void Test(int[] array) {
         //int x = new Symbol().getCounter(1);
-        boolean a= true;
+        boolean a = true;
         int c = 1;
-        if(a && this.check_test(a) && this.check_test(true)) {
-            c = c+1;
-        } else {
-            c = c-1;
-        }
-        
-        
+        a = c < 2 && a;
     }
 
 }

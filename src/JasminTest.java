@@ -77,6 +77,10 @@ public class JasminTest {
     case AlphaTreeConstants.JJTIF:
       symbol = process_nodeIf(node, symbol, funcname, state, possibleReturnType);
       break;
+    case AlphaTreeConstants.JJTWHILE:
+     //child 0 -> condition
+     //child 1 -> body
+      break;
     /*case AlphaTreeConstants.JJTELSE:
       symbol = process_nodeElse(node, symbol, funcname, possibleReturnType);
       break;*/
@@ -154,6 +158,7 @@ public class JasminTest {
   }
 
   private String getFuncname(SimpleNode node, String symbol, String funcname, State state) {
+    this.labelCount = 0; //reset label count
     SimpleNode child_node;
     String tmp = "";
     State currState = State.BUILD;
@@ -257,8 +262,11 @@ public class JasminTest {
     if (node.jjtGetParent().getId() == AlphaTreeConstants.JJTAND) // in case the parent is an and
       default_ = false;
 
-    if (default_) // caso seja apenas uma chamada a x < y e nao uma condiçao de um if/loop
-      code += "if_icmpge\n" + "iconst_1\n" + "goto\n" + "iconst_0\n"; // TODO CHECK IF IT IS if_icmpge
+    if (default_) { // caso seja apenas uma chamada a x < y e nao uma condiçao de um if/loop 
+      String label_if = buildLabel();
+      String label_goto = buildLabel();
+      code += "if_icmpge  " + label_if + "\n" + "iconst_1\n"  + "goto\n" + label_if + ":  " + "iconst_0\n" + label_goto + ":  "; // TODO CHECK IF IT IS if_icmpge
+    }
 
     return "boolean";
   }
@@ -318,8 +326,10 @@ public class JasminTest {
     SimpleNode right_child_node = (SimpleNode) node.jjtGetChild(1); // rigth child
     process_nodeAnd_side(right_child_node, label, funcname, state, possibleReturnType, label);
 
-    if(state != State.CONDITION)
-      code += "iconst_1\n" + "goto\n" + "iconst_0\n"; 
+    if(state != State.CONDITION) {
+      String label_goto = buildLabel();
+      code += "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":  " + "iconst_0\n" + label_goto + ":  "; 
+    }
 
     return label;
   }
@@ -403,7 +413,6 @@ public class JasminTest {
     boolean checkMethod = true;
     SimpleNode child_node = (SimpleNode) node.jjtGetChild(0); // right child
     if (child_node.getId() == AlphaTreeConstants.JJTTHIS) {
-      // header = "aload_0\n";
       header = "invokevirtual " + symbolTable.getClassName();
     } else if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
       if (symbolTable.varExists(funcname, child_node.val) && !symbolTable.extends_) {

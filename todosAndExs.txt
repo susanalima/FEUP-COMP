@@ -6,7 +6,7 @@ TODO LIST:
   15. CODIGO PARA variavel.length -> arraylength?
   17. Nao me cheira que isto esteja bem -> ios/pp(LC;;)I
   18. Verificar instruçoes (nomeadamente aload 1/0 true/false)
-  19. faltam as labels
+
 
 ************************************************************************
     public void Test(int[] array) {
@@ -239,3 +239,31 @@ public void Test(int[]);
       21: iconst_0
       22: istore_3
       23: return
+
+************************************************************************
+  public void Test(int[] array) {
+        //int x = new Symbol().getCounter(1);
+        boolean a= true;
+        int c = 1;
+        while(a) {
+            c = c+1;
+        } 
+    }
+
+ public void Test(int[]);
+    Code:
+       0: iconst_1
+       1: istore_2
+       2: iconst_1
+       3: istore_3
+       4: iload_2
+       5: ifeq          15
+       8: iload_3
+       9: iconst_1
+      10: iadd
+      11: istore_3
+      12: goto          4
+      15: return
+
+************************************************************************
+************************************************************************
