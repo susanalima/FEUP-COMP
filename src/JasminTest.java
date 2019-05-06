@@ -84,6 +84,7 @@ public class JasminTest {
     case AlphaTreeConstants.JJTELSE:
       symbol = process_nodeElse(node, symbol, funcname, possibleReturnType);
       break;
+
     default:
       process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
       break;
@@ -206,7 +207,7 @@ public class JasminTest {
     return instruction;
   }
 
-  
+
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
     if (state == State.PROCESS) {
       symbol += symbolTable.getVarType(funcname, node.val);
@@ -254,6 +255,9 @@ public class JasminTest {
       process(child_node, "", funcname, State.PROCESS, "boolean");
     }
 
+    if(node.jjtGetParent().getId() == AlphaTreeConstants.JJTAND)  //in case the parent is an and
+      default_ = false;
+
     if(default_) //caso seja apenas uma chamada a x < y e nao uma condiçao de um if/loop
       code += "if_icmpge\n" + "iconst_1\n"+ "goto\n" + "iconst_0\n"; //TODO CHECK IF IT IS if_icmpge
     return "boolean"; 
@@ -267,6 +271,23 @@ public class JasminTest {
        process_nodeMinor(child_node, symbol, funcname, false); //o menor faz parte de um if
        code += "if_icmpge\n";
        break;
+      case AlphaTreeConstants.JJTAND: //pode aparecer sem ser como condition
+
+      SimpleNode left_child_node = (SimpleNode) child_node.jjtGetChild(0); //left child
+      process(left_child_node, symbol, funcname, State.PROCESS, possibleReturnType);
+      if(left_child_node.getId() == AlphaTreeConstants.JJTMINOR)
+        code += "if_icmpge\n";
+      else 
+        code += "ifeq\n";
+
+      SimpleNode right_child_node = (SimpleNode) child_node.jjtGetChild(1); //right child
+      process(right_child_node, symbol, funcname, State.PROCESS, possibleReturnType);
+      if(right_child_node.getId() == AlphaTreeConstants.JJTMINOR)
+         code += "if_icmpge\n";
+      else 
+        code += "ifeq\n";
+        
+      break;
      default :
        process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
        code += "ifeq\n";
@@ -327,6 +348,7 @@ public class JasminTest {
     boolean checkMethod = true;
     SimpleNode child_node = (SimpleNode) node.jjtGetChild(0); // right child
     if (child_node.getId() == AlphaTreeConstants.JJTTHIS) {
+      //header = "aload_0\n";
       header = "invokevirtual " + symbolTable.getClassName();
     } else if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
       if (symbolTable.varExists(funcname, child_node.val) && !symbolTable.extends_) {

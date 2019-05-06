@@ -7,6 +7,7 @@ TODO LIST:
   13. o getfield e putfield precisam do aload_0 antes???
   15. CODIGO PARA variavel.length -> arraylength?
   17. Nao me cheira que isto esteja bem -> ios/pp(LC;;)I
+  18. quando se invoca uma funçao com this tem de se chamar o aload_0 (antes de chamar os paramentros)
 
 ************************************************************************
     public void Test(int[] array) {
@@ -153,4 +154,89 @@ TODO LIST:
 
 
 ************************************************************************
+ public void Test(int[] array) {
+        //int x = new Symbol().getCounter(1);
+        boolean x = true;
+        int c = 1;
+        if (check_test()) 
+            c = 1;
+        else 
+        c = 0 ;
+    }
+
+ public void Test(int[]);
+    Code:
+       0: iconst_1
+       1: istore_2
+       2: iconst_1
+       3: istore_3
+       4: aload_0
+       5: invokevirtual #16                 // Method check_test:()Z
+       8: ifeq          16
+      11: iconst_1
+      12: istore_3
+      13: goto          18
+      16: iconst_0
+      17: istore_3
+      18: return
+
 ************************************************************************
+   public void Test(int[] array) {
+        //int x = new Symbol().getCounter(1);
+        boolean x = true;
+        int c = 1;
+        if (check_test(true) && x) 
+            c = 1;
+        else 
+            c = 0 ;
+    }
+
+    public void Test(int[]);
+    Code:
+       0: iconst_1
+       1: istore_2
+       2: iconst_1
+       3: istore_3
+       4: aload_0
+       5: iconst_1
+       6: invokevirtual #16                 // Method check_test:(Z)Z
+       9: ifeq          21
+      12: iload_2
+      13: ifeq          21
+      16: iconst_1
+      17: istore_3
+      18: goto          23
+      21: iconst_0
+      22: istore_3
+      23: return
+
+
+************************************************************************
+ public void Test(int[] array) {
+        //int x = new Symbol().getCounter(1);
+        boolean x = true;
+        int c = 1;
+        if (check_test(true) && x) 
+            c = 1;
+        else 
+            c = 0 ;
+}
+
+public void Test(int[]);
+    Code:
+       0: iconst_1
+       1: istore_2
+       2: iconst_1
+       3: istore_3
+       4: aload_0
+       5: iconst_1
+       6: invokevirtual #16                 // Method check_test:(Z)Z
+       9: ifeq          21
+      12: iload_2
+      13: ifeq          21
+      16: iconst_1
+      17: istore_3
+      18: goto          23
+      21: iconst_0
+      22: istore_3
+      23: return

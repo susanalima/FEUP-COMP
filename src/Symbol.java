@@ -43,14 +43,18 @@ public class Symbol {
         return this.counter;
     }*/
 
+    boolean check_test(boolean a) {
+        return a;
+    }
+
     public void Test(int[] array) {
         //int x = new Symbol().getCounter(1);
         boolean x = true;
         int c = 1;
-        if (x) 
+        if (check_test(true) && x) 
             c = 1;
         else 
-        c = 0 ;
+            c = 0 ;
     }
 
 }
