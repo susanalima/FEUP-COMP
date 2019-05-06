@@ -1,4 +1,5 @@
 enum State {
     PROCESS,
-    BUILD
+    BUILD,
+    CONDITION
 }

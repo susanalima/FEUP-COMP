@@ -67,7 +67,7 @@ public class JasminTest {
       symbol = process_nodeMinor(node, symbol, funcname, true);
       break;
     case AlphaTreeConstants.JJTAND:
-      process_nodeAnd(node, symbol, funcname, possibleReturnType, true);
+      process_nodeAnd(node, symbol, funcname, state, possibleReturnType);
       break;
     case AlphaTreeConstants.JJTCONDITION:
       symbol = process_nodeCondition(node, symbol, funcname, possibleReturnType);
@@ -195,7 +195,7 @@ public class JasminTest {
   }
 
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
-    if (state == State.PROCESS) {
+    if (state == State.PROCESS || state == State.CONDITION) {
       symbol += symbolTable.getVarType(funcname, node.val);
       if (symbolTable.isVarGlobal(node.val)) {
         code += "aload_0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + "\n";
@@ -255,7 +255,7 @@ public class JasminTest {
       code += "if_icmpge\n";
       break;
     case AlphaTreeConstants.JJTAND:
-      process_nodeAnd(child_node, symbol, funcname, possibleReturnType, false);
+      process_nodeAnd(child_node, symbol, funcname, State.CONDITION, possibleReturnType);
       break;
     default:
       process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
@@ -266,21 +266,25 @@ public class JasminTest {
     return symbol;
   }
 
-  private void process_nodeAnd(SimpleNode node, String symbol, String funcname, String possibleReturnType, boolean default_) {
+  private void process_nodeAnd(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
 
     SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0); // left child
-    process_nodeAnd_side(left_child_node, symbol, funcname, possibleReturnType);
+    process_nodeAnd_side(left_child_node, symbol, funcname, state, possibleReturnType);
 
     SimpleNode right_child_node = (SimpleNode) node.jjtGetChild(1); // rigth child
-    process_nodeAnd_side(right_child_node, symbol, funcname, possibleReturnType);
+    process_nodeAnd_side(right_child_node, symbol, funcname, state, possibleReturnType);
 
-    if(default_)
+    if(state != State.CONDITION)
       code += "iconst_1\n" + "goto\n" + "iconst_0\n"; 
   }
 
   private void process_nodeAnd_side(SimpleNode node, String symbol, String funcname,
-      String possibleReturnType) {
-    process(node, symbol, funcname, State.PROCESS, possibleReturnType);
+      State state, String possibleReturnType) {
+
+        System.out.println("node : " + node.toString());
+    process(node, symbol, funcname, state, possibleReturnType);
+    if(node.getId() == AlphaTreeConstants.JJTAND)
+        return;
     if (node.getId() == AlphaTreeConstants.JJTMINOR)
       code += "if_icmpge\n";
     else
