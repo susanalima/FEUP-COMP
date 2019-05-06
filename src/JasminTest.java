@@ -36,7 +36,7 @@ public class JasminTest {
     case AlphaTreeConstants.JJTTRUE:
     case AlphaTreeConstants.JJTFALSE:
       symbol += "boolean";
-      if (state == State.PROCESS)
+      if (state == State.PROCESS || state == State.CONDITION)
         code += "aload " + node.toString().toLowerCase() + "\n";
       break;
     case AlphaTreeConstants.JJTPLUS:
@@ -74,6 +74,15 @@ public class JasminTest {
       break;
     case AlphaTreeConstants.JJTELSE:
       symbol = process_nodeElse(node, symbol, funcname, possibleReturnType);
+      break;
+    case AlphaTreeConstants.JJTIF:
+      SimpleNode child_node = (SimpleNode) node.jjtGetChild(0).jjtGetChild(0); //condition first child
+      if(child_node.getId() == AlphaTreeConstants.JJTTRUE || child_node.getId() == AlphaTreeConstants.JJTFALSE) {
+        child_node = (SimpleNode) node.jjtGetChild(1); //body
+        symbol = process(child_node, symbol, funcname, state, possibleReturnType);
+      } else  {
+        process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
+      }
       break;
     default:
       process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
@@ -487,7 +496,7 @@ public class JasminTest {
     }
     child_node = (SimpleNode) node.jjtGetChild(1); // right child
 
-    if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) // CASE IT IS AN IDENTIFIER LIKE a = s
+    if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER || child_node.getId() == AlphaTreeConstants.JJTTRUE || child_node.getId() == AlphaTreeConstants.JJTFALSE ) // CASE IT IS AN IDENTIFIER LIKE a = s
       process(child_node, symbol, funcname, State.PROCESS, symbol);
 
     if (child_node.getId() == AlphaTreeConstants.JJTINDEX) // CASE IT IS AN INDEX LIKE a = x[2]
