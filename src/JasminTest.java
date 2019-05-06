@@ -177,6 +177,7 @@ public class JasminTest {
       else if (currState == State.PROCESS) {
         code += build_funcDeclaration(funcname);
         tmp += process(child_node, "", funcname, currState, "int");
+        code += getReturnInstruction( funcname) ;
       }
     }
     return funcname;
@@ -200,6 +201,19 @@ public class JasminTest {
       break;
     }
 
+    return instruction;
+  }
+
+  private String getReturnInstruction(String funcname) {
+    String instruction;
+    String returnType = symbolTable.getFunctionReturnType(funcname);
+    if(returnType.equals("int") || returnType.equals("boolean"))
+       instruction = "ireturn";
+    else if(returnType.equals("void")) {
+      instruction = "return";
+    } else {
+      instruction = "areturn";
+    }
     return instruction;
   }
 
