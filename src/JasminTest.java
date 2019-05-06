@@ -35,9 +35,7 @@ public class JasminTest {
       break;
     case AlphaTreeConstants.JJTTRUE:
     case AlphaTreeConstants.JJTFALSE:
-      symbol += "boolean";
-      if (state == State.PROCESS || state == State.CONDITION)
-        code += "aload " + node.toString().toLowerCase() + "\n";
+      symbol = process_nodeTrueFalse(node, symbol, state);
       break;
     case AlphaTreeConstants.JJTPLUS:
     case AlphaTreeConstants.JJTMINUS:
@@ -72,17 +70,11 @@ public class JasminTest {
     case AlphaTreeConstants.JJTCONDITION:
       symbol = process_nodeCondition(node, symbol, funcname, possibleReturnType);
       break;
+    case AlphaTreeConstants.JJTIF:
+      symbol = process_nodeIf(node, symbol, funcname, state, possibleReturnType);
+      break;
     case AlphaTreeConstants.JJTELSE:
       symbol = process_nodeElse(node, symbol, funcname, possibleReturnType);
-      break;
-    case AlphaTreeConstants.JJTIF:
-      SimpleNode child_node = (SimpleNode) node.jjtGetChild(0).jjtGetChild(0); //condition first child
-      if(child_node.getId() == AlphaTreeConstants.JJTTRUE || child_node.getId() == AlphaTreeConstants.JJTFALSE) {
-        child_node = (SimpleNode) node.jjtGetChild(1); //body
-        symbol = process(child_node, symbol, funcname, state, possibleReturnType);
-      } else  {
-        process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
-      }
       break;
     default:
       process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
@@ -228,6 +220,17 @@ public class JasminTest {
     return symbol;
   }
 
+
+  private String process_nodeTrueFalse(SimpleNode node, String symbol, State state) {
+      int tmp = 0;
+      if(node.getId() == AlphaTreeConstants.JJTTRUE)
+        tmp = 1;
+      symbol += "boolean";
+      if (state == State.PROCESS || state == State.CONDITION)
+        code += "aload " + tmp + "\n"; 
+      return symbol;
+  }
+
   private String process_nodeOperator(SimpleNode node, String symbol, String funcname, State state) {
     String tmp = "";
     SimpleNode child_node;
@@ -271,6 +274,17 @@ public class JasminTest {
       code += "ifeq\n";
       break;
 
+    }
+    return symbol;
+  }
+
+  private String process_nodeIf(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
+    SimpleNode child_node = (SimpleNode) node.jjtGetChild(0).jjtGetChild(0); //condition first child
+    if(child_node.getId() == AlphaTreeConstants.JJTTRUE || child_node.getId() == AlphaTreeConstants.JJTFALSE) {
+      child_node = (SimpleNode) node.jjtGetChild(1); //body
+      symbol = process(child_node, symbol, funcname, state, possibleReturnType);
+    } else  {
+      process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
     }
     return symbol;
   }
