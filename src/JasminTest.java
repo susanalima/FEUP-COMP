@@ -78,16 +78,7 @@ public class JasminTest {
       symbol = process_nodeIf(node, symbol, funcname, state, possibleReturnType);
       break;
     case AlphaTreeConstants.JJTWHILE:
-     //child 0 -> condition
-     //child 1 -> body
-     String label_goto = buildLabel();
-     SimpleNode child_node = (SimpleNode) node.jjtGetChild(0); //condition
-     code += label_goto + ":  ";
-     String label = process((SimpleNode) child_node.jjtGetChild(0), symbol, funcname, State.CONDITION, possibleReturnType);
-     System.out.println("while label : " + label);
-     child_node = (SimpleNode) node.jjtGetChild(1); //body
-     process_nodeDefault(child_node, symbol, funcname, state, possibleReturnType);
-     code += "goto    " + label_goto + "\n" + label + ":  ";
+      symbol = process_nodeWhile(node, symbol, funcname, state, possibleReturnType);
       break;
     /*case AlphaTreeConstants.JJTELSE:
       symbol = process_nodeElse(node, symbol, funcname, possibleReturnType);
@@ -316,6 +307,21 @@ public class JasminTest {
       child_node = (SimpleNode) node.jjtGetChild(2); //else
       process_nodeElse(child_node, symbol, funcname, possibleReturnType, label);
     }
+    return symbol;
+  }
+
+
+  private String process_nodeWhile(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
+    //child 0 -> condition
+     //child 1 -> body
+     String label_goto = buildLabel();
+     SimpleNode child_node = (SimpleNode) node.jjtGetChild(0); //condition
+     code += label_goto + ":  ";
+     String label = process((SimpleNode) child_node.jjtGetChild(0), symbol, funcname, State.CONDITION, possibleReturnType);
+     System.out.println("while label : " + label);
+     child_node = (SimpleNode) node.jjtGetChild(1); //body
+     process_nodeDefault(child_node, symbol, funcname, state, possibleReturnType);
+     code += "goto    " + label_goto + "\n" + label + ":  ";
     return symbol;
   }
 
