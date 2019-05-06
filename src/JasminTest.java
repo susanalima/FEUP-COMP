@@ -66,18 +66,17 @@ public class JasminTest {
     case AlphaTreeConstants.JJTMINOR:
       symbol = process_nodeMinor(node, symbol, funcname, true); 
       break;
-    /*case AlphaTreeConstants.JJTIF:
-      //if_icmplt label ; If the first-pushed value is less than the second-pushed value
-      //avaliar condiçao
-      SimpleNode child_node;
-      for(int i = 0; i < node.jjtGetNumChildren(); i++) {
-        child_node = (SimpleNode) node.jjtGetChild(i);
-        process(child_node, symbol, funcname, state, possibleReturnType);
-      }
-      //avaliar body
-      //code += goto;
-      //avaliar else
-      break;*/
+    case AlphaTreeConstants.JJTAND:
+  
+        SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0); //left child
+        process_nodeCondition_and( left_child_node,  symbol,  funcname,  possibleReturnType);
+
+        SimpleNode right_child_node = (SimpleNode) node.jjtGetChild(1); //rigth child
+        process_nodeCondition_and( right_child_node,  symbol,  funcname,  possibleReturnType);
+
+        code +=  "iconst_1\n"+ "goto\n" + "iconst_0\n"; //TODO CHECK IF IT IS if_icmpge
+        
+      break;
     case AlphaTreeConstants.JJTCONDITION:
       symbol = process_nodeCondition(node, symbol, funcname, possibleReturnType);
       break;
@@ -260,6 +259,7 @@ public class JasminTest {
 
     if(default_) //caso seja apenas uma chamada a x < y e nao uma condiçao de um if/loop
       code += "if_icmpge\n" + "iconst_1\n"+ "goto\n" + "iconst_0\n"; //TODO CHECK IF IT IS if_icmpge
+
     return "boolean"; 
   }
 
@@ -273,27 +273,29 @@ public class JasminTest {
        break;
       case AlphaTreeConstants.JJTAND: //pode aparecer sem ser como condition
 
-      SimpleNode left_child_node = (SimpleNode) child_node.jjtGetChild(0); //left child
-      process(left_child_node, symbol, funcname, State.PROCESS, possibleReturnType);
-      if(left_child_node.getId() == AlphaTreeConstants.JJTMINOR)
-        code += "if_icmpge\n";
-      else 
-        code += "ifeq\n";
+        SimpleNode left_child_node = (SimpleNode) child_node.jjtGetChild(0); //left child
+        process_nodeCondition_and( left_child_node,  symbol,  funcname,  possibleReturnType);
 
-      SimpleNode right_child_node = (SimpleNode) child_node.jjtGetChild(1); //right child
-      process(right_child_node, symbol, funcname, State.PROCESS, possibleReturnType);
-      if(right_child_node.getId() == AlphaTreeConstants.JJTMINOR)
-         code += "if_icmpge\n";
-      else 
-        code += "ifeq\n";
-        
+        SimpleNode right_child_node = (SimpleNode) child_node.jjtGetChild(1); //rigth child
+        process_nodeCondition_and( right_child_node,  symbol,  funcname,  possibleReturnType);
+
       break;
      default :
        process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
        code += "ifeq\n";
        break;
+
     }
     return symbol;
+  }
+
+
+  private void process_nodeCondition_and(SimpleNode node, String symbol, String funcname, String possibleReturnType) {
+    process(node, symbol, funcname, State.PROCESS, possibleReturnType);
+    if(node.getId() == AlphaTreeConstants.JJTMINOR)
+      code += "if_icmpge\n";
+    else 
+      code += "ifeq\n";
   }
 
 
