@@ -49,11 +49,12 @@ public class Symbol {
 
     public void Test(int[] array) {
         //int x = new Symbol().getCounter(1);
-
-        boolean t = true ;
-        boolean g = true;
-
-        boolean c = check_test( t && g);
+        boolean a= true;
+        int c = 1;
+        while(a) {
+            c = c + 1;
+        }
+        
         
     }
 

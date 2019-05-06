@@ -7,7 +7,6 @@ TODO LIST:
   13. o getfield e putfield precisam do aload_0 antes???
   15. CODIGO PARA variavel.length -> arraylength?
   17. Nao me cheira que isto esteja bem -> ios/pp(LC;;)I
-  18. quando se invoca uma funçao com this tem de se chamar o aload_0 (antes de chamar os paramentros)
 
 ************************************************************************
     public void Test(int[] array) {
