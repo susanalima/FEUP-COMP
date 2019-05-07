@@ -67,9 +67,9 @@ public class Symbol {
 
 		while (samples_so_far < n) {
 			if (this.check_test(true)) {
-				samples_in_circle = samples_in_circle + 1;
+                samples_so_far = 1;
 			} else {
-			}
+                samples_so_far = 0;			}
 			samples_so_far = samples_so_far + 1;
 		}
 
