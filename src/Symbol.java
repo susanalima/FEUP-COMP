@@ -43,7 +43,7 @@ public class Symbol {
         return this.counter;
     }*/
 
-    boolean check_test(boolean a) {
+    /*boolean check_test(boolean a) {
         return a;
     }
 
@@ -57,7 +57,7 @@ public class Symbol {
     }
 
     
-	public int estimatePi100(int n) {
+    public int estimatePi100(int n) {
 		int samples_in_circle;
 		int samples_so_far;
 		int pi_estimate;
@@ -67,14 +67,14 @@ public class Symbol {
 
 		while (samples_so_far < n) {
 			if (this.check_test(true)) {
-                samples_so_far = 1;
+				samples_in_circle = samples_in_circle + 1;
 			} else {
-                samples_so_far = 0;			}
+			}
 			samples_so_far = samples_so_far + 1;
 		}
 
 		pi_estimate = 400 * samples_in_circle / n;
 		return pi_estimate;
-	}
+	}*/
 
 }
