@@ -6,6 +6,7 @@ TODO LIST:
   15. CODIGO PARA variavel.length -> arraylength?
   17. Nao me cheira que isto esteja bem -> ios/pp(LC;;)I
   18. Verificar instruçoes (nomeadamente aload 1/0 true/false)
+  19. empty if
 
 
 ************************************************************************

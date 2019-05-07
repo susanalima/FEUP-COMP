@@ -762,7 +762,7 @@ public class SymbolTable {
                 child_node = (SimpleNode) node.jjtGetChild(i);
                 symbol = eval_process(child_node, symbol, funcname, State.BUILD);
             }
-             System.out.println("symbol2 : " + symbol);
+             //System.out.println("symbol2 : " + symbol);
             // symbol = AND_SEPARATOR + UNDEFINED_TYPE;
         }
         return symbol;

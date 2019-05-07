@@ -89,6 +89,9 @@ public class JasminTest {
     /*case AlphaTreeConstants.JJTELSE:
       symbol = process_nodeElse(node, symbol, funcname, possibleReturnType);
       break;*/
+    case AlphaTreeConstants.JJTRETURN:
+      process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
+      break;
     default:
       process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
       break;
@@ -402,15 +405,20 @@ public class JasminTest {
 
   private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType, String label) {
     String new_label = buildLabel();
-    code += "goto     " + new_label +"\n";
+    int nrOfChildren = node.jjtGetNumChildren();
+    if(nrOfChildren > 1) // not an empty else (first child is body)
+      code += "goto     " + new_label +"\n";
+
     SimpleNode child_node;
-    for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+    for (int i = 0; i < nrOfChildren; i++) {
       if(i == 0)
         code += label + ":  ";
       child_node = (SimpleNode) node.jjtGetChild(i);
       process(child_node, symbol, funcname, State.PROCESS, possibleReturnType);
     }
-    code += new_label + ":  ";
+
+    if(nrOfChildren > 1)
+      code += new_label + ":  ";
     return symbol;
   }
 
