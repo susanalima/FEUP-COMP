@@ -56,4 +56,25 @@ public class Symbol {
         } 
     }
 
+    
+	public int estimatePi100(int n) {
+		int samples_in_circle;
+		int samples_so_far;
+		int pi_estimate;
+
+		samples_so_far = 0;
+		samples_in_circle = 0;
+
+		while (samples_so_far < n) {
+			if (this.check_test(true)) {
+				samples_in_circle = samples_in_circle + 1;
+			} else {
+			}
+			samples_so_far = samples_so_far + 1;
+		}
+
+		pi_estimate = 400 * samples_in_circle / n;
+		return pi_estimate;
+	}
+
 }

@@ -355,7 +355,7 @@ public class JasminTest {
      String label_goto = buildLabel();
      SimpleNode child_node = (SimpleNode) node.jjtGetChild(0); //condition
      code += label_goto + ":  ";
-     String label = process((SimpleNode) child_node.jjtGetChild(0), symbol, funcname, State.CONDITION, possibleReturnType);
+     String label = process_nodeCondition(child_node, symbol, funcname, possibleReturnType);
      System.out.println("while label : " + label);
      child_node = (SimpleNode) node.jjtGetChild(1); //body
      process_nodeDefault(child_node, symbol, funcname, state, possibleReturnType);
