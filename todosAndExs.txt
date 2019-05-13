@@ -7,8 +7,7 @@ TODO LIST:
   18. Verificar instruçoes (nomeadamente aload 1/0 true/false)
   19. Verificar expressoes aritmeticas
   20. ver while true/false -> verificar em casos com muitos loops e ifs encadeados
-  21. analise semantica tem que verificar se o index do array acedido e valido?? (< size)
-
+  22. 
 
 ************************************************************************
     public void Test(int[] array) {

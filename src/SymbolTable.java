@@ -213,6 +213,20 @@ public class SymbolTable {
         this.symbolTable.get(GLOBAL).setSymbolType(varName, varType);
     }
 
+    void setSymbolSize(String funcName, String varName, int size) {
+        if (isVarLocal(funcName, varName)) {
+            this.symbolTable.get(funcName).setVarSize(varName, size);
+        } else 
+            this.symbolTable.get(GLOBAL).setVarSize(varName, size);
+    }
+
+    int getSymbolSize(String funcName, String varName) {
+        if (isVarLocal(funcName, varName)) {
+            return this.symbolTable.get(funcName).getVarSize(varName);
+        } else 
+            return this.symbolTable.get(GLOBAL).getVarSize(varName);
+    }
+
     public void printSymbolTable() {
         System.out.println("\n\n---SYMBOL TABLE---\n\n");
         System.out.println("Class name: " + this.className);
@@ -223,9 +237,6 @@ public class SymbolTable {
         });
     }
 
-  
-
-
     public void buildAndAnalise(SimpleNode root) {
         eval_build(root, "", GLOBAL, State.BUILD); 
         eval_process(root, "", GLOBAL, State.PROCESS); 
@@ -233,9 +244,6 @@ public class SymbolTable {
     }
 
  
-
-
-
     // build symbol table
     public String eval_build(SimpleNode node, String symbol, String funcname, State state) {
 
@@ -273,6 +281,9 @@ public class SymbolTable {
         case AlphaTreeConstants.JJTMAINDECLARATION:
         case AlphaTreeConstants.JJTMETHOD_DECLARATION:
             funcname = evalNodeFuncDeclaration(node, "", funcname, state);
+            break;
+        case AlphaTreeConstants.JJTEQUAL:
+            evalNodeEqual_build(node, funcname);
             break;
         default:
             symbol = "";
@@ -317,8 +328,10 @@ public class SymbolTable {
         case AlphaTreeConstants.JJTIDENTIFIER:
             symbol = evalNodeIdentifier(node, symbol, funcname, state);
             break;
+        case AlphaTreeConstants.JJTINTEGER: 
+            symbol = AND_SEPARATOR + "int";
+            break;
         case AlphaTreeConstants.JJTLENGTH:
-        case AlphaTreeConstants.JJTINTEGER: // se estes tiverem um val pode se juntar tudo numa so condiçao
             symbol = AND_SEPARATOR + "int";
             break;
         case AlphaTreeConstants.JJTTRUE:
@@ -346,7 +359,7 @@ public class SymbolTable {
             symbol = evalNodeIndex(node, symbol, funcname, state);
             break;
         case AlphaTreeConstants.JJTEQUAL: // formato &type1&type2 etc...
-            symbol = evalNodeEqual(node, symbol, funcname, state);
+            symbol = evalNodeEqual_process(node, symbol, funcname, state);
             break;
         case AlphaTreeConstants.JJTRETURN:
             evalNodeReturn(node, symbol, funcname, state);
@@ -435,8 +448,6 @@ public class SymbolTable {
         return symbol;
     }
 
-
-
     
     public String evalNodeOperator(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node;
@@ -503,17 +514,33 @@ public class SymbolTable {
     }
 
     public String evalNodeIndex(SimpleNode node, String symbol, String funcname, State state) {
-        symbol = eval_process((SimpleNode) node.jjtGetChild(0), symbol, funcname, State.PROCESS); // validates the
-                                                                                                  // identifier
-        String index = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.PROCESS); // validates the
-                                                                                                        // index
-        if (!symbol.contains(ARRAY_SEPARATOR + "array") || !evaluateExpressionInt(index)) // case the variable was
-                                                                                          // declared but is not an
-        // array or the index is not and int
-        {
-            System.out.println("Variable not an array or index not an integer");
+        
+        SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
+        
+        String varname = child_node.val;
+
+        symbol = eval_process(child_node, symbol, funcname, State.PROCESS); // validates the identifier
+         
+        child_node = (SimpleNode) node.jjtGetChild(1);
+        String index = eval_process((SimpleNode) child_node, symbol, funcname, State.PROCESS); // validates the index
+                                                                                                    
+        if (!symbol.contains(ARRAY_SEPARATOR + "array")) {
+            System.out.println("Variable not an array");
             System.exit(0);
         }
+        if(!evaluateExpressionInt(index)) {
+            System.out.println("Index not an integer");
+            System.exit(0);
+        }
+
+        int size = getSymbolSize(funcname, varname);
+        if(child_node.getId() == AlphaTreeConstants.JJTINTEGER) {
+            if( size != -1 && Integer.parseInt(child_node.val) >= size ) {
+                System.out.println("Index out of bounds");
+                System.exit(0);
+            }
+        }
+
         symbol = symbol.split("\\" + ARRAY_SEPARATOR)[0];
         return symbol;
     }
@@ -542,7 +569,7 @@ public class SymbolTable {
         return symbol;
     }
 
-    public String evalNodeEqual(SimpleNode node, String symbol, String funcname, State state) {
+    public String evalNodeEqual_process(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode identifier = (SimpleNode) node.jjtGetChild(0), child_node;
         String tmp = "", varType =  AND_SEPARATOR +"int";
         boolean process_identifier = true;
@@ -633,6 +660,23 @@ public class SymbolTable {
         }
         return funcname;
     }
+
+
+    public void evalNodeEqual_build(SimpleNode node, String funcname) {
+        SimpleNode grand_child_node, child_node = (SimpleNode) node.jjtGetChild(0); //identifier
+        String varname = child_node.val;
+        child_node = (SimpleNode) node.jjtGetChild(1);
+        if(child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) { //new func
+            grand_child_node = (SimpleNode) child_node.jjtGetChild(1);
+            if(grand_child_node.getId() == AlphaTreeConstants.JJTINT) { //se for array
+                grand_child_node = (SimpleNode) child_node.jjtGetChild(2);
+                if(grand_child_node.getId() == AlphaTreeConstants.JJTINTEGER) {
+                    setSymbolSize(funcname, varname, Integer.parseInt(grand_child_node.val));
+                }
+           }   
+        }
+    }
+
 
     private void setUndefinedArgsType(String expression_undefined, String expression) {
 
@@ -749,12 +793,18 @@ public class SymbolTable {
                     }
                 } else {
                     symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
-                    System.out.println("sss " + symbol);
                 }
             }  //else se for array TODO
             else {
                 symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
-                System.out.println("sss1 " + symbol);
+            }
+        } 
+        else if(child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
+            child_node = (SimpleNode) node.jjtGetChild(1);
+            String[] tokens = tmp.split("\\" + ARRAY_SEPARATOR);
+            if(child_node.getId() == AlphaTreeConstants.JJTLENGTH && tokens.length == 1) {
+                System.out.println("Invalid use of length");
+                System.exit(0);
             }
         } else {
             for (int i = 1; i < node.jjtGetNumChildren(); i++) { // i= 0 no caso de de se ter de analisar as variaveis

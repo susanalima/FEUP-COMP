@@ -22,10 +22,6 @@ public class FunctionBlock {
         return contents.containsKey(varName);
     }
 
-    /*Type getVarType(String varName) {
-        return contents.get(varName).type;
-    }*/
-
     String getVarType(String varName) {
         return contents.get(varName).type;
     }
@@ -49,6 +45,16 @@ public class FunctionBlock {
         this.contents.put(varName,newSymbol);
         return true;
     }
+
+    int getVarSize(String varName) {
+        return contents.get(varName).size;
+    }
+
+    
+    void setVarSize(String varName, int size) {
+        contents.get(varName).setSize(size);
+    }
+
 
     public void printFunctionBlock() {
         System.out.println("function return type : " + this.returnType);
