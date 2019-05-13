@@ -405,7 +405,6 @@ void NoExpressionExpression() #void : {}
   And()
 }
 
-
 void Dot() #void: {}
 {
   Dot_token() NoDotExpression() #DOT(2)
@@ -413,53 +412,56 @@ void Dot() #void: {}
 
 void And() #void : {}
 {
-  (Minor()) [LOOKAHEAD(2)  AndAnd()]
-}
-
-void AndAnd() #void : {}
-{
-  And_token() And() #AND(2)
+  Minor() (LOOKAHEAD(2) AndExpr())*
 }
 
 void Minor() #void : {}
 {
-  (PlusMinus()) [ LOOKAHEAD(2) MinorMinor()]
-}
-
-void MinorMinor() #void : {}
-{
-  Minor_token() Minor() #MINOR(2)
-}
-
-void PlusMinus() #void : {}
-{
-  (ProductDivision())  ([LOOKAHEAD(2) (Plus() | Minus())])
+  Plus() (LOOKAHEAD(2) MinorExpr())*
 }
 
 void Plus() #void : {}
 {
-  Plus_token() PlusMinus() #PLUS(2)
+  Product() (LOOKAHEAD(2)  ( PlusExpr() | MinusExpr() ))*
 }
 
-void Minus() #void : {}
+
+void Product() #void  : {}
 {
-  Minus_token() PlusMinus() #MINUS(2)
+  ExpressionTermDotArray() (LOOKAHEAD(2) ( ProductExpr() | DivisionExpr() ) )*    
 }
 
-void ProductDivision() #void  : {}
+
+void AndExpr() #void : {} 
 {
-  (ExpressionTermDotArray() ( [LOOKAHEAD(2) ((Division()) | (Product()))]))
+    And_token() And() #AND(2)
 }
 
-void Product() #void : {}
+void MinorExpr() #void : {} 
 {
-  Product_token() ProductDivision() #PRODUCT(2)
+   Minor_token() Plus() #MINOR(2)
 }
 
-void Division() #void : {}
+void PlusExpr() #void : {} 
 {
-  Division_token() ProductDivision() #DIVISION(2)
+  Plus_token()  Product()  #PLUS(2)
 }
+
+void MinusExpr() #void : {} 
+{
+  Minus_token()  Product()  #MINUS(2)
+}
+
+void ProductExpr() #void : {} 
+{
+  Product_token()  ExpressionTermDotArray()   #PRODUCT(2)
+}
+
+void DivisionExpr() #void : {} 
+{
+  Division_token()  ExpressionTermDotArray()   #DIVISION(2)
+}
+
 
 void ExpressionTermDotArray() # void : {}
 {
