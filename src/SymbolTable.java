@@ -794,19 +794,12 @@ public class SymbolTable {
                 } else {
                     symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
                 }
-            }  //else se for array TODO
+            } 
             else {
-                symbol = eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
+                return eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
             }
         } 
-        else if(child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
-            child_node = (SimpleNode) node.jjtGetChild(1);
-            String[] tokens = tmp.split("\\" + ARRAY_SEPARATOR);
-            if(child_node.getId() == AlphaTreeConstants.JJTLENGTH && tokens.length == 1) {
-                System.out.println("Invalid use of length");
-                System.exit(0);
-            }
-        } else {
+        else  {
             for (int i = 1; i < node.jjtGetNumChildren(); i++) { // i= 0 no caso de de se ter de analisar as variaveis
                                                                  // antes do dot
                 child_node = (SimpleNode) node.jjtGetChild(i);
@@ -815,6 +808,14 @@ public class SymbolTable {
              //System.out.println("symbol2 : " + symbol);
             // symbol = AND_SEPARATOR + UNDEFINED_TYPE;
         }
+
+        child_node = (SimpleNode) node.jjtGetChild(1);
+        String[] tokens = tmp.split("\\" + ARRAY_SEPARATOR);
+        if(child_node.getId() == AlphaTreeConstants.JJTLENGTH && tokens.length == 1) {
+            System.out.println("Invalid use of length");
+            System.exit(0);
+        }
+
         return symbol;
     }
 

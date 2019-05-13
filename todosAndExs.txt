@@ -1,13 +1,9 @@
 TODO LIST:
-  1. RESOLVER CENA DO MENOS
   4. FAZER ALTO REFACTORING NESTE TRETA
   9. Check cena do string&array -> se é [S
-  15. CODIGO PARA variavel.length -> arraylength?
-  17. Nao me cheira que isto esteja bem -> ios/pp(LC;;)I
   18. Verificar instruçoes (nomeadamente aload 1/0 true/false)
   19. Verificar expressoes aritmeticas
   20. ver while true/false -> verificar em casos com muitos loops e ifs encadeados
-  22. code para new int[1].length
 
 ************************************************************************
     public void Test(int[] array) {

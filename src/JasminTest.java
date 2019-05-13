@@ -241,10 +241,10 @@ public class JasminTest {
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
     if (state == State.PROCESS || state == State.CONDITION) {
       symbol += symbolTable.getVarType(funcname, node.val);
-      if (symbolTable.isVarGlobal(node.val)) {
-        code += "aload_0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + "\n";
-      } else {
+      if (symbolTable.isVarLocal(funcname, node.val)) {
         code += "iload_" + symbolTable.getCounter(funcname, node.val) + "\n"; // MUDAR CONSOANTE O TIPO
+      } else {
+         code += "aload_0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + "\n";
       }
     } else {
       symbol += node.val;
@@ -618,11 +618,9 @@ public class JasminTest {
 
     } else if (child_node.getId() == AlphaTreeConstants.JJTLENGTH) {
       SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0);
-      if (left_child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
-          process(left_child_node, symbol, funcname, state.PROCESS, possibleReturnType);
-          code += "arraylength\n";
-          checkMethod = false;
-      }
+      process(left_child_node, symbol, funcname, State.PROCESS, possibleReturnType);
+      code += "arraylength\n";
+      checkMethod = false;
       symbol = "int";
     }
 
@@ -662,10 +660,10 @@ public class JasminTest {
     if (child_node.getId() == AlphaTreeConstants.JJTINDEX) // CASE IT IS AN INDEX LIKE a = x[2]
       code += "iaload\n";
 
-    if (symbolTable.isVarGlobal(left_child_node.val)) {
-      code += "aload_0\n" + "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + "\n";
-    } else {
+    if (symbolTable.isVarLocal(funcname, left_child_node.val)) {
       code += storeType + "\n";
+    } else {
+      code += "aload_0\n" + "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + "\n";
     }
 
     return symbol;
