@@ -490,8 +490,7 @@ public class SymbolTable {
                 else if(getVarType(funcname, node.val).equals(UNDEFINED_TYPE)) {
                     if(!symbol.equals(""))
                         setGlobalSymbolType(node.val, symbol);
-                }
-                   
+                }      
             }
             symbol = getVarType(funcname, node.val);
             
@@ -519,28 +518,39 @@ public class SymbolTable {
         
         String varname = child_node.val;
 
+        boolean skip = false;
+
+        if(this.extends_ ) {
+            if(!wasVarDeclared(funcname,varname))
+                addSymbol(SymbolTable.GLOBAL, varname, new Symbol("int$array", varname, "global"));     
+            else if(getVarType(funcname, varname).equals(UNDEFINED_TYPE)) {
+                    setGlobalSymbolType(varname, "int$array");
+            }      
+        }
+
+
         symbol = eval_process(child_node, symbol, funcname, State.PROCESS); // validates the identifier
          
         child_node = (SimpleNode) node.jjtGetChild(1);
         String index = eval_process((SimpleNode) child_node, symbol, funcname, State.PROCESS); // validates the index
-                                                                                                    
-        if (!symbol.contains(ARRAY_SEPARATOR + "array")) {
+            
+        if (!symbol.contains(ARRAY_SEPARATOR + "array") && !skip) {
             System.out.println("Variable not an array");
             System.exit(0);
         }
+
         if(!evaluateExpressionInt(index)) {
             System.out.println("Index not an integer");
             System.exit(0);
         }
 
         int size = getSymbolSize(funcname, varname);
-        if(child_node.getId() == AlphaTreeConstants.JJTINTEGER) {
-            if( size != -1 && Integer.parseInt(child_node.val) >= size ) {
-                System.out.println("Index out of bounds");
-                System.exit(0);
-            }
+        if( size != -1 && Integer.parseInt(child_node.val) >= size ) {
+            System.out.println("Index out of bounds");
+            System.exit(0);
         }
 
+    
         symbol = symbol.split("\\" + ARRAY_SEPARATOR)[0];
         return symbol;
     }
