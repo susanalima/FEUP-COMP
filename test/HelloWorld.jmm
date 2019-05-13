@@ -1,5 +1,5 @@
 class HelloWorld {
-	public boolean build_test_arr(int s, int b) {
+	public boolean build_test_arr(int s, int b, HelloWorld a) {
 		ioPlus.printHelloWorld();
 
 		return false;
@@ -12,13 +12,16 @@ class HelloWorld {
 	public static void main(String[] args) {
 		int s;
 		int a; 
+		HelloWorld h;
 
 		s = 5;
 		a = 4;
 
 		HelloWorld.build_test_arr(s);
-		this.build_test_arr(s, a);
-		this.build_test_arr(12, 15);
+		h = new HelloWorld();
+
+		this.build_test_arr(s, a, h);
+		this.build_test_arr(12, 15, h);
 		this.build_test_arr(false);
 		ioPlus.printHelloWorld();
 	}
