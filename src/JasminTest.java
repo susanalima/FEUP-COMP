@@ -232,9 +232,10 @@ public class JasminTest {
 
   private void process_nodeProgram(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType) {
-    code += "public class " + symbolTable.getClassName() + " {\n";
+    code += ".class public " + symbolTable.getClassName() + "\n" + ".super java/lang/Object\n"; // TODO: Check
+                                                                                                // Inheritance
     process_nodeDefault(node, symbol, funcname, state, possibleReturnType);
-    code += "}";
+
   }
 
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
