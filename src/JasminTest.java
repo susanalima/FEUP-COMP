@@ -617,15 +617,19 @@ public class JasminTest {
   private String process_nodeEqual(SimpleNode node, String symbol, String funcname) {
     SimpleNode child_node, left_child_node;
 
-    String storeType;
+    String storeType, type;
 
     left_child_node = (SimpleNode) node.children[0]; // left child -> identifier
     if (left_child_node.getId() == AlphaTreeConstants.JJTINDEX) { // in case it is an array assignment
       left_child_node = (SimpleNode) left_child_node.jjtGetChild(0);
       storeType = "iastore"; // TODO PODE SER aastore caso seja uma referencia (acho que nunca acontece)
     } else {
-      storeType = "istore_" + symbolTable.getCounter(funcname, left_child_node.val); // TODO CHANGE ACCORDING WITH THE
-                                                                                     // TYPE
+      type = symbolTable.getVarType(funcname, left_child_node.val);
+      if(type.equals("int"))
+        storeType = "istore_";
+      else 
+        storeType = "astore_";
+      storeType += symbolTable.getCounter(funcname, left_child_node.val); // TODO CHANGE ACCORDING WITH THE                                                                                     // TYPE
     }
 
     String left_child_type = symbolTable.getVarType(funcname, left_child_node.val);
