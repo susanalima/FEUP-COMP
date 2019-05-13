@@ -509,17 +509,18 @@ public class JasminTest {
 
     String header = "";
     boolean checkMethod = true;
-    SimpleNode child_node = (SimpleNode) node.jjtGetChild(0); // right child
+    SimpleNode child_node = (SimpleNode) node.jjtGetChild(0); // left child
     if (child_node.getId() == AlphaTreeConstants.JJTTHIS) {
       header = "invokevirtual " + symbolTable.getClassName();
-    } else if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
+    } 
+    else if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
       if (symbolTable.varExists(funcname, child_node.val) && !symbolTable.extends_) {
         if (!symbolTable.getClassName().equals(symbolTable.getVarType(funcname, child_node.val)))
           checkMethod = false;
         header = "invokevirtual " + symbolTable.getVarType(funcname, child_node.val);
       } else {
-        header = "invokestatic " + child_node.val; // TODO eu acho que devia ser invokevirtual aqui
-        checkMethod = false;
+          header = "invokestatic " + child_node.val; // TODO eu acho que devia ser invokevirtual aqui
+          checkMethod = false;
       }
     } else if (child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) {
       process(child_node, symbol, funcname, state, possibleReturnType);
@@ -616,6 +617,12 @@ public class JasminTest {
         symbol = tmp_symbol;
 
     } else if (child_node.getId() == AlphaTreeConstants.JJTLENGTH) {
+      SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0);
+      if (left_child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
+          process(left_child_node, symbol, funcname, state.PROCESS, possibleReturnType);
+          code += "arraylength\n";
+          checkMethod = false;
+      }
       symbol = "int";
     }
 
@@ -637,7 +644,7 @@ public class JasminTest {
         storeType = "istore_";
       else
         storeType = "astore_";
-      storeType += symbolTable.getCounter(funcname, left_child_node.val); // TODO CHANGE ACCORDING WITH THE // TYPE
+      storeType += symbolTable.getCounter(funcname, left_child_node.val);
     }
 
     String left_child_type = symbolTable.getVarType(funcname, left_child_node.val);

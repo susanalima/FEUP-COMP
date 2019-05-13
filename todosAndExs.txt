@@ -7,7 +7,7 @@ TODO LIST:
   18. Verificar instruçoes (nomeadamente aload 1/0 true/false)
   19. Verificar expressoes aritmeticas
   20. ver while true/false -> verificar em casos com muitos loops e ifs encadeados
-  22. 
+  22. code para new int[1].length
 
 ************************************************************************
     public void Test(int[] array) {
