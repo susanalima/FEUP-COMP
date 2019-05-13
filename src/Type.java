@@ -1,5 +1,0 @@
-
-enum Type {
-    INT,
-    BOOLEAN
-}
