@@ -220,7 +220,7 @@ public class JasminTest {
     } else {
       instruction = "areturn";
     }
-    return instruction;
+    return instruction + "\n.end method";
   }
 
   private void process_nodeVarDeclaration(SimpleNode node) {
@@ -232,8 +232,9 @@ public class JasminTest {
 
   private void process_nodeProgram(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType) {
-    code += ".class public " + symbolTable.getClassName() + "\n" + ".super java/lang/Object\n"; // TODO: Check
-                                                                                                // Inheritance
+    code += ".class public " + symbolTable.getClassName()
+        + "\n.super java/lang/Object\n \n.method public <init>()V\n\taload_0\n\tinvokespecial java/lang/Object/<init>()V\n\treturn\n.end method\n\n";
+    // TODO: Check Inheritance
     process_nodeDefault(node, symbol, funcname, state, possibleReturnType);
 
   }
@@ -465,12 +466,9 @@ public class JasminTest {
     child_node = (SimpleNode) node.jjtGetChild(1);
     if (child_node.getId() == AlphaTreeConstants.JJTFUNC) {
       child_node = (SimpleNode) child_node.jjtGetChild(0);
-      code += "invokenonstatic " + child_node.val + "/" + child_node.val + "()L" + child_node.val + ";\n"; // TODO NAO
-                                                                                                           // DEVIA SER
-                                                                                                           // invokenonvirtual?
-                                                                                                           // (To invoke
-                                                                                                           // a
-                                                                                                           // constructor)
+      code += "new " + child_node.val + "\ndup\ninvokespecial " + child_node.val + "/" + "<init>"// child_node.val
+          + "()L" + child_node.val + ";\n"; // TODO
+      // NAO DEVIA SER invokenonvirtual? (To invoke a constructor)
       symbol = child_node.val;
     } else if (child_node.getId() == AlphaTreeConstants.JJTINT) {
       process((SimpleNode) node.jjtGetChild(2), "", funcname, State.PROCESS, "");

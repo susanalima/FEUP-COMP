@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.file.*;
 
 public class AlphaMain {
 
@@ -16,25 +20,30 @@ public class AlphaMain {
 
       symbolTable.buildAndAnalise(root);
 
-      /*System.out.println("---Jasmin---\n");
-      JasminBuilder jBuilder = new JasminBuilder(symbolTable);
-      String jasmin = jBuilder.printJasmin(root);
-      jasmin = jasmin.concat("\n\nArithmetic \n\n" + jBuilder.arithmeticJasmin(root));
-      System.out.println(jasmin);*/
+      /*
+       * System.out.println("---Jasmin---\n"); JasminBuilder jBuilder = new
+       * JasminBuilder(symbolTable); String jasmin = jBuilder.printJasmin(root);
+       * jasmin = jasmin.concat("\n\nArithmetic \n\n" +
+       * jBuilder.arithmeticJasmin(root)); System.out.println(jasmin);
+       */
 
-  
       JasminTest jTest = new JasminTest(symbolTable);
       jTest.process(root, "", SymbolTable.GLOBAL, State.BUILD, "int");
       System.out.println("\n\n---JasminTEST---\n");
       System.out.println(jTest.code);
 
+      PrintWriter out = null;
+      try {
+        out = new PrintWriter("../out/output.j");
+        out.println(jTest.code);
+      } finally {
+        if (out != null)
+          out.close();
+      }
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
-
-  
- 
 
 }

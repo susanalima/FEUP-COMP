@@ -13,16 +13,22 @@ class HelloWorld {
 		int s;
 		int a; 
 		HelloWorld h;
+		boolean a1;
+		boolean b0;
+		boolean b1;
+		boolean b2;
+		boolean b3;
 
 		s = 5;
 		a = 4;
-
-		HelloWorld.build_test_arr(s);
+		a1 = false;
 		h = new HelloWorld();
 
-		this.build_test_arr(s, a, h);
-		this.build_test_arr(12, 15, h);
-		this.build_test_arr(false);
+		b0 = h.build_test_arr(a1);
+
+		b1 = h.build_test_arr(s, a, h);
+		b2 = h.build_test_arr(12, 15, h);
+		b3 = h.build_test_arr(false);
 		ioPlus.printHelloWorld();
 	}
 }
