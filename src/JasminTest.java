@@ -243,9 +243,9 @@ public class JasminTest {
     if (state == State.PROCESS || state == State.CONDITION) {
       symbol += symbolTable.getVarType(funcname, node.val);
       if (symbolTable.isVarLocal(funcname, node.val)) {
-        code += "iload_" + symbolTable.getCounter(funcname, node.val) + "\n"; // MUDAR CONSOANTE O TIPO
+        code += "iload " + symbolTable.getCounter(funcname, node.val) + "\n"; // MUDAR CONSOANTE O TIPO
       } else {
-         code += "aload_0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + "\n";
+         code += "aload 0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + "\n";
       }
     } else {
       symbol += node.val;
@@ -270,7 +270,7 @@ public class JasminTest {
       tmp = 1;
     symbol += "boolean";
     if (state == State.PROCESS || state == State.CONDITION)
-      code += "aload " + tmp + "\n";
+      code += "ldc " + tmp + "\n";
     return symbol;
   }
 
@@ -637,9 +637,9 @@ public class JasminTest {
     } else {
       type = symbolTable.getVarType(funcname, left_child_node.val);
       if (type.equals("int"))
-        storeType = "istore_";
+        storeType = "istore ";
       else
-        storeType = "astore_";
+        storeType = "astore ";
       storeType += symbolTable.getCounter(funcname, left_child_node.val);
     }
 
