@@ -24,9 +24,11 @@ public class JasminTest {
     case AlphaTreeConstants.JJTPROGRAM:
       process_nodeProgram(node, symbol, funcname, state, possibleReturnType);
       break;
-    case AlphaTreeConstants.JJTMAINDECLARATION:
     case AlphaTreeConstants.JJTMETHOD_DECLARATION:
-      funcname = getFuncname(node, "", funcname, State.PROCESS);
+      funcname = getFuncname(node, "", funcname, State.PROCESS, false);
+      break;
+    case AlphaTreeConstants.JJTMAINDECLARATION:
+      funcname = getFuncname(node, "", funcname, State.PROCESS, true);
       break;
     case AlphaTreeConstants.JJTVAR_DECLARATION:
       process_nodeVarDeclaration(node);
@@ -155,12 +157,14 @@ public class JasminTest {
     return jasmin_funcname + ")";
   }
 
-  private String build_funcDeclaration(String funcname) {
+  private String build_funcDeclaration(String funcname, boolean isMain) {
+    if(isMain)
+      return ".method public static main([Ljava/lang/String;)V\n";
     return ".method " + symbolTable.getClassName() + "/" + get_jasmin_Funcname(funcname)
         + paramType(symbolTable.getFunctionReturnType(funcname)) + "\n";
   }
 
-  private String getFuncname(SimpleNode node, String symbol, String funcname, State state) {
+  private String getFuncname(SimpleNode node, String symbol, String funcname, State state, boolean isMain) {
     this.labelCount = 0; // reset label count
     this.unreachableCode = false; // reset unreachableCode flag
     SimpleNode child_node;
@@ -180,7 +184,8 @@ public class JasminTest {
       if (currState == State.BUILD)
         tmp += symbolTable.eval_build(child_node, symbol, funcname, currState);
       else if (currState == State.PROCESS) {
-        code += build_funcDeclaration(funcname);
+        code += build_funcDeclaration(funcname, isMain);
+        code += ".limit stack 32 \n.limit locals 32 \n";
         tmp += process(child_node, "", funcname, currState, "int");
         if (!this.unreachableCode)
           code += getReturnInstruction(funcname) + "\n\n";
@@ -467,8 +472,7 @@ public class JasminTest {
     if (child_node.getId() == AlphaTreeConstants.JJTFUNC) {
       child_node = (SimpleNode) child_node.jjtGetChild(0);
       code += "new " + child_node.val + "\ndup\ninvokespecial " + child_node.val + "/" + "<init>"// child_node.val
-          + "()L" + child_node.val + ";\n"; // TODO
-      // NAO DEVIA SER invokenonvirtual? (To invoke a constructor)
+          + "()V\n"; 
       symbol = child_node.val;
     } else if (child_node.getId() == AlphaTreeConstants.JJTINT) {
       process((SimpleNode) node.jjtGetChild(2), "", funcname, State.PROCESS, "");
@@ -515,6 +519,7 @@ public class JasminTest {
       if (symbolTable.varExists(funcname, child_node.val) && !symbolTable.extends_) {
         if (!symbolTable.getClassName().equals(symbolTable.getVarType(funcname, child_node.val)))
           checkMethod = false;
+        code += "aload "  + symbolTable.getCounter(funcname, child_node.val)+ "\n";
         header = "invokevirtual " + symbolTable.getVarType(funcname, child_node.val);
       } else {
           header = "invokestatic " + child_node.val; // TODO eu acho que devia ser invokevirtual aqui
@@ -636,7 +641,7 @@ public class JasminTest {
       storeType = "iastore"; // TODO PODE SER aastore caso seja uma referencia (acho que nunca acontece)
     } else {
       type = symbolTable.getVarType(funcname, left_child_node.val);
-      if (type.equals("int"))
+      if (type.equals("int") || type.equals("boolean"))
         storeType = "istore ";
       else
         storeType = "astore ";
