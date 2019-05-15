@@ -248,7 +248,12 @@ public class JasminTest {
     if (state == State.PROCESS || state == State.CONDITION) {
       symbol += symbolTable.getVarType(funcname, node.val);
       if (symbolTable.isVarLocal(funcname, node.val)) {
-        code += "iload " + symbolTable.getCounter(funcname, node.val) + "\n"; // MUDAR CONSOANTE O TIPO
+        String type = symbolTable.getVarType(funcname, node.val);
+        if (type.equals("int") || type.equals("boolean"))
+          code += "iload ";
+        else 
+          code += "aload ";
+        code += symbolTable.getCounter(funcname, node.val) + "\n"; // MUDAR CONSOANTE O TIPO
       } else {
          code += "aload 0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + "\n";
       }
