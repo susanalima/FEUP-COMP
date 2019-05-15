@@ -372,7 +372,7 @@ public class JasminTest {
       process_nodeElse(child_node, symbol, funcname, possibleReturnType, label, unreachable);
 
       if (!new_label.equals(""))
-        code += new_label + ":   ";
+        code += new_label + ":\n";
     }
 
     return symbol;
@@ -387,7 +387,7 @@ public class JasminTest {
                                                                                                                  // while(true)
                                                                                                                  // or
                                                                                                                  // while(false)
-      code += label_goto + ":   ";
+      code += label_goto + ":\n";
       child_node = (SimpleNode) node.jjtGetChild(1); // body
       symbol = process(child_node, symbol, funcname, state, possibleReturnType);
       code += "goto    " + label_goto + "\n";
@@ -395,7 +395,7 @@ public class JasminTest {
     } else {
 
       child_node = (SimpleNode) node.jjtGetChild(0); // condition
-      code += label_goto + ":  ";
+      code += label_goto + ":\n";
       String label = process_nodeCondition(child_node, symbol, funcname, possibleReturnType);
 
       child_node = (SimpleNode) node.jjtGetChild(1); // body
@@ -404,7 +404,7 @@ public class JasminTest {
       if (this.unreachableCode)
         this.unreachableCode = false;
       else {
-        code += "goto    " + label_goto + "\n" + label + ":  ";
+        code += "goto    " + label_goto + "\n" + label + ":\n";
       }
     }
 
@@ -428,7 +428,7 @@ public class JasminTest {
 
     if (state != State.CONDITION) {
       String label_goto = buildLabel();
-      code += "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":  " + "iconst_0\n" + label_goto + ":  ";
+      code += "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":\n" + "iconst_0\n" + label_goto + ":  ";
     }
 
     return label;
@@ -461,13 +461,13 @@ public class JasminTest {
 
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       if (i == 0)
-        code += label + ":  ";
+        code += label + ":\n";
       child_node = (SimpleNode) node.jjtGetChild(i);
       process(child_node, symbol, funcname, State.PROCESS, possibleReturnType);
     }
 
     if (!emptyElse)
-      code += new_label + ":  ";
+      code += new_label + ":\n";
     return symbol;
   }
 
