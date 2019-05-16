@@ -162,7 +162,7 @@ public class JasminTest {
   private String build_funcDeclaration(String funcname, boolean isMain) {
     if(isMain)
       return ".method public static main([Ljava/lang/String;)V\n";
-    return ".method " + symbolTable.getClassName() + "/" + get_jasmin_Funcname(funcname)
+    return ".method public " + get_jasmin_Funcname(funcname)
         + paramType(symbolTable.getFunctionReturnType(funcname)) + "\n";
   }
 
