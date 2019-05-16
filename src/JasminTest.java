@@ -658,6 +658,13 @@ public class JasminTest {
       storeType += symbolTable.getCounter(funcname, left_child_node.val);
     }
 
+
+    if (symbolTable.isVarLocal(funcname, left_child_node.val)) {
+    } else {
+      code += "aload_0\n";
+    }
+
+
     String left_child_type = symbolTable.getVarType(funcname, left_child_node.val);
 
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -676,7 +683,7 @@ public class JasminTest {
     if (symbolTable.isVarLocal(funcname, left_child_node.val)) {
       code += storeType + "\n";
     } else {
-      code += "aload_0\n" + "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + " " + this.paramType(symbolTable.getVarType(funcname, left_child_node.val))+ "\n";
+      code += "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + " " + this.paramType(symbolTable.getVarType(funcname, left_child_node.val))+ "\n";
     }
 
     return symbol;
