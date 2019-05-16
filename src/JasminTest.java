@@ -643,6 +643,11 @@ public class JasminTest {
       symbol = symbols.getKey();
       tmp_symbol = symbols.getValue();
 
+      SimpleNode tmp_node = (SimpleNode) node.jjtGetChild(0); // left child
+      if (tmp_node.getId() == AlphaTreeConstants.JJTIDENTIFIER && tmp_node.val.equals("io")) {
+        possibleReturnType = "void";
+      }
+
       code += header + "/" + process_func_call(funcname, symbol, checkMethod, possibleReturnType) + "\n";
 
       if (!tmp_symbol.equals(SymbolTable.UNDEFINED_TYPE))
@@ -654,7 +659,7 @@ public class JasminTest {
       SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0);
       process(left_child_node, symbol, funcname, State.PROCESS, possibleReturnType);
       code += "arraylength\n";
-      checkMethod = false;
+      //checkMethod = false;
       symbol = "int";
     }
 

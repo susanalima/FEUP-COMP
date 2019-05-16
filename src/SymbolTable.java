@@ -9,10 +9,11 @@ public class SymbolTable {
     static final String ARRAY_SEPARATOR = "$";
     static final String UNDEFINED_TYPE = "@";
     static final String GLOBAL = "#GLOBAL_SCOPE";
-    HashMap<String, FunctionBlock> symbolTable; // First key is fn&Param1Type($array)?&Param2Type
-    boolean extends_;
-    String className;
 
+    HashMap<String, FunctionBlock> symbolTable; // First key is fn&Param1Type($array)?&Param2Type
+    String className;
+    boolean extends_;
+    String parentClass; //TODO
 
     SymbolTable() {
         this.symbolTable = new HashMap<>();
