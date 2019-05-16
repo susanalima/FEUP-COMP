@@ -6,8 +6,9 @@ TODO LIST:
   20. ver while true/false -> verificar em casos com muitos loops e ifs encadeados
   21. esta porra tem algum problema com os booleans
   22. aload_0 antes das invocaçoes com o this
-
-
+  23 ldc ou iconst para os booleanos??
+  24. mudar a tabela de simbolos para ter os tipos no formato correto
+  25. aload_0 no putfield tem de vir antes do que se mete do field
 
 
 ************************************************************************

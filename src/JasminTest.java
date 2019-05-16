@@ -4,12 +4,14 @@ public class JasminTest {
 
   SymbolTable symbolTable;
   String code;
+  String classHeader;
   int labelCount;
   boolean unreachableCode;
 
   JasminTest(SymbolTable sT) {
     this.symbolTable = sT;
     this.code = "";
+    this.classHeader = "";
     this.labelCount = 0;
     this.unreachableCode = false;
   }
@@ -230,18 +232,21 @@ public class JasminTest {
 
   private void process_nodeVarDeclaration(SimpleNode node) {
     SimpleNode child_node = (SimpleNode) node.jjtGetChild(1);
+    if(child_node.getId() == AlphaTreeConstants.JJTARRAY)
+     child_node = (SimpleNode) node.jjtGetChild(2);
+    System.out.println(child_node.val);
     if (symbolTable.isVarGlobal(child_node.val)) {
-      code += symbolTable.getVarType(SymbolTable.GLOBAL, child_node.val) + "  " + child_node.val + ";\n\n";
+      classHeader += ".field " +  child_node.val + " " + this.paramType(symbolTable.getVarType(SymbolTable.GLOBAL, child_node.val)) + "\n\n";
     }
   }
 
   private void process_nodeProgram(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType) {
-    code += ".class public " + symbolTable.getClassName()
-        + "\n.super java/lang/Object\n \n.method public <init>()V\n\taload_0\n\tinvokespecial java/lang/Object/<init>()V\n\treturn\n.end method\n\n";
+    classHeader += ".class public " + symbolTable.getClassName() + "\n.super java/lang/Object\n \n";
+       code += ".method public <init>()V\n\taload_0\n\tinvokespecial java/lang/Object/<init>()V\n\treturn\n.end method\n\n";
     // TODO: Check Inheritance
     process_nodeDefault(node, symbol, funcname, state, possibleReturnType);
-
+    code = classHeader + code;
   }
 
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
@@ -255,7 +260,7 @@ public class JasminTest {
           code += "aload ";
         code += symbolTable.getCounter(funcname, node.val) + "\n"; // MUDAR CONSOANTE O TIPO
       } else {
-         code += "aload 0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + "\n";
+         code += "aload_0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + " " + this.paramType(symbolTable.getVarType(funcname, node.val))+ "\n";
       }
     } else {
       symbol += node.val;
@@ -671,7 +676,7 @@ public class JasminTest {
     if (symbolTable.isVarLocal(funcname, left_child_node.val)) {
       code += storeType + "\n";
     } else {
-      code += "aload_0\n" + "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + "\n";
+      code += "aload_0\n" + "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + " " + this.paramType(symbolTable.getVarType(funcname, left_child_node.val))+ "\n";
     }
 
     return symbol;
