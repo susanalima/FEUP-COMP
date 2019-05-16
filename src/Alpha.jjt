@@ -71,7 +71,7 @@ options {
   #IDENTIFIER
  } 
 
- void Extends_token() #EXTENDS: {}
+ void Extends_token() #void: {}
  {
   <EXTENDS> 
  } 
@@ -254,7 +254,7 @@ options {
 
  void ClassDeclaration() #void : {}
  {
-  Class_token() Identifier_token() [Extends_token() Identifier_token()] ClassBody()
+  Class_token() Identifier_token() [Extends_token() Identifier_token() #EXTENDS] ClassBody()
  }
 
  void ClassBody() #ClassBody : {}

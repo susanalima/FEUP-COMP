@@ -18,10 +18,13 @@ public class SymbolTable {
     SymbolTable() {
         this.symbolTable = new HashMap<>();
         this.extends_ = false;
+        this.parentClass = "java/lang/Object";
     }
 
-    public void setExtends() {
+    public void setExtends(SimpleNode node) {
         this.extends_ = true;
+        SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
+        this.parentClass = child_node.val;
     }
 
     // checks if var is local, global or from a parent class
@@ -210,6 +213,10 @@ public class SymbolTable {
         return this.className;
     }
 
+    String getParentClass() {
+        return this.parentClass;
+    }
+
     void setClassName(String className) {
         this.className = className;
     }
@@ -235,7 +242,7 @@ public class SymbolTable {
     public void printSymbolTable() {
         System.out.println("\n\n---SYMBOL TABLE---\n\n");
         System.out.println("Class name: " + this.className);
-        System.out.println("extends: " + this.extends_);
+        System.out.println("extends: " + this.parentClass);
         symbolTable.forEach((key, value) -> {
             System.out.println(key + " : ");
             value.printFunctionBlock();
@@ -266,7 +273,8 @@ public class SymbolTable {
             symbol = evalNodeIdentifier(node, symbol, funcname, state);
             break;
         case AlphaTreeConstants.JJTEXTENDS:
-            setExtends();
+            setExtends(node);
+  
             break;
         case AlphaTreeConstants.JJTINT:
             symbol = CARDINAL_SEPARATOR + "int";
@@ -308,9 +316,6 @@ public class SymbolTable {
         case AlphaTreeConstants.JJTARG:
         case AlphaTreeConstants.JJTCLASSBODY:
             symbol = evalNodeClassBody(node, symbol, funcname, state);
-            break;
-        case AlphaTreeConstants.JJTEXTENDS:
-            setExtends();
             break;
         case AlphaTreeConstants.JJTVAR_DECLARATION:
             symbol = "";
@@ -516,6 +521,7 @@ public class SymbolTable {
         }
         return symbol;
     }
+
 
     public String evalNodeIndex(SimpleNode node, String symbol, String funcname, State state) {
         

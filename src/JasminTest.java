@@ -255,8 +255,8 @@ public class JasminTest {
 
   private void process_nodeProgram(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType) {
-    classHeader += ".class public " + symbolTable.getClassName() + "\n.super java/lang/Object\n \n";
-       finalCode += ".method public <init>()V\n\taload_0\n\tinvokespecial java/lang/Object/<init>()V\n\treturn\n.end method\n\n";
+    classHeader += ".class public " + symbolTable.getClassName() + "\n.super " + symbolTable.getParentClass() + "\n \n";
+       finalCode += ".method public <init>()V\n\taload_0\n\tinvokespecial " + symbolTable.getParentClass()+ "/<init>()V\n\treturn\n.end method\n\n";
     // TODO: Check Inheritance
     process_nodeDefault(node, symbol, funcname, state, possibleReturnType);
     finalCode = classHeader + finalCode;
@@ -544,7 +544,7 @@ public class JasminTest {
       header = "invokevirtual " + symbolTable.getClassName();
     } 
     else if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
-      if (symbolTable.varExists(funcname, child_node.val) && !symbolTable.extends_) {
+      if (symbolTable.wasVarDeclared(funcname, child_node.val)) {
         if (!symbolTable.getClassName().equals(symbolTable.getVarType(funcname, child_node.val)))
           checkMethod = false;
         stackSize++;
