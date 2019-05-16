@@ -187,7 +187,7 @@ public class JasminTest {
         tmp += symbolTable.eval_build(child_node, symbol, funcname, currState);
       else if (currState == State.PROCESS) {
         code += build_funcDeclaration(funcname, isMain);
-        code += ".limit stack 32 \n.limit locals 32 \n";
+        code += ".limit stack 32 \n" + ".limit locals " + (symbolTable.getLimitLocals(funcname) + 1) + "\n";
         tmp += process(child_node, "", funcname, currState, "int");
         if (!this.unreachableCode)
           code += getReturnInstruction(funcname) + "\n\n";

@@ -5,8 +5,8 @@ class MonteCarloPi {
 		boolean in_circle;
 		int squareDist;
 
-		rand1 = MathUtils.random(0-100, 100);
-		rand2 = MathUtils.random(0-100, 100);
+		rand1 = 1;
+		rand2 = 2;
 
 		squareDist = (rand1 * rand1 + rand2 * rand2) / 100;
 		if (squareDist < 100) {
@@ -42,9 +42,10 @@ class MonteCarloPi {
 		int pi_estimate_times_100;
 		int num_samples;
 
-		num_samples = ioPlus.requestNumber();
+		//num_samples = ioPlus.requestNumber();
+		num_samples = 2;
 		pi_estimate_times_100 = new MonteCarloPi().estimatePi100(num_samples);
 
-		ioPlus.printResult(pi_estimate_times_100);
+		io.println(pi_estimate_times_100);
 	}
 }

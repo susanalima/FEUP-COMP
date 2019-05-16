@@ -26,6 +26,9 @@ public class FunctionBlock {
         return contents.get(varName).type;
     }
 
+    int getLimitLocals() {
+        return this.contents.size();
+    }
 
     String getReturnType() {
         return this.returnType;

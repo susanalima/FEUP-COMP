@@ -40,6 +40,10 @@ public class SymbolTable {
             return isVarGlobal(varName);
     }
 
+
+    int getLimitLocals(String funcName) {
+        return this.symbolTable.get(funcName).getLimitLocals();
+    }
   
 
     String getVarType(String funcName, String varName) {
