@@ -644,11 +644,13 @@ public class JasminTest {
     SimpleNode child_node, left_child_node;
 
     String storeType, type;
+    boolean isArray = false;
 
     left_child_node = (SimpleNode) node.children[0]; // left child -> identifier
     if (left_child_node.getId() == AlphaTreeConstants.JJTINDEX) { // in case it is an array assignment
       left_child_node = (SimpleNode) left_child_node.jjtGetChild(0);
       storeType = "iastore"; // TODO PODE SER aastore caso seja uma referencia (acho que nunca acontece)
+      isArray = true;
     } else {
       type = symbolTable.getVarType(funcname, left_child_node.val);
       if (type.equals("int") || type.equals("boolean"))
@@ -658,12 +660,9 @@ public class JasminTest {
       storeType += symbolTable.getCounter(funcname, left_child_node.val);
     }
 
-
-    if (symbolTable.isVarLocal(funcname, left_child_node.val)) {
-    } else {
+    if (!symbolTable.isVarLocal(funcname, left_child_node.val) && !isArray) {
       code += "aload_0\n";
     }
-
 
     String left_child_type = symbolTable.getVarType(funcname, left_child_node.val);
 
@@ -680,9 +679,9 @@ public class JasminTest {
     if (child_node.getId() == AlphaTreeConstants.JJTINDEX) // CASE IT IS AN INDEX LIKE a = x[2]
       code += "iaload\n";
 
-    if (symbolTable.isVarLocal(funcname, left_child_node.val)) {
+    if (symbolTable.isVarLocal(funcname, left_child_node.val) || isArray) {
       code += storeType + "\n";
-    } else {
+    } else if(!isArray){
       code += "putfield " + symbolTable.getClassName() + "/" + left_child_node.val + " " + this.paramType(symbolTable.getVarType(funcname, left_child_node.val))+ "\n";
     }
 
