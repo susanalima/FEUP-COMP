@@ -30,12 +30,12 @@ public class AlphaMain {
       JasminTest jTest = new JasminTest(symbolTable);
       jTest.process(root, "", SymbolTable.GLOBAL, State.BUILD, "int");
       System.out.println("\n\n---JasminTEST---\n");
-      System.out.println(jTest.code);
+      System.out.println(jTest.finalCode);
 
       PrintWriter out = null;
       try {
         out = new PrintWriter("../out/output.j");
-        out.println(jTest.code);
+        out.println(jTest.finalCode);
       } finally {
         if (out != null)
           out.close();
