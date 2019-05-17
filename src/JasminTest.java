@@ -25,13 +25,16 @@ public class JasminTest {
 
   public String process(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
 
-    if (this.unreachableCode)
+    if (this.unreachableCode && node.getId() != AlphaTreeConstants.JJTMETHOD_DECLARATION && node.getId() != AlphaTreeConstants.JJTMETHOD_DECLARATION)
       return symbol;
 
     switch (node.getId()) {
 
     case AlphaTreeConstants.JJTPROGRAM:
       process_nodeProgram(node, symbol, funcname, state, possibleReturnType);
+      break;
+    case AlphaTreeConstants.JJTCLASSBODY:
+      process_nodeClassBody(node, symbol, funcname, state, possibleReturnType);
       break;
     case AlphaTreeConstants.JJTMETHOD_DECLARATION:
       funcname = getFuncname(node, "", funcname, State.PROCESS, false);
@@ -40,7 +43,7 @@ public class JasminTest {
       funcname = getFuncname(node, "", funcname, State.PROCESS, true);
       break;
     case AlphaTreeConstants.JJTVAR_DECLARATION:
-      process_nodeVarDeclaration(node);
+      process_nodeVarDeclaration(node, state);
       break;
     case AlphaTreeConstants.JJTIDENTIFIER:
       symbol = process_nodeIdentifier(node, symbol, funcname, state);
@@ -200,11 +203,12 @@ public class JasminTest {
         functionHeader += build_funcDeclaration(funcname, isMain);
         //code += ".limit stack 32 \n" + ".limit locals " + (symbolTable.getLimitLocals(funcname) + 1) + "\n";
         tmp += process(child_node, "", funcname, currState, "int");
+
         if (!this.unreachableCode)
-          code += getReturnInstruction(funcname) + "\n\n";
+          code += getReturnInstruction(funcname) + "\n";
         
             functionHeader += ".limit stack " + stackSize + "\n" + ".limit locals " + (symbolTable.getLimitLocals(funcname) + 1) + "\n";
-          finalCode += functionHeader + code;
+          finalCode += functionHeader + code + ".end method\n\n";
       }
     }
     return funcname;
@@ -241,10 +245,12 @@ public class JasminTest {
     } else {
       instruction = "areturn";
     }
-    return instruction + "\n.end method";
+    return instruction;
   }
 
-  private void process_nodeVarDeclaration(SimpleNode node) {
+  private void process_nodeVarDeclaration(SimpleNode node, State state) {
+    if(state != State.PROCESS)
+      return;
     SimpleNode child_node = (SimpleNode) node.jjtGetChild(1);
     if(child_node.getId() == AlphaTreeConstants.JJTARRAY)
      child_node = (SimpleNode) node.jjtGetChild(2);
@@ -260,6 +266,18 @@ public class JasminTest {
     // TODO: Check Inheritance
     process_nodeDefault(node, symbol, funcname, state, possibleReturnType);
     finalCode = classHeader + finalCode;
+  }
+
+
+  private void process_nodeClassBody(SimpleNode node, String symbol, String funcname, State state,
+  String possibleReturnType) {
+    SimpleNode child_node;
+    for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+      child_node = (SimpleNode) node.jjtGetChild(i);
+      if(child_node.getId() == AlphaTreeConstants.JJTVAR_DECLARATION) 
+        state = State.PROCESS;
+      process(child_node, symbol, funcname, state, possibleReturnType);
+    }
   }
 
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
@@ -331,8 +349,8 @@ public class JasminTest {
     if (default_) { // caso seja apenas uma chamada a x < y e nao uma condiçao de um if/loop
       String label_if = buildLabel();
       String label_goto = buildLabel();
-      code += "if_icmpge  " + label_if + "\n" + "iconst_1\n" + "goto\n" + label_if + ":  " + "iconst_0\n" + label_goto
-          + ":  ";
+      code += "if_icmpge  " + label_if + "\n" + "iconst_1\n" + "goto    " + label_goto + "\n" + label_if + ":\n" + "iconst_0\n" + label_goto
+          + ":\n";
     }
 
     return "boolean";
@@ -450,7 +468,7 @@ public class JasminTest {
 
     if (state != State.CONDITION) {
       String label_goto = buildLabel();
-      code += "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":\n" + "iconst_0\n" + label_goto + ":  ";
+      code += "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":\n" + "iconst_0\n" + label_goto + ":\n";
     }
 
     return label;

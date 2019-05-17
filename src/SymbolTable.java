@@ -546,10 +546,15 @@ public class SymbolTable {
         }
 
         int size = getSymbolSize(funcname, varname);
-        if (size != -1 && Integer.parseInt(child_node.val) >= size) {
-            System.out.println("Index out of bounds");
-            System.exit(0);
+        try {
+            if (size != -1 && Integer.parseInt(child_node.val) >= size) {
+                System.out.println("Index out of bounds");
+                System.exit(0);
+            }
+        } catch(NumberFormatException e) {
+
         }
+       
 
         symbol = symbol.split("\\" + ARRAY_SEPARATOR)[0];
         return symbol;
