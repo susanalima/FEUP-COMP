@@ -821,8 +821,12 @@ public class SymbolTable {
                 System.out.println("Invalid function");
                 System.exit(0);
             } else {
+                if (!tmp.equals(symbol)) {
+                    setUndefinedArgsType(symbol, tmp);
+                }
                 symbol = AND_SEPARATOR + IoFunctions.getInstance().getFunctionReturnType(tmp);
             }
+
         } else {
             for (int i = 1; i < node.jjtGetNumChildren(); i++) { // i= 0 no caso de de se ter de analisar as variaveis
                                                                  // antes do dot
