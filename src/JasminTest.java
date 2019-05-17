@@ -332,7 +332,7 @@ public class JasminTest {
       String label_if = buildLabel();
       String label_goto = buildLabel();
       code += "if_icmpge  " + label_if + "\n" + "iconst_1\n" + "goto\n" + label_if + ":  " + "iconst_0\n" + label_goto
-          + ":  "; // TODO CHECK IF IT IS if_icmpge
+          + ":  ";
     }
 
     return "boolean";
@@ -551,7 +551,7 @@ public class JasminTest {
         code += "aload "  + symbolTable.getCounter(funcname, child_node.val)+ "\n";
         header = "invokevirtual " + symbolTable.getVarType(funcname, child_node.val);
       } else {
-          header = "invokestatic " + child_node.val; // TODO eu acho que devia ser invokevirtual aqui
+          header = "invokestatic " + child_node.val; 
           checkMethod = false;
       }
     } else if (child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) {
@@ -583,11 +583,20 @@ public class JasminTest {
       String funcname, State state, String possibleReturnType) {
 
     String[] tmp_symbol_tokens = null;
-    SimpleNode child_node;
+    SimpleNode child_node, tmp_node;
     String tmp_symbol = symbolTable.eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
+    System.out.println("tmp_symbol: " + tmp_symbol);
     String tmp = "";
-    if (!symbolTable.checkUndefinedType(tmp_symbol)) {
-      tmp_symbol = symbolTable.methodExistsWithUndefinedValues(tmp_symbol);
+
+     tmp_node = (SimpleNode) node.jjtGetChild(0); 
+
+    if (!SymbolTable.checkUndefinedType(tmp_symbol)) {
+
+      if(tmp_node.val.equals("io"))
+        tmp_symbol = IoFunctions.getInstance().methodExistsWithUndefinedValues(tmp_symbol); 
+      else
+        tmp_symbol = symbolTable.methodExistsWithUndefinedValues(tmp_symbol);
+
       if (tmp_symbol.equals("")) {
         tmp_symbol = SymbolTable.UNDEFINED_TYPE;
       } else {
@@ -626,12 +635,13 @@ public class JasminTest {
   private String process_nodeDot(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType) {
 
-    SimpleNode child_node = (SimpleNode) node.jjtGetChild(1); // left child
+    SimpleNode right_child_node = (SimpleNode) node.jjtGetChild(1); 
+    SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0);
     String header = "", tmp_symbol;
-    boolean checkMethod = true;
+    boolean checkMethod = true, io = false;
     symbol = "";
 
-    if (child_node.getId() == AlphaTreeConstants.JJTFUNC) {
+    if (right_child_node.getId() == AlphaTreeConstants.JJTFUNC) {
 
       AbstractMap.SimpleEntry<String, Boolean> headerAndCheckMethod = process_nodeDot_buildHeader(node, symbol,
           funcname, state, possibleReturnType);
@@ -643,20 +653,21 @@ public class JasminTest {
       symbol = symbols.getKey();
       tmp_symbol = symbols.getValue();
 
-      SimpleNode tmp_node = (SimpleNode) node.jjtGetChild(0); // left child
-      if (tmp_node.getId() == AlphaTreeConstants.JJTIDENTIFIER && tmp_node.val.equals("io")) {
-        possibleReturnType = "void";
+      if(left_child_node.val.equals("io")) {
+        io = true;
+        possibleReturnType = IoFunctions.getInstance().getFunctionReturnType(tmp_symbol);
       }
 
       code += header + "/" + process_func_call(funcname, symbol, checkMethod, possibleReturnType) + "\n";
 
-      if (!tmp_symbol.equals(SymbolTable.UNDEFINED_TYPE))
+      if (!tmp_symbol.equals(SymbolTable.UNDEFINED_TYPE) && !io)
         symbol = symbolTable.getFunctionReturnType(tmp_symbol);
-      else
+      else if(io) {
+        symbol = possibleReturnType;
+      } else
         symbol = tmp_symbol;
 
-    } else if (child_node.getId() == AlphaTreeConstants.JJTLENGTH) {
-      SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0);
+    } else if (right_child_node.getId() == AlphaTreeConstants.JJTLENGTH) {
       process(left_child_node, symbol, funcname, State.PROCESS, possibleReturnType);
       code += "arraylength\n";
       //checkMethod = false;
