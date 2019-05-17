@@ -7,5 +7,4 @@ TODO LIST:
   28. confirmar cena do extends
   29. perguntar se a analise semantica tem que ver se as variaveis usadas foram inicializadas
   30. cena das variaveis da stack dentro de loops
-  31. nao se pode igualar uma variavel a um void ne....
   32. se a variavel vier do extends como fica o getfield e o putfield?

@@ -585,7 +585,6 @@ public class JasminTest {
     String[] tmp_symbol_tokens = null;
     SimpleNode child_node, tmp_node;
     String tmp_symbol = symbolTable.eval_process((SimpleNode) node.jjtGetChild(1), symbol, funcname, State.BUILD);
-    System.out.println("tmp_symbol: " + tmp_symbol);
     String tmp = "";
 
      tmp_node = (SimpleNode) node.jjtGetChild(0); 
