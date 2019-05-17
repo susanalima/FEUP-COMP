@@ -269,7 +269,6 @@ public class SymbolTable {
             break;
         case AlphaTreeConstants.JJTEXTENDS:
             setExtends(node);
-
             break;
         case AlphaTreeConstants.JJTINT:
             symbol = CARDINAL_SEPARATOR + "int";
@@ -595,17 +594,15 @@ public class SymbolTable {
         }
         symbol += tmp;
 
-        // System.out.println("\nsymbol: " + node.toString());
-
         String expressionType = returnExpressionType(symbol);
 
         if (process_identifier)
             varType = eval_process(identifier, expressionType, funcname, State.PROCESS);
 
-        /*
-         * System.out.println("\nvarType: " + varType);
-         * System.out.println("expressionType: " + AND_SEPARATOR + expressionType);
-         */
+        if (expressionType.equals("void")) {
+            System.out.println("Invalid assigment");
+            System.exit(0);
+        }
 
         if (!evaluateExpressionType(varType, AND_SEPARATOR + expressionType)) {
             System.exit(0);
