@@ -395,9 +395,10 @@ void ExpressionTerm() #void : {}
   (OpenParentesis_token() Expression() CloseParentesis_token())
 }
 
+
 void newFunc() : {}
 {
-New_token()  IntIdentifierExpression()
+  New_token()  IntIdentifierExpression()
 }
 
 void NoExpressionExpression() #void : {}
@@ -409,6 +410,7 @@ void Dot() #void: {}
 {
   Dot_token() NoDotExpression() #DOT(2)
 }
+
 
 void And() #void : {}
 {
