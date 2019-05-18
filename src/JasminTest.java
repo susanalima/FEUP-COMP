@@ -554,10 +554,13 @@ public class JasminTest {
 
   private AbstractMap.SimpleEntry<String, Boolean> process_nodeDot_buildHeader(SimpleNode node, String symbol,
       String funcname, State state, String possibleReturnType) {
+  
 
     String header = "";
     boolean checkMethod = true;
     SimpleNode child_node = (SimpleNode) node.jjtGetChild(0); // left child
+
+
     if (child_node.getId() == AlphaTreeConstants.JJTTHIS) {
       header = "invokevirtual " + symbolTable.getClassName();
     } 
@@ -569,7 +572,7 @@ public class JasminTest {
         code += "aload "  + symbolTable.getCounter(funcname, child_node.val)+ "\n";
         header = "invokevirtual " + symbolTable.getVarType(funcname, child_node.val);
       } else {
-          header = "invokestatic " + child_node.val; 
+          header = "invokestatic " + child_node.val ; 
           checkMethod = false;
       }
     } else if (child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) {
@@ -588,9 +591,11 @@ public class JasminTest {
       } else if (child_node.getId() == AlphaTreeConstants.JJTINT) {
         header = "invokevirtual " + "[I"; // TODO qual é a instrução?
       }
+
     } else {
       checkMethod = false;
     }
+
 
     AbstractMap.SimpleEntry<String, Boolean> returnValues = new AbstractMap.SimpleEntry<>(header, checkMethod);
     return returnValues;
@@ -654,7 +659,7 @@ public class JasminTest {
 
     SimpleNode right_child_node = (SimpleNode) node.jjtGetChild(1); 
     SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0);
-    String header = "", tmp_symbol;
+    String header = "", tmp_symbol, pop = "", processedType;
     boolean checkMethod = true, io = false;
     symbol = "";
 
@@ -675,7 +680,15 @@ public class JasminTest {
         possibleReturnType = IoFunctions.getInstance().getFunctionReturnType(tmp_symbol);
       }
 
-      code += header + "/" + process_func_call(funcname, symbol, checkMethod, possibleReturnType) + "\n";
+
+      processedType = process_func_call(funcname, symbol, checkMethod, possibleReturnType);
+
+      if(node.jjtGetParent().getId() == AlphaTreeConstants.JJTBODY && !processedType.substring(processedType.length() - 1).equals("V") )
+        pop = "pop\n";
+      else 
+        pop = "";
+
+      code += header + "/" + processedType + "\n" + pop;
 
       if (!tmp_symbol.equals(SymbolTable.UNDEFINED_TYPE) && !io)
         symbol = symbolTable.getFunctionReturnType(tmp_symbol);

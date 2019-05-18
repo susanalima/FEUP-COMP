@@ -8,3 +8,5 @@ TODO LIST:
   29. perguntar se a analise semantica tem que ver se as variaveis usadas foram inicializadas
   30. cena das variaveis da stack dentro de loops
   32. se a variavel vier do extends como fica o getfield e o putfield?
+  33. perguntar sobre nomes reservados tipo field
+  34. quando vem um invoke sozinho tem de se fazer pop da stack (verificar isto)
