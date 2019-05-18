@@ -10,3 +10,4 @@ TODO LIST:
   32. se a variavel vier do extends como fica o getfield e o putfield?
   33. perguntar sobre nomes reservados tipo field
   34. quando vem um invoke sozinho tem de se fazer pop da stack (verificar isto)
+  35. analise semantica dos nots (!), tem de vir sempre antes de um boolean

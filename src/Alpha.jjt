@@ -391,7 +391,7 @@ void ExpressionTerm() #void : {}
   (IntegerLiteral_token()) |
   (newFunc() )|
   (Identifier_token()) |
-  (ExclamationPoint_token() Expression()) |
+  (ExclamationPoint_token() Expression() #NOT) |
   (OpenParentesis_token() Expression() CloseParentesis_token())
 }
 

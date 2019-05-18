@@ -359,6 +359,10 @@ public class SymbolTable {
         case AlphaTreeConstants.JJTCONDITION:
             symbol = evalNodeCondition(node, "", funcname, state);
             break;
+        case AlphaTreeConstants.JJTNOT:
+            SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
+            symbol = eval_process(child_node, "", funcname, state);
+            break;
         case AlphaTreeConstants.JJTINDEX:
             symbol = evalNodeIndex(node, symbol, funcname, state);
             break;
