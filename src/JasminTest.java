@@ -99,14 +99,14 @@ public class JasminTest {
     case AlphaTreeConstants.JJTWHILE:
       symbol = process_nodeWhile(node, symbol, funcname, state, possibleReturnType);
       break;
-    /*
-     * case AlphaTreeConstants.JJTNOT: SimpleNode child_node = (SimpleNode)
-     * node.jjtGetChild(0); symbol = process(child_node, symbol, funcname, state,
-     * possibleReturnType); String label_if = buildLabel() ,label_goto =
-     * buildLabel(); code += "ifne " + label_if + "\niconst_1\n" + "goto    " +
-     * label_goto + "\n" + label_if + ":\n" + "iconst_0\n" + label_goto + ":\n";
-     * break;
-     */
+    case AlphaTreeConstants.JJTNOT: 
+      SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
+      symbol = process(child_node, symbol, funcname, state, possibleReturnType); 
+      if(child_node.getId() == AlphaTreeConstants.JJTAND || node.jjtGetParent().getId() == AlphaTreeConstants.JJTAND)
+        break;
+      String label_if = buildLabel() ,label_goto = buildLabel(); 
+      code += "ifne " + label_if + "\niconst_1\n" + "goto    " + label_goto + "\n" + label_if + ":\n" + "iconst_0\n" + label_goto + ":\n";
+      break;
     case AlphaTreeConstants.JJTRETURN:
       process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
       break;
@@ -488,6 +488,7 @@ public class JasminTest {
 
     if (state != State.CONDITION) {
       String label_goto = buildLabel();
+     
       code += "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":\n" + "iconst_0\n" + label_goto + ":\n";
     }
 
@@ -497,32 +498,20 @@ public class JasminTest {
   private void process_nodeAnd_side(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType, String label) {
 
-    boolean notParent = false;
 
     process(node, symbol, funcname, state, possibleReturnType);
 
-    if (node.jjtGetParent().getId() == AlphaTreeConstants.JJTNOT)
-      notParent = true;
-
     if (node.getId() == AlphaTreeConstants.JJTAND)
-      return;
+      return ;
 
     if (node.getId() == AlphaTreeConstants.JJTMINOR) {
-      if (notParent)
-        code += "if_icmplt    " + label + "\n";
-      else
         code += "if_icmpge    " + label + "\n";
     } else if (node.getId() == AlphaTreeConstants.JJTNOT) {
-      if (notParent)
-        code += "ifeq    " + label + "\n";
-      else
         code += "ifne    " + label + "\n";
     } else {
-      if (notParent)
-        code += "ifne    " + label + "\n";
-      else
         code += "ifeq    " + label + "\n";
     }
+    return ;
   }
 
   private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType,
