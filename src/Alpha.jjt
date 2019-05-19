@@ -391,7 +391,6 @@ void ExpressionTerm() #void : {}
   (IntegerLiteral_token()) |
   (newFunc() )|
   (Identifier_token()) |
-  (ExclamationPoint_token() Expression() #NOT) |
   (OpenParentesis_token() Expression() CloseParentesis_token())
 }
 
@@ -465,9 +464,10 @@ void DivisionExpr() #void : {}
 }
 
 
-void ExpressionTermDotArray() # void : {}
+void ExpressionTermDotArray() #void : {}
 {
- ExpressionTerm() [LOOKAHEAD(2) ((OpenBracket_token() Expression() #INDEX(2) CloseBracket_token())| (Dot()))]
+ (ExpressionTerm() [LOOKAHEAD(2) ((OpenBracket_token() Expression() #INDEX(2) CloseBracket_token())| (Dot()))] ) |
+ ( ExclamationPoint_token()  ExpressionTermDotArray() #NOT [LOOKAHEAD(2) ((OpenBracket_token() Expression() #INDEX(2) CloseBracket_token())| Dot())] )
 }
 
 void NoDotExpression() #void: {}
