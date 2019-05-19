@@ -1,0 +1,173 @@
+  
+        /**TEST FUNCTIONS */
+
+    public boolean t0(int a, int b) {  //FAZ DIREITO
+		return (!this.gt(a, b) && !this.eq(a, b));
+    }
+    
+    public boolean t1(int a, int b) { //FAZ DIREITO
+		return (!this.gt(a, b) && this.eq(a, b));
+    }
+    
+    public boolean t2(int a, int b) { //FAZ DIREITO
+		return (this.gt(a, b) && !this.eq(a, b));
+    }
+    
+    public boolean t3(int a, int b) { //FAZ DIREITO
+		return (this.gt(a, b) && this.eq(a, b));
+    }
+    
+
+    public boolean t4(int a, int b) {  //FAZ MAL
+		return !(!this.gt(a, b) && !this.eq(a, b));
+    }
+    
+    public boolean t5(int a, int b) {  //FAZ MAL
+		return !(!this.gt(a, b) && this.eq(a, b));
+    }
+    
+    public boolean t6(int a, int b) {  //FAZ MAL
+		return !(this.gt(a, b) && !this.eq(a, b));
+    }
+    
+    public boolean t7(int a, int b) { //FAZ MAL
+		return !(this.gt(a, b) && this.eq(a, b));
+	}
+
+
+  
+  public boolean t0(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokevirtual #21                 // Method gt:(II)Z
+       6: ifne          22
+       9: aload_0
+      10: iload_1
+      11: iload_2
+      12: invokevirtual #20                 // Method eq:(II)Z
+      15: ifne          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn
+
+  public boolean t1(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokevirtual #21                 // Method gt:(II)Z
+       6: ifne          22
+       9: aload_0
+      10: iload_1
+      11: iload_2
+      12: invokevirtual #20                 // Method eq:(II)Z
+      15: ifeq          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn
+
+  public boolean t2(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokevirtual #21                 // Method gt:(II)Z
+       6: ifeq          22
+       9: aload_0
+      10: iload_1
+      11: iload_2
+      12: invokevirtual #20                 // Method eq:(II)Z
+      15: ifne          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn
+
+  public boolean t3(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokevirtual #21                 // Method gt:(II)Z
+       6: ifeq          22
+       9: aload_0
+      10: iload_1
+      11: iload_2
+      12: invokevirtual #20                 // Method eq:(II)Z
+      15: ifeq          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn
+
+  public boolean t4(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokevirtual #21                 // Method gt:(II)Z
+       6: ifne          18
+       9: aload_0
+      10: iload_1
+      11: iload_2
+      12: invokevirtual #20                 // Method eq:(II)Z
+      15: ifeq          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn
+
+  public boolean t5(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokevirtual #21                 // Method gt:(II)Z
+       6: ifne          18
+       9: aload_0
+      10: iload_1
+      11: iload_2
+      12: invokevirtual #20                 // Method eq:(II)Z
+      15: ifne          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn
+
+  public boolean t6(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokevirtual #21                 // Method gt:(II)Z
+       6: ifeq          18
+       9: aload_0
+      10: iload_1
+      11: iload_2
+      12: invokevirtual #20                 // Method eq:(II)Z
+      15: ifeq          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn
+
+  public boolean t7(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokevirtual #21                 // Method gt:(II)Z
+       6: ifeq          18
+       9: aload_0
+      10: iload_1
+      11: iload_2
+      12: invokevirtual #20                 // Method eq:(II)Z
+      15: ifne          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn

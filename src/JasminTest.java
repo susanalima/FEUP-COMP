@@ -209,8 +209,6 @@ public class JasminTest {
         tmp += symbolTable.eval_build(child_node, symbol, funcname, currState);
       else if (currState == State.PROCESS) {
         functionHeader += build_funcDeclaration(funcname, isMain);
-        // code += ".limit stack 32 \n" + ".limit locals " +
-        // (symbolTable.getLimitLocals(funcname) + 1) + "\n";
         tmp += process(child_node, "", funcname, currState, "int");
 
         if (!this.unreachableCode)
@@ -479,25 +477,48 @@ public class JasminTest {
 
     if (state == State.BUILD)
       state = State.PROCESS;
-
+    
     SimpleNode left_child_node = (SimpleNode) node.jjtGetChild(0); // left child
-    process_nodeAnd_side(left_child_node, label, funcname, state, possibleReturnType, label);
-
     SimpleNode right_child_node = (SimpleNode) node.jjtGetChild(1); // rigth child
-    process_nodeAnd_side(right_child_node, label, funcname, state, possibleReturnType, label);
+    String notLabel = label;
+    boolean notLeft = false, notRight = false, notParent = false, swapLeft = false, swapRight = false;
+
+    if(node.jjtGetParent().getId() == AlphaTreeConstants.JJTNOT ) {
+       notParent = true;
+    }
+
+    if( left_child_node.getId() == AlphaTreeConstants.JJTNOT)
+      notLeft = true;
+
+    if( right_child_node.getId() == AlphaTreeConstants.JJTNOT)
+      notRight = true;
+
+    if(notParent) {
+      if((notLeft && notRight)|| (notLeft && !notRight) || (!notLeft && notRight) || (!notLeft && !notRight)) {
+        swapLeft = false;
+        swapRight = true;
+        notLabel = buildLabel();
+      } 
+    }
+    
+ 
+    process_nodeAnd_side(left_child_node, label, funcname, state, possibleReturnType, notLabel, swapLeft); 
+    process_nodeAnd_side(right_child_node, label, funcname, state, possibleReturnType, label, swapRight);
+
+    if(!notLabel.equals(""))
+      notLabel += ":\n";
 
     if (state != State.CONDITION) {
       String label_goto = buildLabel();
      
-      code += "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":\n" + "iconst_0\n" + label_goto + ":\n";
+      code += notLabel + "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":\n" + "iconst_0\n" + label_goto + ":\n";
     }
 
     return label;
   }
 
   private void process_nodeAnd_side(SimpleNode node, String symbol, String funcname, State state,
-      String possibleReturnType, String label) {
-
+      String possibleReturnType, String label, boolean swap) {
 
     process(node, symbol, funcname, state, possibleReturnType);
 
@@ -505,14 +526,30 @@ public class JasminTest {
       return ;
 
     if (node.getId() == AlphaTreeConstants.JJTMINOR) {
+      if (swap)
+        code += "if_icmplt    " + label + "\n";
+      else
         code += "if_icmpge    " + label + "\n";
     } else if (node.getId() == AlphaTreeConstants.JJTNOT) {
+      if (swap)
+        code += "ifeq    " + label + "\n";
+      else
         code += "ifne    " + label + "\n";
     } else {
+      if (swap)
+        code += "ifne    " + label + "\n";
+      else
         code += "ifeq    " + label + "\n";
     }
     return ;
   }
+
+
+  private void process_nodeAnd_side(SimpleNode node, String symbol, String funcname, State state,
+  String possibleReturnType, String label) {
+     process_nodeAnd_side(node, symbol, funcname, state, possibleReturnType, label, false);
+     return;
+}
 
   private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType,
       String label, boolean unreachableCode) {

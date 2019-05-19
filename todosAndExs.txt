@@ -3,7 +3,6 @@ TODO LIST:
   20. ver while true/false -> verificar em casos com muitos loops e ifs encadeados
   23. ldc ou iconst para os booleanos??
   24. mudar a tabela de simbolos para ter os tipos no formato correto
-  27. funçoes do io guardadas para serem invocadas direito
   28. confirmar cena do extends
   29. perguntar se a analise semantica tem que ver se as variaveis usadas foram inicializadas
   30. cena das variaveis da stack dentro de loops
@@ -11,3 +10,4 @@ TODO LIST:
   33. perguntar sobre nomes reservados tipo field
   34. quando vem um invoke sozinho tem de se fazer pop da stack (verificar isto)
   35. analise semantica dos nots (!), tem de vir sempre antes de um boolean
+  36. a invocaçao de parametros e feita de maneira diferente?
