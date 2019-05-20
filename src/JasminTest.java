@@ -100,12 +100,7 @@ public class JasminTest {
       symbol = process_nodeWhile(node, symbol, funcname, state, possibleReturnType);
       break;
     case AlphaTreeConstants.JJTNOT: 
-      SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
-      symbol = process(child_node, symbol, funcname, state, possibleReturnType); 
-      if(child_node.getId() == AlphaTreeConstants.JJTAND || node.jjtGetParent().getId() == AlphaTreeConstants.JJTAND)
-        break;
-      String label_if = buildLabel() ,label_goto = buildLabel(); 
-      code += "ifne " + label_if + "\niconst_1\n" + "goto    " + label_goto + "\n" + label_if + ":\n" + "iconst_0\n" + label_goto + ":\n";
+      symbol = process_nodeNot(node, symbol, funcname, state);
       break;
     case AlphaTreeConstants.JJTRETURN:
       process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
@@ -380,13 +375,13 @@ public class JasminTest {
         code += "if_icmpge    " + label + "\n";
       break;
     case AlphaTreeConstants.JJTAND:
-      label = process_nodeAnd(child_node, symbol, funcname, State.CONDITION, possibleReturnType, label);
+      label = process_nodeAnd(child_node, symbol, funcname, State.CONDITION,  "boolean", label);
       break;
     case AlphaTreeConstants.JJTNOT:
-      label = process_nodeCondition((SimpleNode) child_node, symbol, funcname, possibleReturnType, true);
+      label = process_nodeCondition((SimpleNode) child_node, symbol, funcname,  "boolean", true);
       break;
     default:
-      process_nodeDefault(node, symbol, funcname, State.PROCESS, possibleReturnType);
+      process_nodeDefault(node, symbol, funcname, State.PROCESS, "boolean");
       if (not)
         code += "ifne    " + label + "\n";
       else
@@ -467,6 +462,17 @@ public class JasminTest {
     }
 
     return symbol;
+  }
+
+
+  private String process_nodeNot(SimpleNode node, String symbol, String funcname, State state) {
+    SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
+    process(child_node, symbol, funcname, state, "boolean"); 
+    if(child_node.getId() == AlphaTreeConstants.JJTAND || node.jjtGetParent().getId() == AlphaTreeConstants.JJTAND)
+      return "boolean";
+    String label_if = buildLabel() ,label_goto = buildLabel(); 
+    code += "ifne " + label_if + "\niconst_1\n" + "goto    " + label_goto + "\n" + label_if + ":\n" + "iconst_0\n" + label_goto + ":\n";
+    return "boolean";
   }
 
 
