@@ -360,8 +360,7 @@ public class SymbolTable {
             symbol = evalNodeCondition(node, "", funcname, state);
             break;
         case AlphaTreeConstants.JJTNOT:
-            SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
-            symbol = eval_process(child_node, "", funcname, state);
+            symbol = evalNodeNot(node, symbol, funcname, state);
             break;
         case AlphaTreeConstants.JJTINDEX:
             symbol = evalNodeIndex(node, symbol, funcname, state);
@@ -588,6 +587,17 @@ public class SymbolTable {
         return symbol;
     }
 
+    private String evalNodeNot(SimpleNode node, String symbol, String funcname, State state) {
+        SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
+        symbol = eval_process(child_node, "boolean", funcname, state);
+        System.out.println("symbol: " + symbol);
+        if(!this.evaluateExpressionType("&boolean", symbol)) {
+            System.out.println("Invalid use of not");
+            System.exit(0);
+        }
+        return symbol;
+    }
+
     public String evalNodeEqual_process(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode identifier = (SimpleNode) node.jjtGetChild(0), child_node;
         String tmp = "", varType = AND_SEPARATOR + "int";
@@ -629,9 +639,7 @@ public class SymbolTable {
         String tmp = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
-            if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER && i != 0) { // this means the type is done and
-                                                                                    // the
-                                                                                    // identifier is next
+            if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER && i != 0) { 
 
                 if (child_node.val.equals(getClassName())) {
                     System.out.println("Invalid var declaration : " + child_node.val);

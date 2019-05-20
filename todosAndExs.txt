@@ -4,10 +4,6 @@ TODO LIST:
   23. ldc ou iconst para os booleanos??
   24. mudar a tabela de simbolos para ter os tipos no formato correto
   28. confirmar cena do extends
-  29. perguntar se a analise semantica tem que ver se as variaveis usadas foram inicializadas
   30. cena das variaveis da stack dentro de loops
   32. se a variavel vier do extends como fica o getfield e o putfield?
-  33. perguntar sobre nomes reservados tipo field
-  34. quando vem um invoke sozinho tem de se fazer pop da stack (verificar isto)
-  35. analise semantica dos nots (!), tem de vir sempre antes de um boolean
-  36. a invocaçao de parametros e feita de maneira diferente?
+
