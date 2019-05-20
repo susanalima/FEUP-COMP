@@ -590,7 +590,6 @@ public class SymbolTable {
     private String evalNodeNot(SimpleNode node, String symbol, String funcname, State state) {
         SimpleNode child_node = (SimpleNode) node.jjtGetChild(0);
         symbol = eval_process(child_node, "boolean", funcname, state);
-        System.out.println("symbol: " + symbol);
         if(!this.evaluateExpressionType("&boolean", symbol)) {
             System.out.println("Invalid use of not");
             System.exit(0);

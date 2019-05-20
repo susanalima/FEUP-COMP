@@ -6,4 +6,5 @@ TODO LIST:
   28. confirmar cena do extends
   30. cena das variaveis da stack dentro de loops
   32. se a variavel vier do extends como fica o getfield e o putfield?
+  33. while(!true)
 

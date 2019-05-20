@@ -480,7 +480,7 @@ public class JasminTest {
   private String process_nodeAnd(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType, String label, String notLabel, boolean swap) {
 
-    if (node.jjtGetParent().getId() != AlphaTreeConstants.JJTAND)
+    if (node.jjtGetParent().getId() != AlphaTreeConstants.JJTAND && label.equals(""))
       label = buildLabel();
 
     if (state == State.BUILD)
@@ -513,14 +513,11 @@ public class JasminTest {
  
     process_nodeAnd_side(left_child_node, label, funcname, state, possibleReturnType, notLabel, false); 
     process_nodeAnd_side(right_child_node, label, funcname, state, possibleReturnType, notLabel, swap);
-
-    if(!notLabel.equals(""))
-      notLabel += ":\n";
+ 
 
     if (state != State.CONDITION) {
       String label_goto = buildLabel();
-     
-      code += notLabel + "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":\n" + "iconst_0\n" + label_goto + ":\n";
+      code +=  "iconst_1\n" + "goto    " + label_goto + "\n" + label + ":\n" + "iconst_0\n" + label_goto + ":\n";
     }
 
     return label;
@@ -556,6 +553,13 @@ public class JasminTest {
       else
         code += "ifeq    " + label + "\n";
     }
+
+    if(!label.equals(symbol) && swap) {
+      label += ":\n";
+      code += label;
+    }
+
+
     return ;
   }
 
