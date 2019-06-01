@@ -1,10 +1,10 @@
 TODO LIST:
-  4. FAZER ALTO REFACTORING NESTE TRETA
   20. ver while true/false -> verificar em casos com muitos loops e ifs encadeados
   23. ldc ou iconst para os booleanos??
   24. mudar a tabela de simbolos para ter os tipos no formato correto
   28. confirmar cena do extends
   30. cena das variaveis da stack dentro de loops
   32. se a variavel vier do extends como fica o getfield e o putfield?
-  33. while(!true) || while(!false) -> da erro, nao sei que fazer, deveria estar na analise semantica?
+  33. while(!true) || while(false) -> da erro, nao sei que fazer, deveria estar na analise semantica?
+  34. ( MathUtils.random(0, 5) < 4 ) -> diz que o return type da funçao e boolean....
 

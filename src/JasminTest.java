@@ -839,11 +839,16 @@ public class JasminTest {
 
     String left_child_type = symbolTable.getVarType(funcname, left_child_node.val);
 
+    State s = State.BUILD;
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       child_node = (SimpleNode) node.jjtGetChild(i);
-      process(child_node, symbol, funcname, State.BUILD, left_child_type);
+      if(child_node.getId() == AlphaTreeConstants.JJTNOT)
+        s = State.PROCESS;
+      process(child_node, symbol, funcname, s, left_child_type);
     }
+    
     child_node = (SimpleNode) node.jjtGetChild(1); // right child
+
 
     if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER || child_node.getId() == AlphaTreeConstants.JJTTRUE
         || child_node.getId() == AlphaTreeConstants.JJTFALSE) // CASE IT IS AN IDENTIFIER LIKE a = s
