@@ -50,7 +50,7 @@ options {
    <STRING: "String"> |
   
    <INTEGER_LITERAL: (["0" - "9"])+ > |
-   <IDENTIFIER: ( (["A" - "Z", "a" - "z"] (["0" - "9", "A" - "Z", "a" - "z", "_"])* ) ) >
+   <IDENTIFIER: ( (["A" - "Z", "a" - "z", "_", "$"] (["0" - "9", "A" - "Z", "a" - "z", "_"])* ) ) >
  }
  SimpleNode Program(): {} {
   (ClassDeclaration() <EOF> ) {

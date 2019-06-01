@@ -623,7 +623,10 @@ public class SymbolTable {
         }
 
         if (!evaluateExpressionType(varType, AND_SEPARATOR + expressionType)) {
-            System.exit(0);
+            if (!(this.extends_ && varType.equals(AND_SEPARATOR + this.parentClass) && expressionType.equals(this.className) )) {
+                System.out.println("Invalid assigment");
+                System.exit(0);
+            }
         }
 
         if (isVarGlobal(identifier.val) && getVarType(GLOBAL, identifier.val).equals(UNDEFINED_TYPE)) {
@@ -792,11 +795,14 @@ public class SymbolTable {
 
             tmp = methodExistsWithUndefinedValues(symbol);
 
-            if (tmp.equals("")) { // se a funçao com aqueles argumentos nao existir
-                System.out.println("Invalid function");
+            if (tmp.equals("") && !this.extends_) { // se a funçao com aqueles argumentos nao existir
+                System.out.println("Invalid function1");
                 System.exit(0);
             } else {
-                symbol = AND_SEPARATOR + getFunctionReturnType(tmp);
+                if(this.extends_)
+                    symbol = "int"; //TODO SEI LA....
+                else
+                    symbol = AND_SEPARATOR + getFunctionReturnType(tmp);
             }
             /*
              * } else if (checkUndefinedType(tmp)) { symbol = AND_SEPARATOR +
