@@ -356,7 +356,7 @@ public class JasminTest {
     SimpleNode child_node;
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       child_node = (SimpleNode) node.jjtGetChild(i);
-      process(child_node, "", funcname, State.PROCESS, "boolean");
+      process(child_node, "", funcname, State.PROCESS, "int");
     }
 
     if (node.jjtGetParent().getId() == AlphaTreeConstants.JJTAND) // in case the parent is an and

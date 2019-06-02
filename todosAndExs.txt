@@ -6,5 +6,4 @@ TODO LIST:
   30. cena das variaveis da stack dentro de loops
   32. se a variavel vier do extends como fica o getfield e o putfield?
   33. while(!true) || while(false) -> da erro, nao sei que fazer, deveria estar na analise semantica?
-  34. ( MathUtils.random(0, 5) < 4 ) -> diz que o return type da funçao e boolean....
 
