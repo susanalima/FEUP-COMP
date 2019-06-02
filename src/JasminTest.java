@@ -141,12 +141,23 @@ public class JasminTest {
   }
 
   private String process_func_call(String funcname, String expression, boolean checkMethod,
-      String possible_return_type) {
+      String possible_return_type, boolean isThis) {
     String[] tokens = expression.split(SymbolTable.AND_SEPARATOR);
     String processed = tokens[0] + "(";
 
+    String prevExpression = expression;
+
+    //System.out.println("expression1 : " + expression);
+
     if (checkMethod)
       expression = symbolTable.methodExistsWithUndefinedValues(expression);
+
+     // System.out.println("expression2 : " + isThis);
+
+    if(isThis && symbolTable.extends_ && expression.equals("")){
+      expression = prevExpression;
+      checkMethod = false;
+    }
 
     tokens = expression.split(SymbolTable.AND_SEPARATOR);
     for (int i = 1; i < tokens.length; i++) {
@@ -672,7 +683,8 @@ public class JasminTest {
       header = "invokevirtual " + symbolTable.getClassName();
     } else if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
       if (symbolTable.wasVarDeclared(funcname, child_node.val)) {
-        if (!symbolTable.getClassName().equals(symbolTable.getVarType(funcname, child_node.val)))
+        String vT = symbolTable.getVarType(funcname, child_node.val);
+        if (!symbolTable.getClassName().equals(vT) && !symbolTable.getParentClass().equals(vT))
           checkMethod = false;
         stackSize++;
         code += "aload " + symbolTable.getCounter(funcname, child_node.val) + "\n";
@@ -753,7 +765,7 @@ public class JasminTest {
 
     symbol += tmp;
 
-    // System.out.println("symbol : " + symbol);
+     //System.out.println("symbol : " + symbol);
 
     AbstractMap.SimpleEntry<String, String> returnValues = new AbstractMap.SimpleEntry<>(symbol, tmp_symbol);
     return returnValues;
@@ -785,7 +797,14 @@ public class JasminTest {
         possibleReturnType = IoFunctions.getInstance().getFunctionReturnType(tmp_symbol);
       }
 
-      processedType = process_func_call(funcname, symbol, checkMethod, possibleReturnType);
+
+      String vT = symbolTable.getVarType(funcname, left_child_node.val);
+
+      boolean isThis = ((left_child_node.getId() == AlphaTreeConstants.JJTTHIS) || (symbolTable.getParentClass().equals(vT)));
+
+      processedType = process_func_call(funcname, symbol, checkMethod, possibleReturnType, isThis );
+
+     // System.out.println("processedType1 : " + processedType);
 
       if (node.jjtGetParent().getId() == AlphaTreeConstants.JJTBODY
           && !processedType.substring(processedType.length() - 1).equals("V"))
