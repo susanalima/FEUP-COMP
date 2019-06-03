@@ -11,6 +11,8 @@ public class JasminTest {
   boolean unreachableCode;
   int stackSize;
 
+  Optimization optimization;
+
   JasminTest(SymbolTable sT) {
     this.symbolTable = sT;
     this.code = "";
@@ -20,6 +22,8 @@ public class JasminTest {
     this.unreachableCode = false;
     this.stackSize = 0;
     this.finalCode = "";
+    this.optimization = Optimization.O;
+
   }
 
   public String process(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
@@ -301,11 +305,19 @@ public class JasminTest {
       symbol += symbolTable.getVarType(funcname, node.val);
       if (symbolTable.isVarLocal(funcname, node.val)) {
         String type = symbolTable.getVarType(funcname, node.val);
-        if (type.equals("int") || type.equals("boolean"))
-          code += "iload ";
-        else
+        if (type.equals("int") || type.equals("boolean")) {
+          String cValue = symbolTable.getSymbolConstValue(funcname, node.val);
+          if(this.optimization == Optimization.O && !cValue.equals(Symbol.UNDEFINED_CVALUE)) {
+            code += "ldc " + cValue + "\n"; 
+          } else {
+            code += "iload ";
+            code += symbolTable.getCounter(funcname, node.val) + "\n"; 
+          }
+        }    
+        else {
           code += "aload ";
-        code += symbolTable.getCounter(funcname, node.val) + "\n"; // MUDAR CONSOANTE O TIPO
+          code += symbolTable.getCounter(funcname, node.val) + "\n"; 
+        }
       } else {
         code += "aload_0\n" + "getfield " + symbolTable.getClassName() + "/" + node.val + " "
             + this.paramType(symbolTable.getVarType(funcname, node.val)) + "\n";
@@ -844,8 +856,13 @@ public class JasminTest {
       isArray = true;
     } else {
       type = symbolTable.getVarType(funcname, left_child_node.val);
-      if (type.equals("int") || type.equals("boolean"))
+      if (type.equals("int") || type.equals("boolean")) {
+        String cValue = symbolTable.getSymbolConstValue(funcname, left_child_node.val);
+        if(optimization == Optimization.O && !cValue.equals(Symbol.UNDEFINED_CVALUE)) {
+          return symbol;
+        }
         storeType = "istore ";
+      }
       else
         storeType = "astore ";
       storeType += symbolTable.getCounter(funcname, left_child_node.val);

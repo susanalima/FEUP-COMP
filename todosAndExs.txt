@@ -6,4 +6,10 @@ TODO LIST:
   30. cena das variaveis da stack dentro de loops
   32. se a variavel vier do extends como fica o getfield e o putfield?
   33. while(!true) || while(false) -> da erro, nao sei que fazer, deveria estar na analise semantica?
+  34. testar parametros $name
+  35. mudar a funcao que faz set do constValue da variavel para adicionar a variavel a tabela de simbolos caso ela nao exista
+  36. ver melhor cena do ldc vs iconst, especialmente nos booleanos
+  37. comparar com o javac mesmo
+  38. adiciona o optimization como argumento/parametro -> esta escrito a mao agr
+
 

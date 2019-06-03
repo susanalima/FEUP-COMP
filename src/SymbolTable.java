@@ -14,11 +14,13 @@ public class SymbolTable {
     String className;
     boolean extends_;
     String parentClass;
+    Optimization optimization;
 
     SymbolTable() {
         this.symbolTable = new HashMap<>();
         this.extends_ = false;
         this.parentClass = "java/lang/Object";
+        this.optimization = Optimization.O;
     }
 
     public void setExtends(SimpleNode node) {
@@ -234,6 +236,23 @@ public class SymbolTable {
         } else
             return this.symbolTable.get(GLOBAL).getVarSize(varName);
     }
+
+
+    void setSymbolConstValue(String funcName, String varName, String value) {
+
+        if (isVarLocal(funcName, varName)) {
+            this.symbolTable.get(funcName).setVarConstValue(varName, value);
+        } else
+            this.symbolTable.get(GLOBAL).setVarConstValue(varName, value);
+    }
+
+    String getSymbolConstValue(String funcName, String varName) {
+        if (isVarLocal(funcName, varName)) {
+            return this.symbolTable.get(funcName).getVarConstValue(varName);
+        } else
+            return this.symbolTable.get(GLOBAL).getVarConstValue(varName);
+    }
+
 
     public void printSymbolTable() {
         System.out.println("\n\n---SYMBOL TABLE---\n\n");
@@ -691,15 +710,41 @@ public class SymbolTable {
     public void evalNodeEqual_build(SimpleNode node, String funcname) {
         SimpleNode grand_child_node, child_node = (SimpleNode) node.jjtGetChild(0); // identifier
         String varname = child_node.val;
-        child_node = (SimpleNode) node.jjtGetChild(1);
-        if (child_node.getId() == AlphaTreeConstants.JJTNEWFUNC) { // new func
-            grand_child_node = (SimpleNode) child_node.jjtGetChild(1);
-            if (grand_child_node.getId() == AlphaTreeConstants.JJTINT) { // se for array
-                grand_child_node = (SimpleNode) child_node.jjtGetChild(2);
-                if (grand_child_node.getId() == AlphaTreeConstants.JJTINTEGER) {
-                    setSymbolSize(funcname, varname, Integer.parseInt(grand_child_node.val));
+        int id = child_node.getId();
+        child_node = (SimpleNode) node.jjtGetChild(1); //right child
+
+        String cValue = Symbol.UNDEFINED_CVALUE;
+        int child_id = child_node.getId();
+        if (child_id == AlphaTreeConstants.JJTINTEGER) {
+            cValue = child_node.val;
+        } else if(child_id == AlphaTreeConstants.JJTTRUE) {
+            cValue = "1";
+        } else if(child_id == AlphaTreeConstants.JJTFALSE) {
+            cValue = "0";
+        } else {
+            if (child_id == AlphaTreeConstants.JJTNEWFUNC) { // new func
+                grand_child_node = (SimpleNode) child_node.jjtGetChild(1);
+                if (grand_child_node.getId() == AlphaTreeConstants.JJTINT) { // se for array
+                    grand_child_node = (SimpleNode) child_node.jjtGetChild(2);
+                    if (grand_child_node.getId() == AlphaTreeConstants.JJTINTEGER) {
+                        setSymbolSize(funcname, varname, Integer.parseInt(grand_child_node.val));
+                    }
                 }
             }
+        }
+
+        if(id == AlphaTreeConstants.JJTIDENTIFIER) {
+
+            SimpleNode parent_node = (SimpleNode) node.jjtGetParent();
+            int parent_id = parent_node.getId();
+            SimpleNode grandParent_node = (SimpleNode) parent_node.jjtGetParent();
+            int grandParent_id = grandParent_node.getId();
+
+            if(parent_id == AlphaTreeConstants.JJTBODY && (grandParent_id == AlphaTreeConstants.JJTIF || grandParent_id == AlphaTreeConstants.JJTELSE))
+                cValue = Symbol.UNDEFINED_CVALUE;
+
+            
+            setSymbolConstValue(funcname, varname, cValue);
         }
     }
 

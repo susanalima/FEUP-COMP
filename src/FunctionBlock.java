@@ -53,9 +53,16 @@ public class FunctionBlock {
         return contents.get(varName).size;
     }
 
-    
     void setVarSize(String varName, int size) {
         contents.get(varName).setSize(size);
+    }
+
+    String getVarConstValue(String varName) {
+        return contents.get(varName).getConstValue();
+    }
+
+    void setVarConstValue(String varName, String value) {
+        contents.get(varName).setConstValue(value);
     }
 
 

@@ -1,0 +1,4 @@
+enum Optimization {
+    NONE,
+    O,
+}
