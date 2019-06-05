@@ -1,6 +1,8 @@
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
 
 public class JasminTest {
 
@@ -15,7 +17,7 @@ public class JasminTest {
 
   Optimization optimization;
 
-  JasminTest(SymbolTable sT) {
+  JasminTest(SymbolTable sT, Optimization opt) {
     this.symbolTable = sT;
     this.code = "";
     this.classHeader = "";
@@ -24,8 +26,7 @@ public class JasminTest {
     this.unreachableCode = false;
     this.stackSize = 0;
     this.finalCode = "";
-    this.optimization = Optimization.O;
-
+    this.optimization = opt;
   }
 
   public String process(SimpleNode node, String symbol, String funcname, State state, String possibleReturnType) {
@@ -435,15 +436,14 @@ public class JasminTest {
         notFalse = true;
     }
 
-    if (childId == AlphaTreeConstants.JJTTRUE || notFalse) { // case
-                                                                                                                 // if(true/false
+    if (childId == AlphaTreeConstants.JJTTRUE || notFalse) { // if(true/!false)
       child_node = (SimpleNode) node.jjtGetChild(1); // body
       symbol = process(child_node, symbol, funcname, state, possibleReturnType);
 
       if (this.unreachableCode)
         this.unreachableCode = false;
 
-    } else if(childId == AlphaTreeConstants.JJTFALSE || notTrue) {
+    } else if(childId == AlphaTreeConstants.JJTFALSE || notTrue) { //if(false/!true)
 
       child_node = (SimpleNode) node.jjtGetChild(2); // else
       symbol = process(child_node, symbol, funcname, state, possibleReturnType);
@@ -460,7 +460,7 @@ public class JasminTest {
         new_label = buildLabel();
         code += "goto   " + new_label + "\n";
       }
-      process_nodeDefault(child_node, symbol, funcname, State.BUILD, possibleReturnType); // process body
+      HashMap<String,String> ifDefinedSymbols = process_nodeIfBody(child_node, symbol, funcname, State.BUILD, possibleReturnType); // process body
 
       if (this.unreachableCode) {
         this.unreachableCode = false;
@@ -468,7 +468,7 @@ public class JasminTest {
       }
 
       child_node = (SimpleNode) node.jjtGetChild(2); // else
-      process_nodeElse(child_node, symbol, funcname, possibleReturnType, label, unreachable);
+      process_nodeElse(child_node, symbol, funcname, possibleReturnType, label, unreachable, ifDefinedSymbols);
 
       if (!new_label.equals(""))
         code += new_label + ":\n";
@@ -633,8 +633,41 @@ public class JasminTest {
   }
 
 
+  private HashMap process_nodeIfBody(SimpleNode node, String symbol, String funcname, State state,
+      String possibleReturnType) {
+
+    SimpleNode child_node;
+
+    HashMap<String, String> definedSymbols = new HashMap<String, String>();
+
+    String prevCValue;
+
+    for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+      child_node = (SimpleNode) node.jjtGetChild(i);
+
+      if(child_node.getId() == AlphaTreeConstants.JJTEQUAL) {
+        SimpleNode left_cn = (SimpleNode) child_node.jjtGetChild(0);
+        if(left_cn.getId() == AlphaTreeConstants.JJTIDENTIFIER) {
+          prevCValue = symbolTable.getSymbolConstValue(funcname, left_cn.val);
+          definedSymbols.put( left_cn.val, prevCValue);
+        }
+      }
+
+      process(child_node, symbol, funcname, state, possibleReturnType);
+    }
+
+    for (Map.Entry<String, String> entry : definedSymbols.entrySet()) {
+      String key = entry.getKey();
+      String value = entry.getValue();
+      symbolTable.setSymbolConstValue(funcname, key, value);
+    }
+
+    return definedSymbols;
+}
+
+
   private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType,
-      String label, boolean unreachableCode) {
+      String label, boolean unreachableCode, HashMap<String,String> ifDefinedSymbols) {
 
     String new_label = buildLabel();
     SimpleNode child_node;
@@ -647,24 +680,34 @@ public class JasminTest {
       code += "goto    " + new_label + "\n";
       emptyElse = false;
     }
+    
+    code += label + ":\n";
 
-    for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-      if (i == 0)
-        code += label + ":\n";
-      child_node = (SimpleNode) node.jjtGetChild(i);
+    for (int i = 0; i < body.jjtGetNumChildren(); i++) {
+
+      child_node = (SimpleNode) body.jjtGetChild(i);
       
-      if(child_node.getId() == AlphaTreeConstants.JJTEQUAL && optimization == Optimization.O) {
-        SimpleNode left_cn = (SimpleNode) child_node.jjtGetChild(0);
-        definedSymbols.add(left_cn.val);
-      }
-
       process(child_node, symbol, funcname, State.PROCESS, possibleReturnType);
+
+      if(child_node.getId() == AlphaTreeConstants.JJTEQUAL) {
+          SimpleNode left_cn = (SimpleNode) child_node.jjtGetChild(0);
+          if(left_cn.getId() == AlphaTreeConstants.JJTIDENTIFIER)
+            definedSymbols.add(left_cn.val);
+      }
     }
+
+    for (String symb : definedSymbols) {
+      symbolTable.setSymbolConstValue(funcname, symb, Symbol.UNDEFINED_CVALUE);
+    }
+
+    for (String key : ifDefinedSymbols.keySet()) {
+      symbolTable.setSymbolConstValue(funcname, key, Symbol.UNDEFINED_CVALUE);
+
+  }
+
 
     if (!emptyElse)
       code += new_label + ":\n";
-
-    System.out.println("hererere" + definedSymbols.toString());
 
     return symbol;
   }
@@ -907,7 +950,7 @@ public class JasminTest {
 
     //if the assignment is made inside a while loop or an if/else body it does not use the optimization
     if(parent_id == AlphaTreeConstants.JJTBODY && 
-    (grandParent_id == AlphaTreeConstants.JJTIF || grandParent_id == AlphaTreeConstants.JJTELSE || grandParent_id == AlphaTreeConstants.JJTWHILE))
+    (/*grandParent_id == AlphaTreeConstants.JJTIF || grandParent_id == AlphaTreeConstants.JJTELSE ||*/ grandParent_id == AlphaTreeConstants.JJTWHILE))
     {
       cValue = Symbol.UNDEFINED_CVALUE;
       ret = false;
@@ -928,8 +971,6 @@ public class JasminTest {
 
     optimizeEqual(node, funcname);
     
- 
-
     left_child_node = (SimpleNode) node.children[0]; // left child -> identifier
     if (left_child_node.getId() == AlphaTreeConstants.JJTINDEX) { // in case it is an array assignment
       left_child_node = (SimpleNode) left_child_node.jjtGetChild(0);

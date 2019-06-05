@@ -8,11 +8,20 @@ public class AlphaMain {
   private static SymbolTable symbolTable = new SymbolTable();
 
   public static void main(String args[]) throws ParseException {
-    if (args.length != 1) {
-      System.out.println("Usage: Alpha <FileToParse>");
+    if (args.length > 2) {
+      System.out.println("Usage: Alpha [-o] <FileToParse>");
     }
     try {
-      Alpha myCalc = new Alpha(new java.io.FileInputStream(args[0]));
+
+      Optimization optimization = Optimization.NONE;
+      String file = args[0];
+      if(args[0].equals("-o")){
+        optimization = Optimization.O;
+        file = args[1];
+      }
+
+
+      Alpha myCalc = new Alpha(new java.io.FileInputStream(file));
 
       SimpleNode root = Alpha.Program();
       System.out.println("\n\n---AST---\n\n");
@@ -27,10 +36,10 @@ public class AlphaMain {
        * jBuilder.arithmeticJasmin(root)); System.out.println(jasmin);
        */
 
-      JasminTest jTest = new JasminTest(symbolTable);
+      JasminTest jTest = new JasminTest(symbolTable, optimization);
       jTest.process(root, "", SymbolTable.GLOBAL, State.BUILD, "int");
       System.out.println("\n\n---JasminTEST---\n");
-      System.out.println(jTest.finalCode);
+     // System.out.println(jTest.finalCode);
 
       PrintWriter out = null;
       try {
