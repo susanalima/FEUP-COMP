@@ -1,4 +1,6 @@
 import java.util.AbstractMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class JasminTest {
 
@@ -278,19 +280,21 @@ public class JasminTest {
     }
   }
 
+
   private void process_nodeProgram(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType) {
     classHeader += ".class public " + symbolTable.getClassName() + "\n.super " + symbolTable.getParentClass() + "\n \n";
     finalCode += ".method public <init>()V\n\taload_0\n\tinvokespecial " + symbolTable.getParentClass()
         + "/<init>()V\n\treturn\n.end method\n\n";
-    // TODO: Check Inheritance
+
     process_nodeDefault(node, symbol, funcname, state, possibleReturnType);
     finalCode = classHeader + finalCode;
   }
 
+
   private void process_nodeClassBody(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType) {
-    SimpleNode child_node;
+    SimpleNode child_node, parent_node = (SimpleNode) node.jjtGetParent();
     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
       child_node = (SimpleNode) node.jjtGetChild(i);
       if (child_node.getId() == AlphaTreeConstants.JJTVAR_DECLARATION)
@@ -298,6 +302,7 @@ public class JasminTest {
       process(child_node, symbol, funcname, state, possibleReturnType);
     }
   }
+
 
   private String process_nodeIdentifier(SimpleNode node, String symbol, String funcname, State state) {
     if (state == State.PROCESS || state == State.CONDITION) {
@@ -447,7 +452,6 @@ public class JasminTest {
         this.unreachableCode = false;
     } 
     else {
-      // process_nodeDefault(node, symbol, funcname, State.BUILD, possibleReturnType);
       child_node = (SimpleNode) node.jjtGetChild(0); // condition
       label = process_nodeCondition(child_node, symbol, funcname, possibleReturnType, false); // process condition
 
@@ -481,6 +485,8 @@ public class JasminTest {
     int childId = child_node.getId();
     boolean notFalse = false;
 
+    Optimization opt = optimization;
+
     if(childId == AlphaTreeConstants.JJTNOT ) {
       SimpleNode tmp_child = (SimpleNode) child_node.jjtGetChild(0);
       if (tmp_child.getId() == AlphaTreeConstants.JJTFALSE)
@@ -491,7 +497,9 @@ public class JasminTest {
                                                                                                            
       code += label_goto + ":\n";
       child_node = (SimpleNode) node.jjtGetChild(1); // body
+      this.optimization = Optimization.NONE;
       symbol = process(child_node, symbol, funcname, state, possibleReturnType);
+      this.optimization = opt;
       code += "goto    " + label_goto + "\n";
       this.unreachableCode = true;
 
@@ -499,10 +507,15 @@ public class JasminTest {
 
       child_node = (SimpleNode) node.jjtGetChild(0); // condition
       code += label_goto + ":\n";
+      this.optimization = Optimization.NONE;
+
       String label = process_nodeCondition(child_node, symbol, funcname, possibleReturnType, false);
 
       child_node = (SimpleNode) node.jjtGetChild(1); // body
+     
       process_nodeDefault(child_node, symbol, funcname, state, possibleReturnType);
+
+      this.optimization = opt;
 
       if (this.unreachableCode)
         this.unreachableCode = false;
@@ -622,11 +635,15 @@ public class JasminTest {
 
   private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType,
       String label, boolean unreachableCode) {
+
     String new_label = buildLabel();
     SimpleNode child_node;
-    child_node = (SimpleNode) node.jjtGetChild(0);
+    SimpleNode body = (SimpleNode) node.jjtGetChild(0);
     boolean emptyElse = true;
-    if (child_node.jjtGetNumChildren() > 0 && !unreachableCode) { // not an empty else (first child is body)
+
+    Set<String> definedSymbols = new HashSet<String>();
+
+    if (body.jjtGetNumChildren() > 0 && !unreachableCode) { // not an empty else (first child is body)
       code += "goto    " + new_label + "\n";
       emptyElse = false;
     }
@@ -635,11 +652,20 @@ public class JasminTest {
       if (i == 0)
         code += label + ":\n";
       child_node = (SimpleNode) node.jjtGetChild(i);
+      
+      if(child_node.getId() == AlphaTreeConstants.JJTEQUAL && optimization == Optimization.O) {
+        SimpleNode left_cn = (SimpleNode) child_node.jjtGetChild(0);
+        definedSymbols.add(left_cn.val);
+      }
+
       process(child_node, symbol, funcname, State.PROCESS, possibleReturnType);
     }
 
     if (!emptyElse)
       code += new_label + ":\n";
+
+    System.out.println("hererere" + definedSymbols.toString());
+
     return symbol;
   }
 
@@ -849,12 +875,13 @@ public class JasminTest {
     SimpleNode left_child_node = (SimpleNode) node.children[0], right_child_node = (SimpleNode) node.children[1];
     String  type = symbolTable.getVarType(funcname, left_child_node.val);
     String varname = left_child_node.val;
-    
+
     if(symbolTable.isVarGlobal(varname)) //does not use the optimization in global variables
       return false;
 
     if (!type.equals("int") &&  !type.equals("boolean"))
       return false;
+
     int rId = right_child_node.getId();
     String cValue;
     switch(rId) {
@@ -879,7 +906,7 @@ public class JasminTest {
     int grandParent_id = grandParent_node.getId();
 
     //if the assignment is made inside a while loop or an if/else body it does not use the optimization
-    if(ret && parent_id == AlphaTreeConstants.JJTBODY && 
+    if(parent_id == AlphaTreeConstants.JJTBODY && 
     (grandParent_id == AlphaTreeConstants.JJTIF || grandParent_id == AlphaTreeConstants.JJTELSE || grandParent_id == AlphaTreeConstants.JJTWHILE))
     {
       cValue = Symbol.UNDEFINED_CVALUE;
@@ -899,10 +926,8 @@ public class JasminTest {
     String storeType, type;
     boolean isArray = false;
 
-    if(optimization == Optimization.O) {
-      if(optimizeEqual(node, funcname))
-        return symbol;
-    }
+    optimizeEqual(node, funcname);
+    
  
 
     left_child_node = (SimpleNode) node.children[0]; // left child -> identifier
@@ -913,10 +938,6 @@ public class JasminTest {
     } else {
       type = symbolTable.getVarType(funcname, left_child_node.val);
       if (type.equals("int") || type.equals("boolean")) {
-        /*String cValue = symbolTable.getSymbolConstValue(funcname, left_child_node.val);
-        if(optimization == Optimization.O && !cValue.equals(Symbol.UNDEFINED_CVALUE)) {
-          return symbol;
-        }*/
         storeType = "istore ";
       }
       else
