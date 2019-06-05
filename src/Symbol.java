@@ -2,6 +2,7 @@
 public class Symbol { 
 
     static final String UNDEFINED_CVALUE = "@";
+    
     String type;
     String name;
     String value;
@@ -50,7 +51,6 @@ public class Symbol {
                 ", value=" + value +
                 ", counter=" + counter +
                 ", size=" + size +
-                ", constValue=" + constValue +
                 '}';
     }
 

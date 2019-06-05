@@ -1,0 +1,40 @@
+class Fac  {
+
+
+  public int ComputeFac(int num, int a, int b, boolean c) {
+    int  num_aux; 
+    boolean a1;
+
+    a1 = true;
+
+    this.ComputeFac(1,1,1,a1);
+
+    a1 = false;
+
+    num_aux = 2;
+
+    this.ComputeFac(num_aux,1,1,a1);
+
+    if (a1)
+      num_aux = 1;
+    else
+      num_aux = 4;
+
+    a1 = 1 < num_aux;
+
+    while(a1) {
+      num_aux = 2;
+    }
+
+
+    a1 = !a1;
+
+      this.ComputeFac(num_aux,1,1,a1);
+    
+    return num_aux;
+  }
+
+  public static void main(String[] a){
+    io.println();
+  }
+}

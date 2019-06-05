@@ -843,24 +843,80 @@ public class JasminTest {
     return symbol;
   }
 
+  private boolean optimizeEqual(SimpleNode node, String funcname) {
+
+    boolean ret = true;
+    SimpleNode left_child_node = (SimpleNode) node.children[0], right_child_node = (SimpleNode) node.children[1];
+    String  type = symbolTable.getVarType(funcname, left_child_node.val);
+    String varname = left_child_node.val;
+    
+    if(symbolTable.isVarGlobal(varname)) //does not use the optimization in global variables
+      return false;
+
+    if (!type.equals("int") &&  !type.equals("boolean"))
+      return false;
+    int rId = right_child_node.getId();
+    String cValue;
+    switch(rId) {
+      case AlphaTreeConstants.JJTINTEGER:
+      cValue = right_child_node.val;
+      break;
+      case AlphaTreeConstants.JJTTRUE:
+      cValue = "1";
+      break;
+      case AlphaTreeConstants.JJTFALSE:
+      cValue = "0";
+      break;
+      default:
+      cValue = Symbol.UNDEFINED_CVALUE;
+      ret = false;
+      break; 
+    }
+
+    SimpleNode parent_node = (SimpleNode) node.jjtGetParent();
+    int parent_id = parent_node.getId();
+    SimpleNode grandParent_node = (SimpleNode) parent_node.jjtGetParent();
+    int grandParent_id = grandParent_node.getId();
+
+    //if the assignment is made inside a while loop or an if/else body it does not use the optimization
+    if(ret && parent_id == AlphaTreeConstants.JJTBODY && 
+    (grandParent_id == AlphaTreeConstants.JJTIF || grandParent_id == AlphaTreeConstants.JJTELSE || grandParent_id == AlphaTreeConstants.JJTWHILE))
+    {
+      cValue = Symbol.UNDEFINED_CVALUE;
+      ret = false;
+    }
+
+    symbolTable.setSymbolConstValue(funcname, varname, cValue);
+
+    return ret;
+
+  }
+
+
   private String process_nodeEqual(SimpleNode node, String symbol, String funcname) {
     SimpleNode child_node, left_child_node;
 
     String storeType, type;
     boolean isArray = false;
 
+    if(optimization == Optimization.O) {
+      if(optimizeEqual(node, funcname))
+        return symbol;
+    }
+ 
+
     left_child_node = (SimpleNode) node.children[0]; // left child -> identifier
     if (left_child_node.getId() == AlphaTreeConstants.JJTINDEX) { // in case it is an array assignment
       left_child_node = (SimpleNode) left_child_node.jjtGetChild(0);
-      storeType = "iastore"; // TODO PODE SER aastore caso seja uma referencia (acho que nunca acontece)
+      storeType = "iastore"; 
       isArray = true;
     } else {
       type = symbolTable.getVarType(funcname, left_child_node.val);
       if (type.equals("int") || type.equals("boolean")) {
-        String cValue = symbolTable.getSymbolConstValue(funcname, left_child_node.val);
+        /*String cValue = symbolTable.getSymbolConstValue(funcname, left_child_node.val);
         if(optimization == Optimization.O && !cValue.equals(Symbol.UNDEFINED_CVALUE)) {
           return symbol;
-        }
+        }*/
         storeType = "istore ";
       }
       else
@@ -904,6 +960,7 @@ public class JasminTest {
 
     return symbol;
   }
+
 
   private void process_nodeDefault(SimpleNode node, String symbol, String funcname, State state,
       String possibleReturnType) {
