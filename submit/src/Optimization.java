@@ -1,4 +1,0 @@
-enum Optimization {
-    NONE,
-    O,
-}

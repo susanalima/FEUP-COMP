@@ -1,7 +1,0 @@
-TODO LIST:
-  20. ver while true/false -> verificar em casos com muitos loops e ifs encadeados
-  23. ldc ou iconst para os booleanos??
-  34. testar parametros $name
-  36. ver melhor cena do ldc vs iconst, especialmente nos booleanos
-  39. if(a1), sendo a1 true
-
