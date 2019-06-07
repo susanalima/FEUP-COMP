@@ -3,13 +3,14 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 
-public class AlphaMain {
+public class jmm {
 
   private static SymbolTable symbolTable = new SymbolTable();
 
   public static void main(String args[]) throws ParseException {
-    if (args.length > 2) {
-      System.out.println("Usage: Alpha [-o] <FileToParse>");
+    if (args.length > 2 || args.length < 1) {
+      System.out.println("Usage: jmm [-o] <FileToParse>");
+      return;
     }
     try {
 
@@ -29,13 +30,7 @@ public class AlphaMain {
 
       symbolTable.buildAndAnalise(root);
 
-      /*
-       * System.out.println("---Jasmin---\n"); JasminBuilder jBuilder = new
-       * JasminBuilder(symbolTable); String jasmin = jBuilder.printJasmin(root);
-       * jasmin = jasmin.concat("\n\nArithmetic \n\n" +
-       * jBuilder.arithmeticJasmin(root)); System.out.println(jasmin);
-       */
-
+    
       JasminTest jTest = new JasminTest(symbolTable, optimization);
       jTest.process(root, "", SymbolTable.GLOBAL, State.BUILD, "int");
       System.out.println("\n\n---JasminTEST---\n");
