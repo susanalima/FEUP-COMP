@@ -820,7 +820,7 @@ public class SymbolTable {
                 System.exit(0);
             } else {
                 if(this.extends_)
-                    symbol = "int"; //TODO SEI LA....
+                    symbol = "int"; 
                 else
                     symbol = AND_SEPARATOR + getFunctionReturnType(tmp);
             }

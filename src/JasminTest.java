@@ -666,6 +666,9 @@ public class JasminTest {
 }
 
 
+  
+
+
   private String process_nodeElse(SimpleNode node, String symbol, String funcname, String possibleReturnType,
       String label, boolean unreachableCode, HashMap<String,String> ifDefinedSymbols) {
 
@@ -968,9 +971,7 @@ public class JasminTest {
 
     String storeType, type;
     boolean isArray = false;
-
-    optimizeEqual(node, funcname);
-    
+ 
     left_child_node = (SimpleNode) node.children[0]; // left child -> identifier
     if (left_child_node.getId() == AlphaTreeConstants.JJTINDEX) { // in case it is an array assignment
       left_child_node = (SimpleNode) left_child_node.jjtGetChild(0);
@@ -1001,6 +1002,8 @@ public class JasminTest {
       process(child_node, symbol, funcname, s, left_child_type);
     }
     
+    optimizeEqual(node, funcname);
+
     child_node = (SimpleNode) node.jjtGetChild(1); // right child
 
 

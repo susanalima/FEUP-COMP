@@ -34,7 +34,7 @@ public class jmm {
       JasminTest jTest = new JasminTest(symbolTable, optimization);
       jTest.process(root, "", SymbolTable.GLOBAL, State.BUILD, "int");
       System.out.println("\n\n---JasminTEST---\n");
-     // System.out.println(jTest.finalCode);
+      System.out.println(jTest.finalCode);
 
       PrintWriter out = null;
       try {
