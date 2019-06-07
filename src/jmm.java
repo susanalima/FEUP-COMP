@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
@@ -21,24 +22,30 @@ public class jmm {
         file = args[1];
       }
 
-
+      
       Alpha myCalc = new Alpha(new java.io.FileInputStream(file));
-
+      
       SimpleNode root = Alpha.Program();
       System.out.println("\n\n---AST---\n\n");
       root.dump("");
-
+      
       symbolTable.buildAndAnalise(root);
-
-    
+      
+      
       JasminTest jTest = new JasminTest(symbolTable, optimization);
       jTest.process(root, "", SymbolTable.GLOBAL, State.BUILD, "int");
       System.out.println("\n\n---JasminTEST---\n");
       System.out.println(jTest.finalCode);
 
+      String fileName = new File(file).getName();
+      int pos = fileName.lastIndexOf(".");
+      if (pos != -1) {
+        fileName = fileName.substring(0, pos);
+      }
+
       PrintWriter out = null;
       try {
-        out = new PrintWriter("../out/output.j");
+        out = new PrintWriter("./" + fileName + ".j");
         out.println(jTest.finalCode);
       } finally {
         if (out != null)
