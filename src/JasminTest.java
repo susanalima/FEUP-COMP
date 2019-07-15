@@ -1006,6 +1006,10 @@ public class JasminTest {
 
     child_node = (SimpleNode) node.jjtGetChild(1); // right child
 
+    if (child_node.getId() == AlphaTreeConstants.JJTTHIS) {
+      code += "aload_0\n";
+      stackSize++;
+    }
 
     if (child_node.getId() == AlphaTreeConstants.JJTIDENTIFIER || child_node.getId() == AlphaTreeConstants.JJTTRUE
         || child_node.getId() == AlphaTreeConstants.JJTFALSE) // CASE IT IS AN IDENTIFIER LIKE a = s

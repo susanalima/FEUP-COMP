@@ -618,6 +618,7 @@ public class SymbolTable {
         SimpleNode identifier = (SimpleNode) node.jjtGetChild(0), child_node;
         String tmp = "", varType = AND_SEPARATOR + "int";
         boolean process_identifier = true;
+        String expressionType = "";
 
         if (wasVarDeclared(funcname, identifier.val)) {
             varType = eval_process(identifier, "", funcname, State.PROCESS);
@@ -625,11 +626,15 @@ public class SymbolTable {
         }
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             child_node = (SimpleNode) node.jjtGetChild(i);
+            if(node.jjtGetNumChildren() == 2 && child_node.getId() == AlphaTreeConstants.JJTTHIS){
+                expressionType = this.className;
+            }
             tmp += eval_process(child_node, varType.split(AND_SEPARATOR)[1], funcname, State.PROCESS);
         }
         symbol += tmp;
 
-        String expressionType = returnExpressionType(symbol);
+        if(expressionType.equals(""))
+            expressionType = returnExpressionType(symbol);
 
         if (process_identifier)
             varType = eval_process(identifier, expressionType, funcname, State.PROCESS);
