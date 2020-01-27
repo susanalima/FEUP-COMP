@@ -1,17 +1,11 @@
 # Compiler of the Java-- language to Java Bytecodes
 
-## Y2019-G66
+[Susana Lima](https://github.com/susanalima), up201603634, 19, 34%
 
-Afonso Azevedo, up201603523, 19, 33%
+[Gonçalo Santos](https://github.com/gregueiras), up201603265, 19, 33%
 
-Gonçalo Santos, up201603265, 19, 33%
+[Afonso Azevedo](https://github.com/4-Z3r0), up201603523, 19, 33%
 
-Susana Lima, up201603634, 19, 34%
-
-
-## GLOBAL Grade of the project: 
-
-Considering all the required features to have a ceiling of 18 and the “-o” optimization were implemented, and the group only has 3 elements, we grade our project a 19.
 
 ## SUMMARY:
 Our tool generates the jasmin instructions for a file written in the Java-- language. To achieve this, the tool starts by constructing an AST with the structures and expressions present in the code. After generating the AST, it proceeds to construct a symbol table and then executes the semantic analysis of the code. At this point the tools has all necessary structures to start generating the jasmin code, if no errors were found, the tool outputs the generated code to a file with the “.j” extension.
