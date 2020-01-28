@@ -1,10 +1,10 @@
 # Compiler of the Java-- language to Java Bytecodes
 
-[Susana Lima](https://github.com/susanalima), up201603634, 19, 34%
+[Susana Lima](https://github.com/susanalima), up201603634, 34%
 
-[Gonçalo Santos](https://github.com/gregueiras), up201603265, 19, 33%
+[Gonçalo Santos](https://github.com/gregueiras), up201603265,  33%
 
-[Afonso Azevedo](https://github.com/4-Z3r0), up201603523, 19, 33%
+[Afonso Azevedo](https://github.com/4-Z3r0), up201603523,  33%
 
 
 ## SUMMARY:
@@ -68,9 +68,6 @@ If there aren’t any errors (from the grammar or the semantic analysis) the cod
 
 To develop the tool we didn’t use any third-party tools and/or packages or any external algorithms. All the program’s structure and code was developed by us. The AST is analysed three times over the program’s execution, one for building the Symbol Table, another for the Semantic Analysis and the last one for generating the code. This means that the code structure to do this three procedures is very similar, which facilitated our work in general. In retrospect the structure could have been implemented in a simpler way in order to facilitate the implementation of certain optimizations, however we think that in general, the structure implemented serves its purpose with great efficiency.
 
-## TASK DISTRIBUTION:
-
-The realization of the project in question was possible due to the joint effort of all the members of the group, in an organized and synchronized way so that there was not great disparity of contribution between the different elements. Each element focused more on the module with which it was more comfortable, but in general the work was divided equally among all.
 
 ## PROS: 
 
