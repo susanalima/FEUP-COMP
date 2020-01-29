@@ -1,10 +1,10 @@
 # Compiler of the Java-- language to Java Bytecodes
 
-[Susana Lima](https://github.com/susanalima), up201603634, 34%
+[Susana Lima](https://github.com/susanalima), up201603634
 
-[Gonçalo Santos](https://github.com/gregueiras), up201603265,  33%
+[Gonçalo Santos](https://github.com/gregueiras), up201603265
 
-[Afonso Azevedo](https://github.com/4-Z3r0), up201603523,  33%
+[Afonso Azevedo](https://github.com/4-Z3r0), up201603523
 
 
 ## SUMMARY:
